@@ -10,6 +10,7 @@ git config --global user.email"trilever31204@163.com"
 2、将一个文件提交到本地git库（就是让git软件对这个文件实施管理）
 新建：t1.txt文件
 git add t1.txt//将文件加入到git库中
+注意：此处如果是在本地工作目录中删除了一个文件，这时候就不应该是使用add，而应该是使用git rm t1.txt，然后的commit是一样的。
 git commint -m "the first version"
 
 这样就将这个文件提交到本地git库中，让git软件帮助管理这个文件。
@@ -79,11 +80,29 @@ c、将本地仓库与github上的仓库相连接：
 进入本仓库的bash中：
 git remote add origin git@github.com:trileverwt/java_test.git
 d、将本地仓库中的修改commit之后，add&&commit。
-git push origin master。
+git push origin master。//
 这样就将本地仓库中的修改提交到远程仓库中。
 
-12、怎样从别人的项目中pull下来东西。
+12、怎样从别人的项目中clone下来东西。
 进入本地某一个大目录，这个目录中放的是所有的git项目文件夹。
 git clone git@github.com:trileverwt/linux.git
 
-13、
+13、git报错处理
+如果输入$ git push origin master
+提示出错信息：error:failed to push som refs to …….
+解决办法如下：
+1、先输入$ git pull origin master //先把远程服务器github上面的文件拉下来
+2、再输入$ git push origin master
+3、如果出现报错 fatal: Couldn’t find remote ref master或者fatal: ‘origin’ does not appear to be a git repository以及fatal: Could not read from remote repository.
+4、则需要重新输入$ git remote add origingit@github.com:djqiang/gitdemo.git
+
+14、使用git在本地创建一个项目的过程
+$ makdir ~/hello-world    //创建一个项目hello-world
+$ cd ~/hello-world       //打开这个项目
+$ git init             //初始化
+$ touch README
+$ git add README        //更新README文件
+$ git commit -m ‘first commit’     //提交更新，并注释信息“first commit”
+$ git remote add origin git@github.com:defnngj/hello-world.git     //连接远程github项目
+$ git push -u origin master     //将本地项目更新到github项目上去
+
