@@ -80,6 +80,9 @@ c、将本地仓库与github上的仓库相连接：
 进入本仓库的bash中：
 git remote add origin git@github.com:trileverwt/java_test.git
 d、将本地仓库中的修改commit之后，add&&commit。
+每次push之前，都要先pull下远程仓库里的内容。
+git pull origin master
+然后再：
 git push origin master。//
 这样就将本地仓库中的修改提交到远程仓库中。
 
