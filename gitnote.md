@@ -109,3 +109,4 @@ $ git commit -m ‘first commit’     //提交更新，并注释信息“first commit”
 $ git remote add origin git@github.com:defnngj/hello-world.git     //连接远程github项目
 $ git push -u origin master     //将本地项目更新到github项目上去
 
+git@github.com:trileverwt/triolog.git
