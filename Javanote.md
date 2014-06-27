@@ -1561,22 +1561,24 @@ B、我们不在枚举中实现接口中的所有的抽象方法。
 
 Java中的jar命令
 ---------------
-作用：把多个文件打包成一个压缩包。与winzip压缩格式是一样的，只不过jar压缩结果中在各种class文件之外会添加一个meta-inf的文件夹，其中有一个menifest.mf文件，这个文件就是清单文件。
-通常得到的压缩包有3种:
-*.jar:它里面包括的是n个class文件。
-*.war:它是一个web应用打包生成的文件。与jar的格式是一样的，只是后缀不同而已。
-*.ear:它是一个企业应用打包生成的包。
+作用：把多个文件打包成一个压缩包。与`winzip`压缩格式是一样的，只不过jar压缩结果中在各种`class`文件之外会添加一个`meta-inf`的文件夹，其中有一个`menifest.mf`文件，这个文件就是清单文件。  
 
-Jar命令的用法：
-某个工程在一个文件夹中，里面都是class文件。将所有的class文件压缩成一个jar文件压缩包。
-jar -cvf myname.jar *.class   //f:表示后面的是目标jar文件名。*.class表示将文件夹中所有的class文件都压缩起来。
+通常得到的压缩包有3种:  
+1. `*.jar`:它里面包括的是n个`class`文件。  
+2. `*.war`:它是一个`web`应用打包生成的文件。与`jar`的格式是一样的，只是后缀不同而已。  
+3. `*.ea`r:它是一个企业应用打包生成的包。
+
+`jar`命令的用法：
+某个工程在一个文件夹中，里面都是`class`文件。将所有的`class`文件压缩成一个`jar`文件压缩包。  
+> 
+ `jar -cvf myname.jar *.class `  //f:表示后面的是目标`jar`文件名。`*.class`表示将文件夹所有的`class`文件都压缩起来。
 
 如果不生成清单文件：
 >
 >
 	jar -cMf myname.jar *.class
 
-查看jar压缩包的内容：
+查看`jar`压缩包的内容：
 >
 	jar -tf myname.jar
 	jar -tvf myname.jar:查看详细内容
@@ -1590,17 +1592,17 @@ jar -cvf myname.jar *.class   //f:表示后面的是目标jar文件名。*.class
 	jar -uvf myname.jar *.class //将文件夹中的新的class加入到原来的jar包中。
 
 
-为什么做jar包？
-因为一个真实项目中会有很多class文件，所以存在系统管理不方便、性能低（jvm需要依次加载不同的class文件，效率很低）。
-所以可以将多个class文件打包成一个jar包，这样的好处就是：多个class文件统一成一个jar包方便管理，jvm不用将jar包解压再加载，而是可以加载整个jar包（加载所有的class），这样效率高。
+为什么做jar包？  
+因为一个真实项目中会有很多`class`文件，所以存在系统管理不方便、性能低（`jvm`需要依次加载不同的`class`文件，效率很低）。  
+所以可以将多个`class`文件打包成一个`jar`包，这样的好处就是：多个`class`文件统一成一个`jar`包方便管理，`jvm`不用将`jar`包解压再加载，而是可以加载整个`jar`包（加载所有的`class`），这样效率高。
 
 
-将整个项目打包成可执行的jar包：
-我们讲所有的class打包成jar文件后，这些class中只有一个class中的main方法才可以知道执行，也就是说项目是从这个class文件开始执行的，但是jvm不知道哪一个才是开始执行的class文件，所以，需要打包成可执行的jar包。
-通过-e选项告诉jvm哪一个class才是整个项目的主类。
+将整个项目打包成可执行的`jar`包：  
+我们将所有的`class`打包成`jar`文件后，这些`class`中只有一个`class`中的`main`方法才可以执行，也就是说项目是从这个`class`文件开始执行的，但是`jvm`不知道哪一个才是可以开始执行的`class`文件，所以，需要打包成可执行的`jar`包。
+通过`-e`选项告诉`jvm`哪一个`class`才是整个项目的主类。
 >
-	jar -cvfe myname.jar hello *.class//后面的说明hello.class是主类，*.class表示压缩文件的来源class。
-产生的文件在已经装了JVM的情况下可以点击运行。
+	jar -cvfe myname.jar hello *.class//后面的说明hello.class是主类，*.class表示压缩文件的来源为目录下所有的class文件。
+产生的文件在已经装了JVM的情况下可以点击运行。  
 如果没有安装JVM，可以使用：
 >
 	java -jar my.jar来进行运行。//用于运行控制台程序。
@@ -1609,52 +1611,51 @@ jar -cvf myname.jar *.class   //f:表示后面的是目标jar文件名。*.class
 
 Java中的入口方法
 ------------------------
-系统JVM在调用这个main方法的时候，JVM与我们的类不会在同一个包中，JVM也不会是我们这个类的子类。所以只能用public修饰main方法。
-也不能先创建实例来调用main方法，只能用类拥有的方法，这样在JVM载入这个类的时候，就自动加载这个类所拥有的方法。所以main方法就是一个static方法。
-Main方法的参数：args，这是一个String数组，默认长度是0；可以在运行的时候，接参数，将参数值传递进入main方法。
-Java 主类名 参数1 参数2 参数3……
+系统`JVM`在调用这个`main()`方法的时候，`JVM`与我们的类不会在同一个包中，`JVM`也不会是我们这个类的子类。所以只能用`public`修饰`main()`方法。  
+也不能先创建实例来调用`main()`方法，只能用类拥有的方法，这样在`JVM`载入这个类的时候，就自动加载这个类所拥有的方法。所以`main()`方法就是一个`static`方法。  
+`main()`方法的参数：`args`，这是一个`String`数组，默认长度是0；可以在运行的时候，接参数，将参数值传递进入`main()`方法。  
+>
+`java 主类名 参数1 参数2 参数3……`
 
 
 Java中与系统有关的两个类
 -------------
 
-1、System类
-代表我们的JVM所在的操作系统，如XP系统。
-如果要获取操作平台的相关特性，就要使用System类
-System中所有的方法和field都是static的。无需对象来调用。
+System类  
+代表我们的`JVM`所在的操作系统，如`XP`系统。  
+如果要获取操作平台的相关特性，就要使用`System`类。  
+`System`类中所有的方法和`field`都是`static`的。无需对象来调用。
+>
+`System.out`:代表屏幕这个对象，这个`out`实际上是`System`这个类的一个`static field`，属于整个类。因为系统本来就有这个东西，而且是类拥有的。  
+>
+`System.in`:代表键盘这个对象，这个`in`实际上是`System`这个类的一个`static field`，属于整个类。
+>
+`System.exit(int status)`:使用这个`static`方法可以退出JVM，这个方法实际上是`System`这个类的一个`static`方法。遇到这个代码，该`java`程序立刻结束,退出虚拟机。
+>
+`System.getenv()`:获取所有环境变量。
+>
+`System.getenv(String name)`:获取指定环境变量值。
+>
+`System.getProperties()`:获取所有的系统属性。
+>
+`System.getProperty(String key)`：获取指定的系统属性。  
 
-System.out:代表屏幕这个对象，这个out实际上是System这个类的一个static field，属于整个类。因为系统本来就有这个东西嘛，而且是类拥有的。
+Runtime类  
+代表`JVM`所在的`JRE`。  
+`JRE=JVM+核心类库（JDK）`。  
+若要获取`JVM（虚拟机）`的特性，就要使用`Runtime`类。
 
-System.in:代表键盘这个对象，这个in实际上是System这个类的一个static field，属于整个类。
-
-System.exit(int status):使用这个static方法可以退出JVM，这个方法实际上是System这个类的一个static方法。遇到这个代码，该java程序立刻结束退出虚拟机。
-
-System.getenv()//获取所有环境变量
-
-System.getenv(String name)//获取指定环境变量值
-
-System.getProperties()//获取所有的系统属性
-
-System.getProperty(String key)//获取指定的系统属性
-
-Runtime类
-代表JVM所在的JRE
-JRE=JVM+核心类库（JDK）
-若要获取JVM（虚拟机）的特性，就要使用Runtime类。
-
-Runtime类的方法不是static的，而且这个类没有构造器。
-但是这是一个单例类。它的构造器被隐藏了，外界是看不到的。
-只能通过getRuntime()这个static方法来获得实例。
-然后通过这个实例来调用runtime的各种方法进行操作
+`Runtime`类的方法不是`static`的，而且这个类没有构造器。  
+但是这是一个单例类。它的构造器被隐藏了，外界是看不到的。  
+只能通过`getRuntime()`这个`static`方法来获得实例。然后通过这个实例来调用`Runtime`的各种方法进行操作。
 >
 	Runtime rt=Runtime.getRuntime();//获得runtime类的实例
 	System.out.println(rt.availableProcessors());//使用这个实例调用这个类的方法，获得JVM的处理器个数
 
-还可以通过Runtime类对象的方法exex（）来调用运行操作系统（xp）命令或者其中的一个程序：
+还可以通过`Runtime`类对象的方法`exex()`来调用运行操作系统（xp）命令或者其中的一个程序：
 实际上只要是安装于这个系统中的所有软件都可以通过这个类对象进行调用运行。
 >
-	rt.exec("D:/Program Files/Bin/QQ.exe");//在虚拟机中开辟一个新的进程，然后再执行调用系统中的某一个程序。
-	注意调用时的路径问题，如果没有指定绝对路径，而只有相对路径，就回到path环境变量中进行搜索。
+	rt.exec("D:/Program Files/Bin/QQ.exe");//在虚拟机中开辟一个新的进程，然后再执行用系统中的某一个程序。注意调用时的路径问题，如果没有指定绝对路径，而只有相对路径，就回到path环境变量中进行搜索。
 
 
 因此，有了这个东西，我们可以做一个有界面的程序，界面上都是本系统中拥有的所有程序的图标按钮，然后每一个按钮都和对应的程序.exe连接在一起，那么运行了这个程序之后，点击相应的按钮就可以快捷启动对应的软件。
