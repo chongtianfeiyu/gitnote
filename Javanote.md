@@ -1657,17 +1657,15 @@ Runtime类
 >
 	rt.exec("D:/Program Files/Bin/QQ.exe");//在虚拟机中开辟一个新的进程，然后再执行用系统中的某一个程序。注意调用时的路径问题，如果没有指定绝对路径，而只有相对路径，就回到path环境变量中进行搜索。
 
-
 因此，有了这个东西，我们可以做一个有界面的程序，界面上都是本系统中拥有的所有程序的图标按钮，然后每一个按钮都和对应的程序.exe连接在一起，那么运行了这个程序之后，点击相应的按钮就可以快捷启动对应的软件。
 
-java中用于处理日期的类
+Java中用于处理日期的类
 ----------
-Date类，表示一个日期，
-未过时的构造器只有：
-Date()与Date(long date),
-当然，过时的方法等都还是可以使用。
-在java中月份从0开始。
-Date是毫秒数，从1970开始。System类中有一个static方法currentTimeMillis()用于获取当前时间已经过的毫秒数。
+`Date`类，表示一个日期。  
+其未过时的构造器只有：
+`Date()与Date(long date)`，当然，过时的方法等都还是可以使用。  
+在Java中月份从0开始。`Date`是毫秒数，从1970开始。  
+`System`类中有一个`static`方法`currentTimeMillis()`用于获取当前时间已经过的毫秒数。
 >
 	//initialize the de with default empty constructor_
 	Date de=new Date();
@@ -1680,10 +1678,10 @@ Date是毫秒数，从1970开始。System类中有一个static方法currentTimeM
 	de=new Date(System.currentTimeMillis()-3*24*60*60*1000);
 	System.out.println(de);//output the date three days earlier
 
-calender类，也表示一个时间。
-由于date类已经过时了，所以要使用calender类来代替。但是date类并不能完全丢弃。
-但是calender的构造器不能被调用。所以不能自己调用该类的构造器去创建对象实例。
-而是通过其一个static方法去创建一个实例。这个方法是getInstance();
+`Calender`类，也表示一个时间。  
+由于`Date`类已经过时了，所以要使用`Calender`类来代替。但是`Date`类并不能完全丢弃。  
+但是`Calender`的构造器不能被调用。所以不能自己调用该类的构造器去创建对象实例。
+而是通过其一个`static`方法去创建一个实例。这个方法是`getInstance()`。
 >
 	//output the static field of clendar
 	System.out.println(Calendar.DAY_OF_MONTH);
@@ -1707,11 +1705,11 @@ calender类，也表示一个时间。
 
 Java中的正则表达式
 ---------
-所谓的正则表达式就是：可以匹配n个字符串的字符串模板。是一个非常强大的字符串模板。
-*代表n个字符
-？代表一个字符
-一般在命令行中，经常使用此类的符号来搜索。但是功能太弱。
-所以需要正则表达式。是跨语言工具。
+所谓的正则表达式就是：可以匹配n个字符串的字符串模板。是一个非常强大的字符串模板。  
+>
+*代表n个字符  
+？代表一个字符  
+一般在命令行中，经常使用此类的符号来搜索。但是功能太弱。所以需要正则表达式。是跨语言工具。
 
 注：vim编辑器对正则表达式支持很好。
 “/”+正则表达式
