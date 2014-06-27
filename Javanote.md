@@ -1800,29 +1800,25 @@ Matcher类：表示一个匹配工具类。
 2. 获取该网页的响应内容（就是网站将网页的内容发送过来）。  
 3. 提取出网页内容中的超链接地址。此步骤中使用正则表达式，使用这两个类的作用。
 
-
-
-
-
 Java中的国际化
 --------------
-所谓的java的国际化，就是希望程序本身自适应所有的用户（各种语言界面）环境。就是I18N。
+所谓的java的国际化，就是希望程序本身自适应所有的用户（各种语言界面）环境。就是`I18N`。
 
-其本质就是：查找、替换。
+其本质就是：查找&&替换。  
 就是对程序中出现的字符或者字符串到资源文件中进行查找替换成目标的字符或者字符串。
 
-
-资源文件：用于为程序提供国际化消息。
-资源文件的命名：<baseName>_语言代码_国家代码.properties
+资源文件：用于为程序提供国际化消息。  
+资源文件的命名：`<baseName>_语言代码_国家代码.properties `  
+如：
 >
 Ms_zh_CN.properties
 
-同一个程序的所有资源文件的baseName必须是相同的，也就是说对于不同语言的资源文件命名，baseName都是一样的。
+同一个程序的所有资源文件的`baseName`必须是相同的，也就是说对于不同语言的资源文件命名时，`baseName`都是一样的。
 该文件中内容：
 >
 	hi=你好！
 
-如果资源文件中包含有非西欧字符（中文，日文等），就需要使用native2ascii工具类来处理这个文件，然后才能用。
+如果资源文件中包含有非西欧字符（中文，日文等），就需要使用native2ascii工具来处理这个文件，然后才能用。
 使用这个工具处理资源文件的命令：
 >
 	native2ascii Ms_zh_CN.properties mse_zh_CN.properties //将前者处理成后者这个文件。就是将汉字处理成标准的Unicode值。
@@ -1843,7 +1839,7 @@ Ms_zh_CN.properties
 >
 	hi={0}，你好！{1}  //在资源文件中加上占位符，以供运行时参数来填补占位符。
 	源程序中：
-	System.out.println(MessageFormat.format(res.getString("hello"),args[0],args[1]));//这里使用MessageFormat类，为消息中的占位符填充参数值。
+	System.out.println(MessageFormat.format(res.getString("hi"),args[0],args[1]));//这里使用MessageFormat类，为消息中的占位符填充参数值。
 
 运行这个程序的时候，使用运行时参数args[0],args[1]来填充资源文件中的占位符。
 
@@ -1852,66 +1848,68 @@ CMD中：
 	java hell 张三 李四 // 这里在运行的时候，用张三、李四两个字符填充语言资源文件中两个占位符。
 
 
-国际化的步骤：
-提供资源文件。
-对于非西欧字符，要将它进行处理成标准Unicode字符。使用native2ascii工具。
-探查获得本计算机所在区域以及所使用的语言。
-使用一个ResourceBundle类来绑定我们所需要的语言资源文件，也就是将探测到的计算机所使用的语言与我们已有的语言资源文件链接起来。。
-在程序中通过查找替换的形式使用语言资源文件中所对应的语言。
+国际化的步骤：  
+1. 提供资源文件。  
+2. 对于非西欧字符，要将它进行处理成标准`Unicode`字符。使用`native2ascii`工具。  
+3. 探查获得本计算机所在区域以及所使用的语言。  
+4. 使用一个`ResourceBundle`类来绑定我们所需要的语言资源文件，也就是将探测到的计算机所使用的语言与我们已有的语言资源文件链接起来。  
+5. 在程序中通过查找替换的形式使用语言资源文件中所对应的语言。
 
 
 那么怎样查询所需语言和国家代码？
-使用Local工具类即可。
+使用`Local`工具类即可。
 >
 	Locale currentLocale=Locale.getDefault(Locale.Category.DISPLAY);
 
 
-Java中的Format类的使用。
-Format类有三个子类，MessageFormat、NumberFormat、DateFormat。
-NumberFormat：用于格式化数字，所谓格式化数字：就是将数字转换成相应所要求格式的字符串。
-不能使用构造器来进行构造，而是使用static方法来获得实例对象。
+Java中的Format类的使用
+-----------------  
+`Format`类有三个子类：`MessageFormat、NumberFormat、DateFormat`。  
+
+`NumberFormat`类：用于格式化数字，所谓格式化数字，就是将数字转换成相应所要求格式的字符串。
+不能使用构造器来进行构造，而是使用以下的`static`方法来获得实例对象。
 >
 	getCurrencyInstance（）；用于将数字格式化成货币字符串。
 	getIntegerInstance（）：用于将数字格式化成整数字符串。
 	getPercentInstance（）：用于将数字格式化成百分号字符串。
 
-并且，这些方法中还可以传入locale对象，设置格式化成哪个国家的字符串。
+并且，这些方法中还可以传入`locale`对象，设置格式化成哪个国家的字符串。
 
-得到实例之后，调用以下方法，就可以将数字转换成相应所要的字符串。
+得到`NumberFormat`类的实例对象之后，调用其以下方法，就可以将数字转换成相应所要的字符串。
 >
 	String format（double number）；
+
+`DateFormat`类：用于格式化日期。不能直接创建实例，而是通过以下的`static`方法创建实例。
 >
-	DateFormat：用于格式化日期。
-	不能直接创建实例，而是通过static方法创建实例。
 	getDateInstance（）；用于将日期对象格式化成日期字符串，只有日期，没有时间。
 	getTimeInstance（）；用于将日期对象格式化成时间字符串，只有时间，没有日期。
 	getDateTimeInstance（）；用于将日期对象格式化成日期时间字符串，都有。
 
-并且，这些方法中还可以传入locale对象，设置格式化成哪个国家的字符串以及格式化风格。
+并且，这些方法中还可以传入`locale`对象，设置格式化成哪个国家的字符串以及格式化风格。
 >
 	DateFormat  usShort=DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.LONG,Locale.US);
 
-得到实例之后，调用以下方法，就可以将日期对象格式化成相应想要的字符串。
+得到`DateFormat`类的实例对象之后，调用对象的以下方法，就可以将日期对象格式化成相应想要的字符串。  
+>
+	String format（Date date）；
 >
 	Date date = new Date();//创建一个时间对象实例。
-	System.out.println(df.format(date));
+	System.out.println(df.format(date));//将时间对象实例格式化成想要的String格式。
 
 
-还有一个常用的simpledateformat是dateformat的子类。
-其可以进行任意自定义格式的格式化。简单的日期时间格式器。
-可以将日期格式化为字符串，也可以将字符串格式化为日期。
-其具有构造器。
-
-1、按照自己的要求将日期对象格式化成一个日期字符串。
+还有一个常用的`simpledateformat`是`Dateformat`的子类。
+其可以进行任意自定义格式的格式化，是简单的日期时间格式器。**可以将日期格式化为字符串，也可以将字符串格式化为日期**。其具有构造器。
+>
+按照自己的要求*将日期对象格式化成一个日期字符串*。
 >
 	SimpleDateFormat sdf = new SimpleDateFormat("生日：y年M月d日,是今年的第D天");//将格式器设定为我们所需要的任何格式。
 	System.out.println(sdf.format(date));//使用格式化器。
-
-它的格式化是随心所欲的。
-
-将一个日期字符串格式化成一个日期对象。
 >
-	String dat = "2014/5%25 13.34/12";//时间字符串
+它的格式化是随心所欲的。
+>
+将一个*日期字符串格式化成一个日期对象*。
+>
+	String dat = "2014/5/25 13.34/12";//时间字符串
 	SimpleDateFormat sdf1 = new SimpleDateFormat("y/M%d H.m/s");//创建对象
 	Date da = sdf1.parse(dat);//将时间字符串转换成时间对象
 >		
