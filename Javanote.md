@@ -2104,40 +2104,6 @@ b. 负载因子：
     	return this.name.hashCode()+this.count;
     }
 
-
-`HashSet`的子类`LinkedHashSet`  
-其存储机制与`HashSet`类似，但是，`HashSet`的底层机制是一个数组(顺序表），而且数据存放位置是一个无顺序的，也就是与放入时顺序无关的，这样，遍历整个`Hashset`的时候就是无序的。  
-而`LinkedHashSet`的底层机制是一个链表，这样，在链表中顺序就和放入对象的顺序是一致的，这样在遍历`linkedHashSet`的时候，就是有序的，与放入顺序一样。
-
-Java中的TreeSet
------------------
-特征：保证`Set`中的元素对象都是已经排好序的，排序的目的在于便于查找、检索。  
-对于字符串，按首字母的`ASCII`码排序。  
-TreeSet是标准的“红黑树”；  
-树——>二叉树——>排序二叉树(左子节点小于`root`节点小于右子节点）——>平衡排序二叉树(AVL：任何节点的树高度差不大于1且是排序二叉树，保证整棵树的权值最小)——>红黑树。  
-树：**二叉树**（普通二叉树、排序二叉树、AVL树（平衡排序二叉树））、**红黑树**、**扩展树**。**B树**。  
-其中，二叉树、红黑树、扩展树是用于内存中元素的管理。B树是用于外存（例如硬盘中数据元素的管理的）。
-
-`TreeSet`的底层用一棵红黑树。红黑树的存入、检索性能很好。  
-在没有出现大量的“链表（位置重合、重hash）”的情况下，`HashSet`的性能比`TreeSet`的好。而`TreeSet`不受此影响。
-
-`TreeSet`相对于`HashSet`的优点： 
-> 
-1. `HashSet`中有一定量的空间是空的（内存的浪费），而`TreeSet`的空间利用率要高。  
-2. `TreeSet`可以保证集合元素是有序的。
-
-由于`TreeSet`中元素是有序的，所以要求放入到`TreeSet`中的元素对象是可以比较大小的。
-
-TreeSet在比较中认为两个元素对象相等的标准：  
-只要这两个元素对象通过`compareTo()`方法返回值是0，那么TreeSet就认为二对象相等。而与`equals()`方法无关（只与`compareTo()`方法有关）。所以我们要重写放入TreeSet中的元素对象的所属类中`compareTo()`方法。这个方法是`comparable`接口中的方法，所以，对于我们自己所写的类，必须要实现这个接口中这个唯一的这个方法。如果是**JDK**已有的类，我们就不必去自己实现这个方法了，因为已有的类以及实现了这个方法。  
-那么**JDK**中已经存在的类实现了`compareTo()`，不用我们去重写这个方法。这个就是所谓的*自然排序 *。  
-对于我们自己写的类需要自己去实现这个这个`compareTo()`方法或者我们对于JDK中已有的类希望按照自己想要的方式继续排序，就需要在创建`TreeSet`的使用要传入一个`comparator`对象，这就是所谓的*定制排序*。  
-java容器中比较元素对象大小的两种方式：  
->
-1. 自然排序：也就是让我们自己写的类实现Comparable接口。主要就是重写里面的compareTo这个方法。这个方法被自动用于元素大小比较和排序。
-元素实现了这个接口之后，元素自身就是可以进行排序的。  
-2. 定制排序：在创建TreeSet的时候，提供一个comparator对象，该对象可负责对元素进行比较大小。这里集合中元素对象无需实现comparable接口（本身无排序功能）。这里的TreeSet就需要在构造的时候传入一个comparator对象，实际上传入的是一个comparator匿名内部实现类。这个匿名类产生对象用于进行比较。
-
 HashSet的使用：
 >
 	import java.util.*;
@@ -2215,6 +2181,44 @@ HashSet的使用：
 	
 	}
 
+`HashSet`的子类`LinkedHashSet`  
+其存储机制与`HashSet`类似，但是，`HashSet`的底层机制是一个数组(顺序表），而且数据存放位置是一个无顺序的，也就是与放入时顺序无关的，这样，遍历整个`Hashset`的时候就是无序的。  
+而`LinkedHashSet`的底层机制是一个链表，这样，在链表中顺序就和放入对象的顺序是一致的，这样在遍历`linkedHashSet`的时候，就是有序的，与放入顺序一样。
+
+Java中的TreeSet
+-----------------
+特征：保证`Set`中的元素对象都是已经排好序的，排序的目的在于便于查找、检索。  
+对于字符串，按首字母的`ASCII`码排序。  
+TreeSet是标准的“红黑树”；  
+树——>二叉树——>排序二叉树(左子节点小于`root`节点小于右子节点）——>平衡排序二叉树(AVL：任何节点的树高度差不大于1且是排序二叉树，保证整棵树的权值最小)——>红黑树。  
+树：**二叉树**（普通二叉树、排序二叉树、AVL树（平衡排序二叉树））、**红黑树**、**扩展树**。**B树**。  
+其中，二叉树、红黑树、扩展树是用于内存中元素的管理。B树是用于外存（例如硬盘中数据元素的管理的）。
+
+`TreeSet`的底层用一棵红黑树。红黑树的存入、检索性能很好。  
+在没有出现大量的“链表（位置重合、重hash）”的情况下，`HashSet`的性能比`TreeSet`的好。而`TreeSet`不受此影响。
+
+`TreeSet`相对于`HashSet`的优点： 
+> 
+1. `HashSet`中有一定量的空间是空的（内存的浪费），而`TreeSet`的空间利用率要高。  
+2. `TreeSet`可以保证集合元素是有序的。
+
+由于`TreeSet`中元素是有序的，所以要求放入到`TreeSet`中的元素对象是可以比较大小的。
+
+TreeSet在比较中认为两个元素对象相等的标准：  
+只要这两个元素对象通过`compareTo()`方法返回值是0，那么`TreeSet`就认为两对象相等。而与`equals()`方法无关（只与`compareTo()`方法有关）。所以我们要重写放入`TreeSet`中的元素对象的所属类中`compareTo()`方法。这个方法是`comparable`接口中的方法，所以，对于我们自己所写的类，必须要实现这个接口中这个唯一的这个方法。如果是**JDK**已有的类，我们就不必去自己实现这个方法了，因为已有的类已经实现了这个方法。 
+ 
+
+  
+  
+
+java容器中比较元素对象大小的两种方式：  
+>
+1. 自然排序：那么如果**JDK**中存在的类已经实现了`compareTo()`，不用我们去重写这个方法。这个就是所谓的*自然排序*。  
+也就是我们自己放入的类对象自己已经实现Comparable接口。已经重写了里面的`compareTo()`这个方法。这个方法被自动用于元素大小比较和排序。无需我们自己再次重写。  
+元素实现了这个接口之后，元素自身就是可以进行排序的。  
+2. 定制排序：对于我们自己写的类，需要自己去实现这个`compareTo()`方法或者我们对于**JDK**中已有的类希望按照自己想要的方式继续排序，就需要在创建`TreeSet`的使用要传入一个`Comparator`对象，这就是所谓的*定制排序*。  
+在创建`TreeSet`的时候，提供一个`Comparator`对象，该对象可负责对元素进行比较大小。这里集合中元素对象无需实现`comparable`接口（本身无排序功能）。这里的`TreeSet`就需要在构造的时候传入一个`Comparator`对象，由于Comparator实际上是一个接口。*所以传入的是一个`Comparator`匿名内部实现类*。这个*匿名类产生的对象*用于进行比较。
+
 TreeSet的使用
 >
 	import java.util.*;
@@ -2246,7 +2250,6 @@ TreeSet的使用
 			{
 				return true;
 			}
-			
 			if(obj!=null&&obj.getClass()==apple.class)
 			{
 				apple app = (apple)obj;
@@ -2254,9 +2257,7 @@ TreeSet的使用
 				{
 					return true;
 				}
-	
 			}
-	
 			return false;
 		}
 		//the override of hashcode()
@@ -2265,11 +2266,9 @@ TreeSet的使用
 		{
 			return color.hashCode()+(int)weight;
 		}
-	
 	}
 	public class treeSetTest
 	{
-	
 		public static void main(String[] args)
 		{
 			//use TreeSet class
@@ -2280,10 +2279,11 @@ TreeSet的使用
 			ts.add("王五");
 			ts.add("赵六");
 			System.out.println(ts);
-	
+>	
 			//use TreeSet class
-			//class apple do not has implements the interface comparator itself that we must implement it by ourselves
+			//class apple do not has implements the interface comparator itself that we must implement it by ourselves。In this sample，we use anonymous class to override the func of compare() in the interface Compatator.
 			TreeSet<apple> ts1 = new TreeSet<>(new Comparator<apple>(){
+			//use anonymous class to override the func compare() in the interface Comparator to provide a Comparator object for TreeSet.
 			@Override
 			public int compare(apple o1,apple o2)
 			{
@@ -2291,30 +2291,30 @@ TreeSet的使用
 				{
 					return 1;
 				}
-		
+>		
 				else if(o1.weight<o2.weight)
 				{
 					return -1;
 				}
-	
+>	
 				else
 				{
 					return 0;
 				}
 			}
-	
+>	
 			});
-	
-	
+>	
 			ts1.add(new apple("green",4.3));
 			ts1.add(new apple("blue",6.7));
 			ts1.add(new apple("black",5.3));
 			System.out.println(ts1);
-	
+>	
 			//use TreeSet class
-			//class String has implements the interface comparator itself but we want it compare as t		//he method we want 
-			//that we implement it by ourselves
+			//class String has implements the interface comparator itself but we want it compare as the method we want 
+			//that we implement it by ourselves.In this sample，we use anonymous class to override the func of compare() in the interface Compatator.
 			TreeSet<String> ts2 = new TreeSet<>(new Comparator<String>(){
+			//use anonymous class to override the func compare() in the interface Comparator to provide a Comparator object for TreeSet.
 			@Override
 			public int compare(String o1,String o2)
 			{
@@ -2322,27 +2322,24 @@ TreeSet的使用
 				{
 					return 1;
 				}
-		
+>		
 				else if(o1.length()<o2.length())
 				{
 					return -1;
 				}
-	
+>	
 				else
 				{
 					return 0;
 				}
 			}
-	
+>	
 			});
 			ts2.add("green");
 			ts2.add("blue");
 			ts2.add("esddfa");
 			System.out.println(ts2);
-	
-		
 		}
-	
 	}
 
 Java中的List接口
