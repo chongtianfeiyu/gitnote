@@ -2912,7 +2912,15 @@ Java中的输入与输出
 例如:将一个文件`File`对象包装进一个输入流对象。里面就拥有了水滴。我们要做的就是将这个输入流对象中的那些数据传送到程序中，也就是内存中。  
 对于输出流而言，是不同的。创建一个输出流对象的时候，里面是没有数据的，也就是说里面没有水滴，我们所要做的就是将程序中所产生的数据传送到这个空水管中。  
 
-文件节点流：用于访问文件的节点流。  
+下面从流的角色分类进行讨论：  
+A. 节点流：  
+a. 文件节点流（与文件相连接，对文件内容进行操作）。  
+b. 数组节点流（与字节、字符数组相连接，对数组内容进行操作）。  
+c. 管道节点流（与管道相连接，对管道内容进行操作）。  
+d. 字符串节点流（与字符串相连接，对字符串内容进行操作）。  
+
+
+**文件节点流**：用于访问文件的节点流。他们和文件相连接。  
 `FileInputStream`、`FileOutputStream`：字节流。  
 `FileReader`、`FileWriter`：字符流。  
 
@@ -2922,7 +2930,7 @@ Java中的输入与输出
 `FileOutputStream`方法：  
 1. `write(byte[] b)`：将内存中的`byte`数组写入到文件中。
 
-`FileInputStream`、`FileOutputStrea`m类使用举例：
+文件节点流类使用举例：
 >
 	import java.io.*;
 	import java.util.*;
@@ -2957,3 +2965,41 @@ Java中的输入与输出
 			fis2.close();
 		}
 	}
+
+
+
+**数组节点流类**：用于访问数组。它们和数组相连接。  
+`ByteArrayInputStream`、`ByteArrayOutputStream`：访问字节数组流类。  
+`CharArrayReader`、`CharArrayWriter`：访问字符数组流类。
+
+数组节点流类使用举例：  
+>	
+	import java.io.*;
+	public class ArrayStreamTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a ByteArrayOutputStream,just like get a pipe without water in it.that you can pipe water into it.
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+>
+			byte[] buffer = "hello".getBytes();
+			bos.write(buffer);
+>		
+			byte[] content = bos.toByteArray();
+			for(byte b : content)
+			{
+				System.out.println((char)b);
+			}
+		}
+	}
+
+
+**管道节点流类**：用于访问管道。它们和管道相连接。  
+`PipedInputStream`、`PipedOutputStream`：访问管道流类。  
+`PipedReader`、`PipedWriter`：访问管道流类。  
+所谓的管道：两个进程之间进行通信的连接。
+
+**字符串节点流类**：用于访问字符串。他们与字符串相连接。它们就没有字节流类了，只有字符流类。  
+`StringReader`、`StringWriter`：访问字符串流类。以字符串作为节点。  
+
+B. 包装流：
