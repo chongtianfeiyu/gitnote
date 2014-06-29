@@ -3002,4 +3002,56 @@ d. 字符串节点流（与字符串相连接，对字符串内容进行操作�
 **字符串节点流类**：用于访问字符串。他们与字符串相连接。它们就没有字节流类了，只有字符流类。  
 `StringReader`、`StringWriter`：访问字符串流类。以字符串作为节点。  
 
-B. 包装流：
+B. 包装流类：就是将别的流类包装成新的流类。节点流是直接与I/O节点（文件、键盘、网络、磁盘等）相关联，包装之后成为包装类效率更高、更加方便。   
+a. 缓冲流类。  
+b. 过滤流类。  
+c. 打印流类。  
+d. 转换流类。  
+
+**缓冲流类**：由于内、外存的读取速度不一样。所以需要缓冲流类来进行缓冲。缓冲流类实际上是通过*将其他的节点流类包装形成的新的缓冲流类*。其好处是可以调用`readLine()`每次读取一行。
+`BufferedInputStream`、`BufferedOutputStream`：实际上是`inputStream`、`outputStream`包装而成的流类。  
+`BufferedReader`、`BufferedWriter`：实际上是`Reader`、`Writer`包装而成的流类。    
+
+**过滤流类**：实际中我们在程序中并不是直接使用节点流类，而是使用通过包装各节点流类的过滤流类。  
+使用过滤流的优点：  
+1. 其建立在节点流的基础之上，可以消除节点流之间的差异，这样就会更加方便地进行面向过滤流编程。  
+2. 使用过滤流的方法进行**I/O**更加便捷。  
+`FilterInputStream`、`BufferedOutputStream`:  
+`FilterReader`、`FilterWriter`：
+
+**打印流类**：用于在屏幕、打印机等上面打印的流类。
+`printStream`、`printWriter`：分别是`FileOutputStream`、`FileWriter`这两个节点流包装而来。包装之后更加方便。
+
+**转换流类**：用于将字节流转换为字符流。  
+`InputStreamReader`、`OutputStreamWriter`:转换流类。
+
+转换流类、缓冲流类使用示例：
+>
+	import java.io.*;
+	public class StreamReaderTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct args Stream class
+			FileInputStream fis= new FileInputStream("E:/	Java_source/fileStreamTest.java");
+>		
+			//transform the stream class into a reader class
+			InputStreamReader reader = new InputStreamReader(fis);
+>
+			//transform the reader class into a Bufferedreader class
+			BufferedReader br = new BufferedReader(reader);
+>
+			//use the readLine() func of BufferedReader to read a line in the text
+			String tempstr = null;
+			while((tempstr = br.readLine())!=null)
+			{
+				System.out.println(tempstr);
+			}
+>		
+		}
+	}
+
+所有以`InputStream`结尾的流类都是*字节输入流*。  
+所有以`OutputStream`结尾的流类都是*字节输出流*。  
+所有以`Reader`结尾的流类都是*字符输入流*。  
+所有以`Writer`结尾的流类都是*字符输入流*。
