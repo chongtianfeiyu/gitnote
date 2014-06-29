@@ -2778,9 +2778,9 @@ Java中的异常处理
 
 
 
-Java中的I/O流
+Java中的输入与输出
 -----------
-所谓的I/O流，实际上就是以内存为中心，硬盘↔内存，内存→显示屏，键盘→内存。这三者之间的信息传输的过程。
+所谓的输入与输出，实际上就是以内存为中心，硬盘↔内存，内存→显示屏，键盘→内存。这三者之间的信息传输的过程。
 
 `File`类：代表硬盘里面的一个文件或者目录。  
 `Fil`e类的方法：  
@@ -2791,4 +2791,169 @@ Java中的I/O流
 5. `listFiles()`：列出当前目录下所有的文件。  
 6. `listFiles(FileFilter filter)`：列出当前目录下符合条件的文件与目录。  
 7. `listFiles(FilenameFilter filter)`：列出当前目录下符合条件的文件与目录。  
+
+`File`类使用：
+>
+	import java.io.*;
+	import java.util.*;
+	public class fileTest
+	{
+		public static void main(String[] args) 
+		{
+			//get the path of the file.
+			File file = new File("E:/git/git_note");
+			System.out.println(file.getPath());
+>			
+			//list the roots of the disk
+			File[] roots = File.listRoots(); 
+			System.out.println(Arrays.toString(roots));
+>			
+			//verify the existense of the directory then mkdir
+			File file1 = new File("git_note");
+			System.out.println(file1.exists());
+			if(!file1.exists())
+			{
+				file1.mkdir();
+			}	
+>		
+			File file2 = new File("E:/Books");
+			//list the directories in the disk
+			File[] file3 = file2.listFiles();
+			for(File temp_file:file3)
+			{
+				System.out.println(temp_file);
+			}
+>				
+			//list all the  files with specified suffin in the directory		
+			myFilterlist(file2);
+			//list all the files in the directory	
+			mylist(file2);
+		}
+>
+		//list all the  files with specified suffin in the directory
+		public static void myFilterlist(File dir) 
+		{
+			File[] temp = dir.listFiles(new FileFilter()
+				{
+				public boolean accept(File pathname) 
+				{
+					try
+					{
+						if(pathname.getCanonicalPath().endsWith(".txt"))
+							{
+								return true;
+							}
+					}
+					catch(IOException ex)
+					{
+						ex.printStackTrace();
+					}
+					return false;
+				}
+				}
+				);
+				for(File f2:temp)
+				{	
+					System.out.println(f2);
+				}
+>							
+				File[] temp1 = dir.listFiles();
+				for(File f1:temp1)
+				{
+					if(f1.isDirectory())
+						{
+							myFilterlist(f1);
+						}
+				}
+		}
+>		
+		//list all the files in the directory
+		public static void mylist(File dir) 
+		{
+			if(dir.isDirectory())
+			{
+				File[] temp = dir.listFiles();
+>		
+				for(File f2:temp)
+				{	
+					if(f2.isFile())
+					{
+						System.out.println(f2);
+					}
+					else
+					mylist(f2);
+				}
+			}
+		}
+	}	
+
+`I/O`流：`File`类只能访问磁盘中的文件与目录，但是不能读取文件。  
+如果要读取文件，就需要使用`I/O`流。  
+按流的方向来分：  
+>
+输入、输出流都是在内存的角度来看的。  
+
+按流处理的数据来分：  
+>
+字节流：处理的对象是字节。功能强大，例如：图片、音乐。  
+字符流：处理的对象时字符。主要用于文本文件，如：`txt`文件。处理文本文件时，比字节流更方便。
+
+按流的角色来分：  
+>
+节点流：直接与一个`I/O`的物理节点（如，磁盘上的文件、网络等）关联。  
+包装流(处理流)：以节点流为基础，包装之后得到的流。  
+
+常用的有4个抽象流类：  
+`InputStream`、`OutputStream`：字节流。  
+`Reader`、`Writer`：字符流。  
   
+**一个流对象相当于一根水管**，里面的每一滴水就相当于一个数据单元，如果是字节流，那就是一个字节。如果是字符流，那就相当于一个字符。  
+对于输入流而言，创建一个输入流对象的时候，里面就有数据。  
+例如:将一个文件`File`对象包装进一个输入流对象。里面就拥有了水滴。我们要做的就是将这个输入流对象中的那些数据传送到程序中，也就是内存中。  
+对于输出流而言，是不同的。创建一个输出流对象的时候，里面是没有数据的，也就是说里面没有水滴，我们所要做的就是将程序中所产生的数据传送到这个空水管中。  
+
+文件节点流：用于访问文件的节点流。  
+`FileInputStream`、`FileOutputStream`：字节流。  
+`FileReader`、`FileWriter`：字符流。  
+
+`FileInputStream`方法：  
+1. `read()/read(byte[] b)`：将文件中的字节读入到内存中。  
+
+`FileOutputStream`方法：  
+1. `write(byte[] b)`：将内存中的`byte`数组写入到文件中。
+
+`FileInputStream`、`FileOutputStrea`m类使用举例：
+>
+	import java.io.*;
+	import java.util.*;
+	public class fileStreamTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a fileinputstream,just like get a pipe with water in it.that you can pipe the water into the RAM.
+			FileInputStream fis = new FileInputStream("E:/Java_source/fileStreamTest.java");
+>
+			//read the file by one byte
+			System.out.print((char)fis.read());
+>
+			//read all the file by bytes 
+			byte[] buffer1 = new byte[64];
+			int len1 = 1;
+			while((len1 = fis.read(buffer1))!=-1)
+			{
+				System.out.print(new String(buffer1,0,len1));
+			}
+>
+			//read the file by bytes into a specified length buffer arrays 
+			FileInputStream fis1 = new FileInputStream("E:/Java_source/fileStreamTest.java");
+			byte[] buffer = new byte[128];
+			fis1.read(buffer);
+			System.out.println(new String(buffer));
+>
+			//output into the file with the FileOutputStream class 
+			FileOutputStream fis2 = new FileOutputStream("E:/Java_source/2.java");
+			byte[] buffer3 = "hello".getBytes();
+			fis2.write(buffer3);
+			fis2.close();
+		}
+	}
