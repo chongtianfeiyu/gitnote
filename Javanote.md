@@ -2783,7 +2783,7 @@ Java中的输入与输出
 所谓的输入与输出，实际上就是以内存为中心，硬盘↔内存，内存→显示屏，键盘→内存。这三者之间的信息传输的过程。
 
 `File`类：代表硬盘里面的一个文件或者目录。  
-`Fil`e类的方法：  
+`File`类的方法：  
 1. `listRoots()`：列出所有的根目录。  
 2. `exists()`:判断文件、目录的存在。  
 3. `getPath()`:获取文件的路径。  
@@ -2791,102 +2791,7 @@ Java中的输入与输出
 5. `listFiles()`：列出当前目录下所有的文件。  
 6. `listFiles(FileFilter filter)`：列出当前目录下符合条件的文件与目录。  
 7. `listFiles(FilenameFilter filter)`：列出当前目录下符合条件的文件与目录。  
-
-`File`类使用：
->
-	import java.io.*;
-	import java.util.*;
-	public class fileTest
-	{
-		public static void main(String[] args) 
-		{
-			//get the path of the file.
-			File file = new File("E:/git/git_note");
-			System.out.println(file.getPath());
->			
-			//list the roots of the disk
-			File[] roots = File.listRoots(); 
-			System.out.println(Arrays.toString(roots));
->			
-			//verify the existense of the directory then mkdir
-			File file1 = new File("git_note");
-			System.out.println(file1.exists());
-			if(!file1.exists())
-			{
-				file1.mkdir();
-			}	
->		
-			File file2 = new File("E:/Books");
-			//list the directories in the disk
-			File[] file3 = file2.listFiles();
-			for(File temp_file:file3)
-			{
-				System.out.println(temp_file);
-			}
->				
-			//list all the  files with specified suffin in the directory		
-			myFilterlist(file2);
-			//list all the files in the directory	
-			mylist(file2);
-		}
->
-		//list all the  files with specified suffin in the directory
-		public static void myFilterlist(File dir) 
-		{
-			File[] temp = dir.listFiles(new FileFilter()
-				{
-				public boolean accept(File pathname) 
-				{
-					try
-					{
-						if(pathname.getCanonicalPath().endsWith(".txt"))
-							{
-								return true;
-							}
-					}
-					catch(IOException ex)
-					{
-						ex.printStackTrace();
-					}
-					return false;
-				}
-				}
-				);
-				for(File f2:temp)
-				{	
-					System.out.println(f2);
-				}
->							
-				File[] temp1 = dir.listFiles();
-				for(File f1:temp1)
-				{
-					if(f1.isDirectory())
-						{
-							myFilterlist(f1);
-						}
-				}
-		}
->		
-		//list all the files in the directory
-		public static void mylist(File dir) 
-		{
-			if(dir.isDirectory())
-			{
-				File[] temp = dir.listFiles();
->		
-				for(File f2:temp)
-				{	
-					if(f2.isFile())
-					{
-						System.out.println(f2);
-					}
-					else
-					mylist(f2);
-				}
-			}
-		}
-	}	
-
+  
 `I/O`流：`File`类只能访问磁盘中的文件与目录，但是不能读取文件。  
 如果要读取文件，就需要使用`I/O`流。  
 按流的方向来分：  
@@ -2901,11 +2806,12 @@ Java中的输入与输出
 按流的角色来分：  
 >
 节点流：直接与一个`I/O`的物理节点（如，磁盘上的文件、网络等）关联。  
-包装流(处理流)：以节点流为基础，包装之后得到的流。  
+包装流(处理流/过滤流)：以节点流为基础，包装之后得到的流。  
 
 常用的有4个抽象流类：  
 `InputStream`、`OutputStream`：字节流。  
 `Reader`、`Writer`：字符流。  
+所有的`I/O`流都是以以上的四个流为基础的。
   
 **一个流对象相当于一根水管**，里面的每一滴水就相当于一个数据单元，如果是字节流，那就是一个字节。如果是字符流，那就相当于一个字符。  
 对于输入流而言，创建一个输入流对象的时候，里面就有数据。  
@@ -2913,7 +2819,7 @@ Java中的输入与输出
 对于输出流而言，是不同的。创建一个输出流对象的时候，里面是没有数据的，也就是说里面没有水滴，我们所要做的就是将程序中所产生的数据传送到这个空水管中。  
 
 下面从流的角色分类进行讨论：  
-A. 节点流：  
+A. 节点流类：  
 a. 文件节点流（与文件相连接，对文件内容进行操作）。  
 b. 数组节点流（与字节、字符数组相连接，对数组内容进行操作）。  
 c. 管道节点流（与管道相连接，对管道内容进行操作）。  
@@ -3002,17 +2908,20 @@ d. 字符串节点流（与字符串相连接，对字符串内容进行操作�
 **字符串节点流类**：用于访问字符串。他们与字符串相连接。它们就没有字节流类了，只有字符流类。  
 `StringReader`、`StringWriter`：访问字符串流类。以字符串作为节点。  
 
-B. 包装流类：就是将别的流类包装成新的流类。节点流是直接与I/O节点（文件、键盘、网络、磁盘等）相关联，包装之后成为包装类效率更高、更加方便。   
+
+System.in就是一个字节流对象，其就是和键盘相联系的。  
+System.out也是一个字节流对象，是与显示器相联系的。
+B. 包装流类：就是将别的流类包装成新的流类。节点流是直接与I/O节点（文件、键盘、网络、磁盘等）相关联，包装之后成为包装类效率更高。   
 a. 缓冲流类。  
 b. 过滤流类。  
 c. 打印流类。  
 d. 转换流类。  
 
-**缓冲流类**：由于内、外存的读取速度不一样。所以需要缓冲流类来进行缓冲。缓冲流类实际上是通过*将其他的节点流类包装形成的新的缓冲流类*。其好处是可以调用`readLine()`每次读取一行。
+**缓冲流类**：由于内、外存的读取速度不一样。所以需要缓冲流类来进行缓冲。缓冲流类实际上是通过*将其他的节点流类包装形成的新的缓冲流类*。建立于过滤流之上。其好处是可以调用`readLine()`每次读取一行。
 `BufferedInputStream`、`BufferedOutputStream`：实际上是`inputStream`、`outputStream`包装而成的流类。  
 `BufferedReader`、`BufferedWriter`：实际上是`Reader`、`Writer`包装而成的流类。    
 
-**过滤流类**：实际中我们在程序中并不是直接使用节点流类，而是使用通过包装各节点流类的过滤流类。  
+**过滤流类**：实际中我们在程序中并不是直接使用节点流类，而是使用通过包装各节点流类的过滤流类。实际上过滤流类是*抽象类*，不能直接将过滤流类进行示例话。所以，都是通过包装成*缓冲流类*进行使用的。  
 使用过滤流的优点：  
 1. 其建立在节点流的基础之上，可以消除节点流之间的差异，这样就会更加方便地进行面向过滤流编程。  
 2. 使用过滤流的方法进行**I/O**更加便捷。  
@@ -3022,7 +2931,7 @@ d. 转换流类。
 **打印流类**：用于在屏幕、打印机等上面打印的流类。
 `printStream`、`printWriter`：分别是`FileOutputStream`、`FileWriter`这两个节点流包装而来。包装之后更加方便。
 
-**转换流类**：用于将字节流转换为字符流。  
+**转换流类**：用于将字节流转换为字符流。很有用。  
 `InputStreamReader`、`OutputStreamWriter`:转换流类。
 
 转换流类、缓冲流类使用示例：
@@ -3033,7 +2942,7 @@ d. 转换流类。
 		public static void main(String[] args) throws Exception
 		{
 			//construct args Stream class
-			FileInputStream fis= new FileInputStream("E:/	Java_source/fileStreamTest.java");
+			FileInputStream fis= new FileInputStream("E:/Java_source/fileStreamTest.java");
 >		
 			//transform the stream class into a reader class
 			InputStreamReader reader = new InputStreamReader(fis);
@@ -3051,7 +2960,60 @@ d. 转换流类。
 		}
 	}
 
+
+**两个特殊的流对象**：`DataInputStream`、`DataOutputStream`,它们继承了过滤流。  
+它们的特点就是：拥有的方法更多，可以读、写各种数据。  
+
 所有以`InputStream`结尾的流类都是*字节输入流*。  
 所有以`OutputStream`结尾的流类都是*字节输出流*。  
 所有以`Reader`结尾的流类都是*字符输入流*。  
-所有以`Writer`结尾的流类都是*字符输入流*。
+所有以`Writer`结尾的流类都是*字符输入流*。  
+
+
+
+**IM**：我们使用I/O流类的正常使用方法：  
+1. 不会直接使用节点流类。而是将它们包装成包装类进行使用。  
+2. 如果是键盘、文件、屏幕等节点设备，那么就是节点流类。  
+a. *字节节点流类*要被包装成`BufferedInputStream`、`BufferedOutputStream`这样的包装缓冲流类使用。  
+b. *字符节点流类*要被包装成`BufferedReader`、`BufferedWriter`这样的包装缓冲流类来使用。  
+c. 如果是*字节节点流类*要转变成*字符包装类*使用，那么就使用`InputStreamReader`、`OutputStreamWriter`这样的转换流类进行转换为'字符包装类'。  
+使用方法见下例：
+>
+	import java.io.*;
+	public class StreamReaderTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//this part is aimed at reading the file and printing it onto the screen
+			//construct args Stream class object
+			FileInputStream fis= new FileInputStream("E:/Java_source/fileStreamTest.java");
+>		
+			//transform the stream class object(file object) into a reader class object
+			InputStreamReader reader = new InputStreamReader(fis);
+>
+			//transform the reader class object into a Bufferedreader class object
+			BufferedReader br = new BufferedReader(reader);
+>
+			//use the readLine() func of BufferedReader to read a line in the text
+			String tempstr = null;
+			while((tempstr = br.readLine())!=null)
+			{
+				System.out.println(tempstr);
+			}
+>
+>
+			//this part is aimed at reading the keyboard and printing it onto the screen
+			//transform the stream object(System.in is the keybord) into a reader class
+			InputStreamReader reader = new InputStreamReader(System.in);
+>
+			//transform the reader class into a Bufferedreader class
+			BufferedReader br = new BufferedReader(reader);
+>
+			//use the readLine() func of BufferedReader to read a line in the text
+			String tempstr = null;
+			while((tempstr = br.readLine())!=null)
+			{
+				System.out.println(tempstr);
+			}
+		}
+	}
