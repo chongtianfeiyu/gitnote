@@ -2973,10 +2973,11 @@ d. 转换流类。
 
 **IM**：我们使用I/O流类的正常使用方法：  
 1. 不会直接使用节点流类。而是将它们包装成包装类进行使用。  
-2. 如果是键盘、文件、屏幕等节点设备，那么就是节点流类。  
+2. 如果联系到键盘、文件、屏幕等节点设备，那么就是节点流类。  
 a. *字节节点流类*要被包装成`BufferedInputStream`、`BufferedOutputStream`这样的包装缓冲流类使用。  
 b. *字符节点流类*要被包装成`BufferedReader`、`BufferedWriter`这样的包装缓冲流类来使用。  
 c. 如果是*字节节点流类*要转变成*字符包装类*使用，那么就使用`InputStreamReader`、`OutputStreamWriter`这样的转换流类进行转换为'字符包装类'。  
+
 使用方法见下例：
 >
 	import java.io.*;
