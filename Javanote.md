@@ -3018,3 +3018,34 @@ c. 如果是*字节节点流类*要转变成*字符包装类*使用，那么就�
 			}
 		}
 	}
+
+
+
+Java中虚拟机读取其他进程数据
+------------------
+
+在`Java`中启动其他进程：  
+`Runtime.getRuntime().exec()`;返回值是一个`Process`对象，就是一个进程，进程就是运行中的应用程序。  
+注意：对于这个调用的进程而言，其输出的内容对于我们的`JVM`而言是输入，所以，`JVM`应该使用输入流。  
+
+应用实例：  
+>
+	import java.io.*;
+	public class ReadFromProcess
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//create a process
+			Runtime runtime = Runtime.getRuntime();
+			Process proc = runtime.exec("javac.exe");
+>
+			//read from the process	
+			InputStreamReader isr = new InputStreamReader(proc.getErrorStream()); 
+			BufferedReader br = new BufferedReader(isr);
+>		
+			while(br.readLine()!=null)
+			{
+				System.out.println(br.readLine());
+			}
+		}	
+	}
