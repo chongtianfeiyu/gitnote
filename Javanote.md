@@ -3049,3 +3049,68 @@ Java中虚拟机读取其他进程数据
 			}
 		}	
 	}
+
+Java中的RandomAccessFile类使用
+-----------------
+该类可以任意访问文件，也就是说，想访问文件中的哪个点就访问哪个点。  
+特征：  
+1. 可以读，可以写，相当于`inputStream`、`outputStream`的合体。还可以在末尾增加。不会覆盖原有的文件内容。  
+2. `RandomAccessFile`的局限性：只能访问文件。别的都不能使用。  
+
+在构建这个对象的时候，需要制定读写模式，("r")("rw")模式。  
+体现了这个类的`Random`特性的方法是`seek(long pos)`:用于将记录指针移动到任意指定的位置。默认的记录指针在文件首部。  
+1. 使用`RandomAccessFile`来在文件后面追加字符：  
+a. 将记录指针移动到文件末尾   
+b. 执行写入。  
+2. 使用`RandomAccessFile`来在文件中插入字符：  
+a. 将记录指针移动到将要插入的位置   
+b. 将记录指针后面的内容读取并保存  
+c. 输出要插入的内容  
+d. 输入已经保存的内容  
+
+追加与插入示例：
+>
+	import java.io.*;
+	public class RandomAccessFileTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//random seek the position
+			RandomAccessFile raf = new RandomAccessFile("good.txt","rw");
+>		
+			//read the file
+			byte[] br =  new byte[1024];
+			raf.read(br);
+			String tempstr = new String(br);
+			System.out.println(tempstr);
+>		
+			//write into the file at the end postion of the file
+			raf.seek(raf.length());
+			String tempstr1 = new String("hello world!");
+			byte[] br2 = tempstr1.getBytes();
+			raf.write(br2);
+>	
+			//insert into the file at the specified position
+			//save the contents after the position into the ByteArrayOutputStream object
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			byte[] br3 = new byte[1024];
+			raf.seek(100);
+			int hasRead = -1;
+			while((hasRead=raf.read(br3))!=-1)
+			{
+				bos.write(br3,0,hasRead);
+			}
+>		
+			//insert the string you want into the postion
+			raf.seek(100);
+			String tempstr2 = new String("hello world!");
+			byte[] br4 = tempstr2.getBytes();
+			raf.write(br4);
+>		
+			//insert the contents that have been saved into the end of the file currently
+			raf.seek(raf.length());
+			byte[] br5 =bos.toByteArray();
+			raf.write(br5);
+		}	 
+	}
+ 
