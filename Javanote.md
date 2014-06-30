@@ -2969,9 +2969,92 @@ d. 转换流类。
 所有以`Reader`结尾的流类都是*字符输入流*。  
 所有以`Writer`结尾的流类都是*字符输入流*。  
 
+**两个特殊的流对象**：`ObjectInputStream`、`ObjectOutputStream`，这两个类是用于序列化储存对象或者。见Java中的序列化。  
 
 
-**IM**：我们使用I/O流类的正常使用方法：  
+Java中的序列化
+--------------------
+`Java`中的一切都是对象，放在内存中，我们常需要将`Java`中的对象通过序列化转换成二进制流来进行储存或者传输。  
+转换成二进制流的目的：  
+1. 我们有时候需要将对象储存在**外部存储器**中,这样，即使在程序结束运行之后，我们依旧可以从磁盘中将这个对象恢复出来。  
+2. 有时候，我们需要将这些对象通过网络进行传输。  
+出于以上的目的，我们就需要对这些对象进行序列化。序列化就是将内存中的对象与二进制流之间进行相互转换以进行储存或者传输。
+
+
+那么Java中可序列化对象必须具有的特征：该对象的类必须实现以下任意两个接口之一：  
+`Serializable`
+接口(该接口中无任何方法，只是一个标志性的接口，实现该接口无需实现任何方法)、`Externalizable`
+接口(该接口使用较少）。  
+
+用于序列化的I/O流对象：  
+`ObjectInputStream`：用于从二进制流中恢复对象。 最重要的方法是`readObject()`，用于从其他储存了对象的节点中读取对象，如，从文件中读取对象。  
+`ObjectOutputStream`：用于将对象转换为二进制流进行储存。最重要的方法是`writeObject(Object obj)`用于将对象储存在一个`OutputStream中`，也就是储存于一个文件节点流中,如，将对象储存于文件中。
+
+对象序列化与对象恢复使用示例：
+>
+	import java.io.*;
+	//the class must implements the Serializable interface that it can be serialized
+	class apple implements Serializable
+	{
+		private String name;
+		private String color;
+		apple()
+		{
+			this.name = "zhang";
+			this.color = "red";
+		}
+		apple(String aname,String acolor)
+		{
+			this.name=aname;
+			this.color=acolor;
+		}
+		public void setname(String aname)
+		{
+			this.name=aname;
+		}
+		public void setcolor(String acolor)
+		{
+			this.color=acolor;
+		}
+		public String getname()
+		{
+			return this.name;
+		}
+		public String getcolor()
+		{
+			return this.color;
+		}
+>	
+		public String toString()
+		{
+			String str = "apple "+this.name+" "+this.color;
+			return str;
+		}
+	}
+>
+	public class appleSerializableTest
+	{
+		public static void main(String[] args) throws Exception
+			{
+				apple ap = new apple("lisi","red");
+				//after the finish of the program,the ap object will perish
+				System.out.println(ap);
+>			
+				//write the ap object into the file and save it in the disk in binary stream form with the ObjectOutputStream class
+				FileOutputStream fos = new FileOutputStream("apple.bin"); 
+				ObjectOutputStream ops = new ObjectOutputStream(fos); 
+				ops.writeObject(ap); 
+>			
+				//read the object from the file stored in the disk 
+				FileInputStream fis = new FileInputStream("apple.bin"); 
+				ObjectInputStream ois = new ObjectInputStream(fis);
+				Object bp = ois.readObject();
+				apple mp = (apple)bp;
+				System.out.println(mp.getname());
+			}	
+	}
+
+**IM**：我们使用`I/O`流类的正常使用方法：  
 1. 不会直接使用节点流类。而是将它们包装成包装类进行使用。  
 2. 如果联系到键盘、文件、屏幕等节点设备，那么就是节点流类。  
 a. *字节节点流类*要被包装成`BufferedInputStream`、`BufferedOutputStream`这样的包装缓冲流类使用。  
