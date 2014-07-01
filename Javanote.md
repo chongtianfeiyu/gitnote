@@ -3178,15 +3178,103 @@ c. 如果要序列化的对象已经在之前已经序列化过一次，那么�
 			}	
 	}
 
-完全自定义的序列化：  
+**完全自定义的序列化**：  
 对于账号、密码等这些敏感信息，我们如果完全通过`transient`来阻止这些`Field`被序列化是不好的(在恢复的时候就根本没有了这些信息）。这时就可以使用定制的序列化来对这些`Field`进行加密。  
 
 如果要使用自定义的序列化，就需要让这个**要被序列化的对象的类**实现两个方法：  
 `private void writeObject(ObjectOutputStream out) throws IOException`、`private void readObject(ObjectInputStream in) throws IOException` 。  
 但是要注意的是：这两个方法并不是`Serializable`接口中的方法。  
-这两个方法是被**系统调用**以完成对象序列化的。注意是被系统自动调用，而不是被人为调用，我们在序列化对象的时候依旧是使用`writeObject()`、`readObject()`方法的。只不过这里实现了这两个方法表示在写入和读取的时候底层是使用我们自己定制的转换方法（可以理解为加密方法）。
+这两个方法是被**系统调用**以完成对象序列化的。注意是被系统自动调用，而不是被人为调用，我们在序列化对象的时候依旧是使用`writeObject()`、`readObject()`方法的。只不过这里实现了这两个方法表示在写入和读取的时候底层是使用我们自己定制的转换方法（可以理解为加密方法）。  
 
+**版本号**：  
+由于我们的类会经常修改、变化，所以无法知道在序列化读取的时候类是不是正确的。所以要给可序列化类一个版本号。
+  
+实际上上如果没有给版本号，系统也会默认给一个版本号。但是默认的这个版本号不稳定。  
+使用`serialver.exe`工具以查看类的版本号: `serialver.exe UseaEncodeSerializableTest`  
 
+自定义设置类的版本号：  
+在类定义的最前面加上一句：`static final long serialVersionUID = 1.1;`即将该类的版本号设置为1，以后每修改一次这个类，就可以修改一下这个类的版本号。自定义版本号后更稳定。
+
+使用方式示例：  
+>
+	import java.io.*;
+	//the class must implements the Serializable interface that it can be serialized
+	class user implements Serializable
+	{
+		//set the version of the class 
+		static final long serialVersionUID = 1L;
+>		
+		private String name;
+		private String password;
+		user()
+		{
+			this.name = "zhang";
+			this.password = "red";
+		}
+		user(String aname,String apassword)
+		{
+			this.name=aname;
+			this.password=apassword;
+		}
+		public void setname(String aname)
+		{
+			this.name=aname;
+		}
+		public void setpassword(String apassword)
+		{
+			this.password=apassword;
+		}
+		public String getname()
+		{
+			return this.name;
+		}
+		public String getpassword()
+		{
+			return this.password;
+		}
+>	
+		public String toString()
+		{
+			String str = "user "+this.name+" "+this.password;
+			return str;
+		}
+>	
+		//set method to encode the password by yourself that it can not be get after the serialization
+		private void writeObject(ObjectOutputStream out) throws IOException
+		{
+			out.writeUTF(this.name);
+			//you can encode the Field with the method you want
+			out.writeUTF(new StringBuilder(this.password).reverse().toString());
+		}
+		//set method to read the fields but you can not decode the password
+		private void readObject(ObjectInputStream in) throws IOException
+		{
+			this.name = in.readUTF();
+			this.password = in.readUTF();
+		}
+	}	
+>
+	public class UseaEncodeSerializableTest
+	{
+		public static void main(String[] args) throws Exception
+			{
+				user us = new user("lisi","123");
+				//after the finish of the program,the ap object will perish
+				System.out.println(us);
+>			
+				//write the us object into the file and save it in the disk in binary stream form with the ObjectOutputStream class and the Field has been encoded then it can be saved or passed through the web
+				FileOutputStream fos = new FileOutputStream("user.bin"); 
+				ObjectOutputStream ops = new ObjectOutputStream(fos); 
+				ops.writeObject(us);
+>			
+				//read the object from the file stored in the disk , but can not decode the password
+				FileInputStream fis = new FileInputStream("user.bin"); 
+				ObjectInputStream ois = new ObjectInputStream(fis);
+				Object bp = ois.readObject();
+				user mp = (user)bp;
+				System.out.println(mp.getpassword());
+			}	
+	}	
 **IM**：我们使用`I/O`流类的正常使用方法：  
 1. 不会直接使用节点流类。而是将它们包装成包装类进行使用。  
 2. 如果联系到键盘、文件、屏幕等节点设备，那么就是节点流类。  
