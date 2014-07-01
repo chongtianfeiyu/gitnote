@@ -1453,7 +1453,7 @@ B、在外部类之外使用static内部类的时候。
 	}
 
 >
-	Public enum gender
+	public enum gender
 	{	
     	 Male,//这是调用了该类的默认构造器，省略了括号。Female（“woman”）；//显式调用有参构造器。
 		//实际上相当于：gender female=new gender（“woman”）；
@@ -3054,6 +3054,124 @@ Java中的序列化
 			}	
 	}
 
+Java中序列化的机制
+-----------
+1. 对于一个要被序列化的对象，其所有的属性，也就是成员变量，都必须是可序列化的，也就是实现了`Serializable`接口。  
+如：Student类有一个属性（成员变量）是Teacher。那么Student对象如果需要被序列化，那么除了Student类必须实现`Serializable`接口，它的属性Teacher类也必须实现`Serializable`接口。这样才能保证能够被序列化。  
+2. 序列化底层机制：  
+a. 当我们每序列化一个对象，就会给这个对象一个编号。  
+b. 如果是第一次序列化一个对象，就会真的将这个对象序列化成二进制流。  
+c. 如果要序列化的对象已经在之前已经序列化过一次，那么此次就只序列化一个编号，而不会再序列化保存整个对象。也就是说只会序列化保存本次编号。
+
+序列化底层机制示例：
+>
+	import java.io.*;
+	//the class must implements the Serializable interface that it can be serialized
+	class Student implements Serializable
+	{
+		private String name;
+		private Teacher teacher;
+		Student()
+		{
+		}
+		Student(String aname,Teacher ateacher)
+		{
+			this.name=aname;
+			this.teacher=ateacher;
+		}
+		public void setname(String aname)
+		{
+			this.name=aname;
+		}
+		public void setteacher(Teacher ateacher)
+		{
+			this.teacher=ateacher;
+		}
+		public String getname()
+		{
+			return this.name;
+		}
+		public Teacher getteacher()
+		{
+			return this.teacher;
+		}
+>		
+		public String toString()
+		{
+			String str = "student "+this.name+" "+this.teacher.toString();
+			return str;
+		}
+	}
+>
+		class Teacher implements Serializable
+		{
+			private String name;
+		private int age;
+		Teacher()
+		{
+		}
+		Teacher(String aname,int aage)
+		{
+			this.name=aname;
+			this.age=aage;
+		}
+		public void setname(String aname)
+		{
+			this.name=aname;
+		}
+		public void setage(int aage)
+		{
+			this.age=aage;
+		}
+		public String getname()
+		{
+			return this.name;
+		}
+		public int getage()
+		{
+			return this.age;
+		}
+>		
+		public String toString()
+		{
+			String str = "teacher "+this.name+" "+this.age;
+			return str;
+		}
+	}
+>
+	public class appleSerializableTestb
+	{	
+		public static void main(String[] args) throws Exception
+			{
+				Teacher tea = new Teacher("liu",23);
+				Student stu = new Student("lisi",tea);
+				//after the finish of the program,the ap object will perish
+				System.out.println(stu);
+>			
+				FileOutputStream fos = new FileOutputStream("stu.bin"); 
+				ObjectOutputStream ops = new ObjectOutputStream(fos); 
+				//write the stu object into the file and save it in the disk in binary stream form with the ObjectOutputStream class
+				ops.writeObject(stu); 
+>			
+				tea.setname("hu");
+				tea.setage(50);
+				//do not write the tea object into the file and do not save it in the disk in binary stream form with the ObjectOutputStream class again, because this object has been serialized in the object stu that it can not been serialized again
+				ops.writeObject(tea); 
+>			
+				FileInputStream fis = new FileInputStream("stu.bin"); 
+				ObjectInputStream ois = new ObjectInputStream(fis);
+				//read the stu object from the file stored in the disk 
+				Object bp = ois.readObject();
+				//read the tea object from the file stored in the disk 
+				//but the alteration of tea can not be read because the changed object can not be serialized 
+				Object cp = ois.readObject();
+				Student mp = (Student)bp;
+				Teacher np = (Teacher)cp;
+				System.out.println(mp.getname());
+				System.out.println(np.getname());
+			}	
+	}
+
 **IM**：我们使用`I/O`流类的正常使用方法：  
 1. 不会直接使用节点流类。而是将它们包装成包装类进行使用。  
 2. 如果联系到键盘、文件、屏幕等节点设备，那么就是节点流类。  
@@ -3197,3 +3315,7 @@ d. 输入已经保存的内容
 		}	 
 	}
  
+
+
+
+
