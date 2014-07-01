@@ -3323,8 +3323,6 @@ c. 如果是*字节节点流类*要转变成*字符包装类*使用，那么就�
 		}
 	}
 
-
-
 Java中虚拟机读取其他进程数据
 ------------------
 在`Java`中启动其他进程：  
@@ -3417,7 +3415,48 @@ d. 输入已经保存的内容
 		}	 
 	}
  
+Java中几个有用的类
+----------
+`Path`：接口。表示一个平台无关的路径。可以通过Paths工具类获得Path对象。  
+传统的`File`类，既代表文件又代表路径。不好用。  
+  
+`Paths`：操作路径的工具类。里面有方法可以获得`Path`对象。  
+`Files`：操作文件的工具类。可以直接操作文件。  
+例如：要复制一个文件。不再需要使用I/O流进行复制、粘贴了。而是直接使用这个工具类即可。
+`Arrays`：操作数组的工具类。  
+`Collections`：操作集合的工具类。  
+`Objects`：操作对象的工具类。  
 
+`Files`类与`Paths`类使用示例：
+>
+	import java.nio.file.*;
+	public class pathTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//get the relative path
+			Path path = Paths.get("1.java");
+			Path path1 = Paths.get("4.java");
+			Path path2 = Paths.get("C:/Python27/python.exe");
+>			
+			//get the absolute path and get the path root
+			System.out.println((path.toAbsolutePath().getRoot()));  
+>	
+			//get the absolute path and git the path parents
+			System.out.println((path.toAbsolutePath().getParent())); 
+>		
+			//test the file can be read
+			System.out.println(Files.isReadable(path)); 
+			//test the file is hidden
+			System.out.println(Files.isHidden(path)); 
+>		
+			//copy the file in path to the file in path1
+			Files.copy(path,path1,StandardCopyOption.REPLACE_EXISTING);
+>		
+			//test the file can be exec
+			System.out.println(Files.isExecutable(path2));
+		}
+	}
 
 
 
