@@ -3681,9 +3681,9 @@ Java中的Swing
 由于`AWT`中的界面*组件*较少，所以导致界面不够美观。此时就需要使用`Swing`界面组件。  
 `Java`中还有一套界面组件库，来自`IBM`的`SWT/JFaces`。
 `Swing`功能更强大，使用更方便。  
-`JComponent`：一切的`Swing`组件及`Swing`容器都属于（继承自）`JComponent`。`JFrame`除外。  
+`JComponent`：一切的`Swing`组件及`Swing`容器都属于（继承自）`JComponent`。`JFrame`、`JDialo`除外。  
 由于`AWT`组件要调用底层系统的实现，所以被称为“重量级”组件。  
-`Swing`组件是依靠自己实现，无需调用底层s系统的实现，所以被称为“轻量级”组件。  
+`Swing`组件是依靠自己实现，无需调用底层系统的实现，所以被称为“轻量级”组件。  
 
 `JOptionPane`:是一个工具类，专用于弹出各种对话框。`static`方法有`showMessageDialog()`等。
 
@@ -3715,4 +3715,172 @@ Java中的Swing
 			System.out.println(JOptionPane.showInputDialog(null,"please input:"));
 			MainFrame.setVisible(true);
 		}
+	}  
+
+`JPanel`:类似与`Panel`。  
+`JPasswordField`：密码输入框。
+`JProgressBar`：进度条。  
+`JRadioButton`：单选框。  
+`JScrollBar`：滚动条。  
+`JSplitPane`：分割面板。  
+`JTabledPane`：窗口里面的`Tab`页面。  
+`JTable`：表格。`JTable`必须放在`JScrollPane`中显示。  
+`JToggleButton`：开关按钮。
+`JToolBar`：做工具条。
+`JToolBar.Separator`:工具条的分割线。  
+`JToolTip`：工具条上的提示。
+
+表格使用示例：
+>
+	import java.awt.*;
+	import javax.swing.*;
+	public class SwingTableTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			JFrame MainFrame = new JFrame("hello");
+			MainFrame.setBounds(100,200,300,400);
+			//MainFrame.setLayout(new FlowLayout(10,10,10));
+			BorderLayout bl = new BorderLayout(40,40);
+>
+			String[] str1 = new String[]{"Name","Age","Gender"};
+			String[][] str2 = new String[][]{new String[]{"Jim","13","male"},new String[]{"Mary","15","female"},new String[]{"Jack","11","male"}};
+>		
+			JTable jt = new JTable(str2,str1);
+			JScrollPane jsp = new JScrollPane(jt);
+			MainFrame.add(jsp);
+			MainFrame.setVisible(true);
+		}
 	}
+
+
+工具条使用示例：
+>
+	import java.awt.*;
+	import javax.swing.*;
+	import java.awt.event.*;
+	public class SwingToolBarTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			JFrame MainFrame = new JFrame("hello");
+			MainFrame.setBounds(100,200,300,400);
+			//MainFrame.setLayout(new FlowLayout(10,10,10));
+			BorderLayout bl = new BorderLayout(40,40);
+>
+			JToolBar jtb = new JToolBar("good", JToolBar.HORIZONTAL);
+			 Action ac1 = new AbstractAction("yes") 
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					System.out.println("yes");
+				}
+			};
+			 Action ac2 = new AbstractAction("no") 
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					System.out.println("no");
+				}
+			};
+			 Action ac3 = new AbstractAction("cancel") 
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					System.out.println("cancel");
+				}
+			};
+			jtb.add(ac1);  
+			jtb.add(ac2);  
+			jtb.addSeparator(); 
+			jtb.add(ac3);  
+>		
+		 	String[] str1 = new String[]{"Name","Age","Gender"};
+			String[][] str2 = new String[][]{new String[]{"Jim","13","male"},new String[]{"Mary","15","female"},new String[]{"Jack","11","male"}};
+>		
+			JTable jt = new JTable(str2,str1);
+			JScrollPane jsp = new JScrollPane(jt); 
+			MainFrame.add(jsp);
+			MainFrame.add(jtb,BorderLayout.NORTH);
+			MainFrame.setVisible(true);
+		}
+	}
+
+
+`Window`容器有两个子类：`Frame`、`Dialog`。
+`Swing`中容器：`JFrame`、`JDialog`。  
+`JDialog`：本质上对话框也是一个窗口，区别在于对话框必须属于某一个窗口。  
+创建对话框需要指定的参数：  
+1.`owner`  
+2. `title`  
+3. 是否`modal`：如果是模式对话框，那么该对话框出现的时候，其`ower`不能得到焦点。否则就是非模式对话框。
+
+对话框使用示例：
+>
+	import java.awt.*;
+	import javax.swing.*;
+	import java.awt.event.*;
+	public class SwingDialogTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			JFrame MainFrame = new JFrame("hello");
+			MainFrame.setBounds(100,200,300,400);
+			//MainFrame.setLayout(new FlowLayout(10,10,10));
+			BorderLayout bl = new BorderLayout(40,40);
+>
+			JButton jbu1 = new JButton("yes");
+			JButton jbu2 = new JButton("no");
+			JButton jbu3 = new JButton("cancel");
+			MainFrame.setLayout(new FlowLayout());
+			MainFrame.add(jbu1);
+			MainFrame.add(jbu2);
+			MainFrame.add(jbu3);
+>		
+			final JDialog jd1 = new JDialog(MainFrame,"yes",true);
+			final JDialog jd2 = new JDialog(MainFrame,"no",false);
+			final JDialog jd3 = new JDialog(MainFrame,"yes",true);
+>		
+			//add button action react for button1
+			jbu1.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					System.out.println("yes");
+					//show the dialog
+					jd1.setVisible(true);
+				}
+			});
+>		
+			//add button action react for button2
+			jbu2.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					System.out.println("no");
+					//show the dialog
+					jd2.setVisible(true);
+				}
+			});
+>		
+			//add button action react for button3
+			jbu3.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					System.out.println("cancel");
+					//show the dialog
+					jd3.setVisible(true);
+				}
+			});
+>		
+			MainFrame.setVisible(true);
+		}
+	}
+
+注：怎样为一个抽象类创建对象？  
+使用匿名内部类即可，使用内部类创建一个该抽象类的子类的匿名对象。然后让这个抽象类引用变量去引用这个子类的匿名对象。  
+
