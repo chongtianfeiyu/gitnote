@@ -3498,18 +3498,221 @@ AWT:
 
 所谓的布局，就是组件位置与大小。使用布局管理器之后，更为简单，程序员无需显式控制组件的位置与大小，而是选择合适的布局管理器即可管理容器里面**各组件的位置布局**。  
 布局管理器：  
-`FlowLayout`：让组件在容器中横向排列，到顶就会自动折返到下一行。  
+1. `FlowLayout`：让组件在容器中横向排列，到顶就会自动折返到下一行。  
 使用时被容器一次性调用`FlowLayout`，用于全局。  
-`BorderLayout`：将容器分为五个区域，每个区域中都能放组件。各个区域会自动调整大小。如果某个区域没有组件，就会自动被别的区域占满。    
+2. `BorderLayout`：将容器分为五个区域，每个区域中都能放组件。各个区域会自动调整大小。如果某个区域没有组件，就会自动被别的区域占满。    
 使用时容器一次一次为每一个组件调用`BorderLayout`的`Field`。每调用一次都只对这个组件有效果。  
 但是并不表明每个区域只能放一个组件，可以使用`Panel`容器里放多个组件，然后将这个容器放在某一个区域即可。  
 注意：任何一个布局管理器对象可以被任何一个容器使用，如，一个布局管理器既可以被一个`Frame`容器使用，也可以被一个`Panel`容器使用，然后可以使用这个布局管理器将这个`Panel`加到这个`Frame`容器中。  
-`GridLayout`：将整个容器界面自定义划分成若干个块，然后对容器调用该布局管理器。即对全局的组件使用该布局管理器。   
-`CardLayer`：将组件一个一个地叠加在一起。看到的只是最上面的那个组件。  
-`GridBagLayout`：  
-`BoxLayout`：是`Swing`里面的一个布局管理器。用法简单，功能强大。代替了`GridBagLayout`。要么是垂直方向排组件，要么横向排组件。   
-
-还可以不使用布局管理器：  
+3. `GridLayout`：将整个容器界面自定义划分成若干个块，然后对容器调用该布局管理器。即对全局的组件使用该布局管理器。   
+4. `CardLayer`：将组件一个一个地叠加在一起。看到的只是最上面的那个组件。  
+5. `GridBagLayout`：  
+6. `BoxLayout`：是`Swing`里面的一个布局管理器。用法简单，功能强大。代替了`GridBagLayout`。要么是垂直方向排组件，要么横向排组件。   
+7. 还可以不使用布局管理器：  
 在`Frame`里设置布局管理器为`null`；然后对每一个组件都各自设置大小及位置。
 
 注：内部类里访问局部变量，局部变量必须加上`Final`修饰。
+
+`AWT`使用示例：
+>	
+	import java.awt.*;
+	public class AWTFlowLayoutTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			FlowLayout fl = new FlowLayout(FlowLayout.CENTER,60,80);
+>
+			//construct a container
+			Frame MainFrame = new Frame("hello");
+			//set the size of the frame(container) and locate it on the postion you want
+			MainFrame.setBounds(100,200,300,400);
+>		
+			//add the button with the default layout
+			MainFrame.add(new Button("Yes"));
+>
+			//use the layout FlowLayout f1 for all the components
+			MainFrame.setLayout(fl);
+>		
+			MainFrame.setVisible(true);
+		}
+	}
+
+  
+>
+	import java.awt.*;
+	public class AWTBorderLayoutTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			BorderLayout bl = new BorderLayout(10,10);
+>		
+			//construct a container
+			Frame MainFrame = new Frame("hello");
+			//set the size of the frame(container) and locate it on the postion you want
+			MainFrame.setBounds(100,200,300,400);
+>		
+			//add new buttons with the layout b1
+			MainFrame.add(new Button("East"),bl.EAST);
+			MainFrame.add(new Button("West"),bl.WEST);
+			MainFrame.add(new Button("North"),bl.NORTH);
+			MainFrame.add(new Button("South"),bl.SOUTH); 
+>		
+			//create a panel with layout bl to contain two buttons
+			Panel pl = new Panel(bl);
+			pl.add(new Button("East"),bl.EAST);
+			pl.add(new Button("West"),bl.WEST);
+>
+			//add the panel with layout bl
+			MainFrame.add(pl,bl.CENTER);
+>		
+			MainFrame.setVisible(true);
+		}
+	}
+
+
+>
+	import java.awt.*;
+	public class AWTGridLayoutTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			GridLayout gl = new GridLayout(2,2,5,5);
+>		
+			//construct a container
+			Frame MainFrame = new Frame("hello");
+			//set the size of the frame(container) and locate it on the postion you want
+			MainFrame.setBounds(100,200,300,400);
+>
+			//set the layout gl
+			MainFrame.setLayout(gl);
+>
+			//add buttons
+			MainFrame.add(new Button("East"));
+			MainFrame.add(new Button("West"));
+			MainFrame.add(new Button("North"));
+			MainFrame.add(new Button("South"));
+			MainFrame.pack();
+			MainFrame.setVisible(true);
+		}
+	}	
+
+
+
+>
+	import java.awt.*;
+	public class AWTCardLayoutTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			CardLayout cl = new CardLayout(4,4);
+>
+			//construct a container
+			Frame MainFrame = new Frame("hello");
+			//set the size of the frame(container) and locate it on the postion you want
+			MainFrame.setBounds(100,200,300,400);
+>
+			Panel pl = new Panel();
+			//use the layout FlowLayout f1 for all the components
+			pl.setLayout(cl);
+>		
+			//add the button with the default layout
+			pl.add(new Button("East"));
+			pl.add(new Button("West"));
+			pl.add(new Button("North"));
+			pl.add(new Button("South"));
+>
+			//cl.next(pl);
+			MainFrame.add(pl,BorderLayout.NORTH);
+>		
+			Panel pl2 = new Panel();
+			pl2.add(new Button("First"));
+			pl2.add(new Button("Previous"));
+			pl2.add(new Button("Next"));
+			pl2.add(new Button("Last"));
+>		
+			MainFrame.add(pl2,BorderLayout.SOUTH);
+			MainFrame.setVisible(true);
+		}
+	}
+
+
+
+>
+	import java.awt.*;
+	import javax.swing.*;
+	public class AWTBoxLayoutTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			Frame MainFrame = new Frame("hello");
+			//set the size of the frame(container) and locate it on the postion you want
+			MainFrame.setBounds(100,200,300,400);
+>		
+			//BoxLayout for MainFrame
+			BoxLayout bl1 = new BoxLayout(MainFrame,BoxLayout.Y_AXIS);
+			MainFrame.setLayout(bl1);
+			MainFrame.add(new Button("1"));
+			MainFrame.add(new Button("2"));
+			MainFrame.add(new Button("3"));
+>		
+			Panel pl = new Panel();
+			//BoxLayout for pl
+			BoxLayout bl2 = new BoxLayout(pl,BoxLayout.X_AXIS);
+			pl.setLayout(bl2);
+			Panel pl1 = new Panel();
+			//BoxLayout for pl1
+			BoxLayout bl3 = new BoxLayout(pl1,BoxLayout.Y_AXIS);
+			pl1.setLayout(bl3);
+			pl1.add(new Button("4"));
+			pl1.add(new Button("5"));
+			pl.add(pl1);
+			pl.add(new Button("6"));
+>		
+			MainFrame.add(pl);
+>		
+			MainFrame.setVisible(true);
+		}
+	}
+
+
+Java中的Swing
+-----------
+由于`AWT`中的界面*组件*较少，所以导致界面不够美观。此时就需要使用`Swing`界面组件。  
+`Java`中还有一套界面组件库，来自`IBM`的`SWT/JFaces`。
+`Swing`功能更强大，使用更方便。  
+`JComponent`：一切的`Swing`组件及`Swing`容器都属于（继承自）`JComponent`。`JFrame`除外。  
+由于`AWT`组件要调用底层系统的实现，所以被称为“重量级”组件。  
+`Swing`组件是依靠自己实现，无需调用底层s系统的实现，所以被称为“轻量级”组件。  
+
+`JOptionPane`:是一个工具类，专用于弹出各种对话框。`static`方法有`showMessageDialog()`等。
+
+`Swing`使用示例：
+>
+	import java.awt.*;
+	import javax.swing.*;
+	public class SwingTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			JFrame MainFrame = new JFrame("hello");
+			MainFrame.setBounds(100,200,300,400);
+			//MainFrame.setLayout(new FlowLayout(10,10,10));
+			BorderLayout bl = new BorderLayout(40,40);
+>
+			//JCheckBox
+			MainFrame.add(new JCheckBox("good!"),bl.NORTH);
+>		
+			//JColorChooser
+			JColorChooser.showDialog(MainFrame, "hi", Color.black); 
+>		
+			//JList
+			String[] str = new String[]{"1","2","3"};
+			MainFrame.add(new JList<String>(str),bl.SOUTH);
+>		
+			//JOptionPane
+			System.out.println(JOptionPane.showInputDialog(null,"please input:"));
+			MainFrame.setVisible(true);
+		}
+	}
