@@ -3855,7 +3855,7 @@ Java中的Swing
 				}
 			});
 >		
-			//add button action react for button2
+			//add button action react listener for button2
 			jbu2.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
