@@ -4144,4 +4144,63 @@ Java中的菜单
 
 `Swing`菜单：比`AWT`菜单功能更强大。比如，Swing菜单支持图标菜单。  
 `JMenuBar`:工具条。包含多个JMenu，JMenu包含多个`JMenuItem`。  
-由于JMenu继承自JMenuItem，所以，JMenu可以当JMenuItem使用。 
+由于`JMenu`继承自`JMenuItem`，所以，`JMenu`可以当`JMenuItem`使用。  
+`JFrame`使用`setJMenuBar(JMenuBar menubar)`来安装菜单工具条。
+`JMenu`可以`add(JMenuItem j)`也可以`add(JMenu j)`,这样就可以产生二级菜单,也就是说，`JMenu`可以当成`JMenuItem`使用.  
+
+菜单使用示例：
+
+>
+	import java.awt.*;
+	import javax.swing.*;
+	import java.awt.event.*;
+	public class SwingJMenuTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			JFrame MainFrame = new JFrame("hello");
+			MainFrame.setBounds(100,200,300,400);
+			BorderLayout bl = new BorderLayout(40,40);
+>	
+			//construct the menubar
+			JMenuBar jmb = new JMenuBar();
+>		
+			//construct the menus for the menubar	
+			JMenu jm1 = new JMenu("Files",true);
+			JMenu jm2 = new JMenu("Edit",true);
+			JMenu jm3 = new JMenu("Search",true);
+			JMenu jm4 = new JMenu("Runs",true);
+			JMenu jm5 = new JMenu("Language",true);
+			jmb.add(jm1);
+			jmb.add(jm2);
+			jmb.add(jm3);
+			jmb.add(jm4);
+			jmb.add(jm5);
+>			
+			//construct the menuitems for the menu
+			JMenuItem jmi1 = new JMenuItem("1");
+			JMenuItem jmi2 = new JMenuItem("2");
+			JMenu jmi3 = new JMenu("3");
+			JMenuItem jmi4 = new JMenuItem("4");
+			jmi1.setAccelerator(KeyStroke.getKeyStroke('V',InputEvent.CTRL_DOWN_MASK)); 
+			jm1.add(jmi1); 
+			jm1.add(jmi2);
+			//add separator in the menu
+			jm1.addSeparator(); 
+			jm1.add(jmi3); 
+			jmi3.add(jmi4); 
+>		
+			//add ActionListener for the menuitem
+			jmi1.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					System.out.println("hi");
+				}
+			});
+			//add the menubar onto the frame
+			MainFrame.setJMenuBar(jmb);
+			MainFrame.setVisible(true);
+		}
+	}
