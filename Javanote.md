@@ -3964,5 +3964,59 @@ Java中的Swing
 注：怎样为一个抽象类创建对象？  
 使用匿名内部类即可，使用内部类创建一个该抽象类的子类的匿名对象。然后让这个抽象类引用变量去引用这个子类的匿名对象。  
 
+Java中的事件编程
+-----------
+针对的就是程序与人的交互---通过鼠标、键盘触发事件。
+Java的事件处理模式：委托式的事件处理。
+委托式事件处理模型：  
+1. 在这种处理模型之下，事件源（如按钮）发生事件（点击）的时候，事件源不处理事件。  
+2. 事件源会发出事件（Event）给事件监听器（Listener）：也就是发送了事件发生点等关于该事件的详细信息。  
+3. 事件监听器（Linstener）获得事件信息（Event对象），只能依据事件信息对象（Event）对事件进行反应处理。  
+4. 事件监听器都要实现一个特定的方法。
 
 
+事件源：一切组件都可能是事件源。
+  
+事件：无需程序员理会，事件发送过程也无需理会。
+  
+监听器：需要程序员实现，通过匿名内部类获得一个监听器的对象。需要实现相应的接口。  
+**对于不同的事件，有不同的监听器。**需要为事件源上发生的不同的事件注册与之对应的事件监听器，也就是说一个事件源可以被多个事件监听器监听，一个事件监听器也可以监听多个事件源。
+
+单击事件：`ActionEvent`。
+
+单击事件处理示例：
+>
+	import java.awt.*;
+	import javax.swing.*;
+	import java.awt.event.*;
+	public class SwingActionlistenerTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			JFrame MainFrame = new JFrame("hello");
+			MainFrame.setBounds(100,200,300,400);
+			//MainFrame.setLayout(new FlowLayout(10,10,10));
+			BorderLayout bl = new BorderLayout(40,40);
+>		
+			//create your own actionlintener for click and implements the reaction func
+			class MyEventListener implements ActionListener
+			{
+				public void actionPerformed(ActionEvent e) 
+				{
+					System.out.println(e.getActionCommand());				
+					System.out.println(e.getWhen());
+				}
+			}
+>		
+			JButton bu1 = new JButton("Yes");
+			JButton bu2 = new JButton("No");
+			//add the actionlistener for your buttons
+			bu1.addActionListener(new MyEventListener());
+			bu2.addActionListener(new MyEventListener());
+>		
+			MainFrame.add(bu1,BorderLayout.NORTH);
+			MainFrame.add(bu2,BorderLayout.SOUTH);
+			MainFrame.setVisible(true);
+		}
+	}
