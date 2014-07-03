@@ -3986,7 +3986,7 @@ Java的事件处理模式：委托式的事件处理。
 单击事件：`ActionEvent`。
 
 下例中使用了*内部类*，还可以使用*匿名内部类*。
-1. 窗口监听器： `ActionListener`
+单击监听器： `ActionListener`
 单击事件处理示例：
 >
 	import java.awt.*;
@@ -4030,7 +4030,7 @@ IM：无论是我们通过`implements`来实现监听器接口获得监听器对
 于是就出现了适配器，适配器是监听器的实现类。它为监听器接口提供了通实现。也即是说，采用适配器之后，我们不需要的接口里的方法可以不用自己去实现，只用实现自己想要实现的方法。  
 对于方法很多的事件监听器接口，都会为它提供对应的事件适配器。 
 
-2. 窗口监听器：
+窗口监听器：
 对任何一个窗口（`Frame`或者`Dialog`都适用)监听。
 
 窗口监听器使用示例：
@@ -4127,11 +4127,21 @@ IM：无论是我们通过`implements`来实现监听器接口获得监听器对
 	}
 
 
-各种事件与接口对应：
-1. `Action`：`ActionListener`：单击事件。  
+各种事件与接口对应：  
+1. `Action`：`ActionListener`：单击事件  
 2. `Item`：`ItemListener`：  
 3. `Mouse Motion`：`MouseMotionListener`：鼠标动作事件  
 4. `Mouse`：`MouseListener`：鼠标按键事件  
 5. `Key`：`KeyListener`：按键事件  
 6. `Focus`：`FocusListener`：焦点事件  
 7. `Text`:`TextListener`:文本框、文本域事件
+
+
+Java中的菜单
+-----------
+`AWT`菜单：`MenuComponent`,一切菜单组件都是`MenuComponent`。见类结构图。  
+`MenuBar`：就是一整个工具条。包含多个`Menu`，`Menu`包含多个`MenuItem`。
+
+`Swing`菜单：比`AWT`菜单功能更强大。比如，Swing菜单支持图标菜单。  
+`JMenuBar`:工具条。包含多个JMenu，JMenu包含多个`JMenuItem`。  
+由于JMenu继承自JMenuItem，所以，JMenu可以当JMenuItem使用。 
