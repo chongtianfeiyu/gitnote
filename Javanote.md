@@ -3811,7 +3811,7 @@ Java中的Swing
 
 `Window`容器有两个子类：`Frame`、`Dialog`。
 `Swing`中容器：`JFrame`、`JDialog`。  
-`JDialog`：本质上对话框也是一个窗口，区别在于对话框必须属于某一个窗口。  
+`JDialog`：本质上对话框也是一个窗口，区别在于对话框必须属于某一个窗口。对话框是一个容器，里面可以放各种组件。  
 创建对话框需要指定的参数：  
 1.`owner`  
 2. `title`  
@@ -3844,7 +3844,7 @@ Java中的Swing
 			final JDialog jd2 = new JDialog(MainFrame,"no",false);
 			final JDialog jd3 = new JDialog(MainFrame,"yes",true);
 >		
-			//add button action react for button1
+			//add button action react for button1 with anonymous class
 			jbu1.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
@@ -3855,7 +3855,7 @@ Java中的Swing
 				}
 			});
 >		
-			//add button action react listener for button2
+			//add button action react listener for button2 with anonymous class
 			jbu2.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
@@ -3866,7 +3866,7 @@ Java中的Swing
 				}
 			});
 >		
-			//add button action react for button3
+			//add button action react for button3 with anonymous class
 			jbu3.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
@@ -3881,6 +3881,87 @@ Java中的Swing
 		}
 	}
 
+
+还有两个特殊的对话框：
+`JColorChooser`、`JFileChooser`:颜色选择对话框与文件选择对话框。
+文件选择对话框使用示例：
+>  
+	import java.awt.*;
+	import javax.swing.*;
+	import java.awt.event.*;
+	import java.nio.file.*;
+	import java.io.*;
+	public class SwingFileDialogTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			final JFrame MainFrame = new JFrame("hello");
+			MainFrame.setBounds(100,200,300,400);
+			//MainFrame.setLayout(new FlowLayout(10,10,10));
+			BorderLayout bl = new BorderLayout(40,40);
+>
+			JButton jbu3 = new JButton("Choose");
+>	
+			MainFrame.add(jbu3,BorderLayout.SOUTH);
+>		
+			//add button action react for button3
+			jbu3.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e) 			{
+					try
+					{
+						SwingDialogTest.readFile(MainFrame);
+					}
+					catch(Exception m)
+					{
+						System.out.println("Error");
+					}
+				}
+			});
+			MainFrame.setVisible(true);
+		}
+>	
+		static void readFile(Component c) throws Exception
+		{
+			JFileChooser jfc = new JFileChooser();
+			jfc.showOpenDialog(c);
+			File f = jfc.getSelectedFile();
+>		
+		 	if(f!=null)
+			{ 
+				//read the file with notepad
+				Runtime rt = Runtime.getRuntime();
+				rt.exec("notepad "+f.getPath());
+>		
+			 	//read the line in the CMD line
+				InputStreamReader isr = new InputStreamReader(new FileInputStream(f)); 
+				BufferedReader br = new BufferedReader(isr);
+				String tempstr = null;
+				while((tempstr=br.readLine())!=null)
+				{
+					System.out.println(tempstr);
+				}  
+>		
+				//read the line in the textarea
+				JTextArea jtp = new JTextArea();
+				JFrame jf = (JFrame)c;
+				jf.add(new JScrollPane(jtp));
+>	
+				InputStreamReader isr1 = new InputStreamReader(new FileInputStream(f)); 
+				BufferedReader br1 = new BufferedReader(isr1);
+				String tempstr1 = null;
+				while((tempstr1=br1.readLine())!=null)
+				{
+					jtp.append(tempstr1+"\n"); 
+				}  
+			}
+		}
+	}
+
+
 注：怎样为一个抽象类创建对象？  
 使用匿名内部类即可，使用内部类创建一个该抽象类的子类的匿名对象。然后让这个抽象类引用变量去引用这个子类的匿名对象。  
+
+
 
