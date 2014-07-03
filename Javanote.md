@@ -3970,8 +3970,8 @@ Java中的事件编程
 Java的事件处理模式：委托式的事件处理。
 委托式事件处理模型：  
 1. 在这种处理模型之下，事件源（如按钮）发生事件（点击）的时候，事件源不处理事件。  
-2. 事件源会发出事件（Event）给事件监听器（Listener）：也就是发送了事件发生点等关于该事件的详细信息。  
-3. 事件监听器（Linstener）获得事件信息（Event对象），只能依据事件信息对象（Event）对事件进行反应处理。  
+2. 事件源会发出事件（`Event`）给事件监听器（`Listener`）：也就是发送了事件发生点等关于该事件的详细信息。  
+3. 事件监听器（`Listener`）获得事件信息（`Event`对象），只能依据事件信息对象（`Event`）对事件进行反应处理。  
 4. 事件监听器都要实现一个特定的方法。
 
 
@@ -3980,10 +3980,13 @@ Java的事件处理模式：委托式的事件处理。
 事件：无需程序员理会，事件发送过程也无需理会。
   
 监听器：需要程序员实现，通过匿名内部类获得一个监听器的对象。需要实现相应的接口。  
-**对于不同的事件，有不同的监听器。**需要为事件源上发生的不同的事件注册与之对应的事件监听器，也就是说一个事件源可以被多个事件监听器监听，一个事件监听器也可以监听多个事件源。
-
+**对于不同的事件，有不同的监听器。**需要为事件源上发生的不同的事件注册与之对应的事件监听器，也就是说一个事件源可以被多个事件监听器监听，一个事件监听器也可以监听多个事件源。  
+事件编程的重点就是实现事件处理的方法。  
+可以简化为匿名内部类。经常使用的是匿名内部类。
 单击事件：`ActionEvent`。
 
+下例中使用了*内部类*，还可以使用*匿名内部类*。
+1. 窗口监听器： `ActionListener`
 单击事件处理示例：
 >
 	import java.awt.*;
@@ -4020,3 +4023,115 @@ Java的事件处理模式：委托式的事件处理。
 			MainFrame.setVisible(true);
 		}
 	}
+
+注：`Event`类是属于`AWT`的。
+IM：无论是我们通过`implements`来实现监听器接口获得监听器对象还是通过匿名内部类来获得监听器对象，都需要实现监听器接口中的**所有抽象方法**，即使有些只是空实现。
+这样就导致，当监听器接口里的方法过多的时候，需要程序员实现这个接口里面的所有方法，导致监听器过于臃肿。  
+于是就出现了适配器，适配器是监听器的实现类。它为监听器接口提供了通实现。也即是说，采用适配器之后，我们不需要的接口里的方法可以不用自己去实现，只用实现自己想要实现的方法。  
+对于方法很多的事件监听器接口，都会为它提供对应的事件适配器。 
+
+2. 窗口监听器：
+对任何一个窗口（`Frame`或者`Dialog`都适用)监听。
+
+窗口监听器使用示例：
+>
+	import java.awt.*;
+	import javax.swing.*;
+	import java.awt.event.*;
+	public class SwingWindowActionListenerTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			final JFrame MainFrame = new JFrame("hello");
+			MainFrame.setBounds(100,200,300,400);
+			//MainFrame.setLayout(new FlowLayout(10,10,10));
+			BorderLayout bl = new BorderLayout(40,40);
+>
+			//add windowlistener
+			MainFrame.addWindowListener(new WindowListener()
+			{
+				//implements the window funcs all	
+				public void windowClosing(WindowEvent e) 			
+				{
+					try
+					{
+						System.out.println("hi");
+						int result = JOptionPane.showConfirmDialog(MainFrame, 	"yes?"); 
+						if(result==0)
+						{	 
+							System.exit(0);
+						}
+					}
+					catch(Exception d)
+					{
+						System.out.println("error");
+					}
+				}
+				public void windowActivated(WindowEvent e) 
+				{}
+				public void windowClosed(WindowEvent e) 
+				{}
+>			
+				public void windowDeactivated(WindowEvent e) 
+				{}
+				public void windowDeiconified(WindowEvent e) 
+				{}
+				public void windowIconified(WindowEvent e) 
+				{}
+				public void windowOpened(WindowEvent e) 
+				{}
+			});
+			MainFrame.setVisible(true);
+		}
+	}
+
+窗口适配器使用示例：
+>
+	import java.awt.*;
+	import javax.swing.*;
+	import java.awt.event.*;
+	public class SwingWindowActionAdapterTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a container
+			final JFrame MainFrame = new JFrame("hello");
+			MainFrame.setBounds(100,200,300,400);
+			//MainFrame.setLayout(new FlowLayout(10,10,10));
+			BorderLayout bl = new BorderLayout(40,40);
+>	
+			//add windowlistener
+			MainFrame.addWindowListener(new WindowAdapter()
+			{
+				//implements the window close raction only the funcs you want
+				public void windowClosing(WindowEvent e) 			
+					{
+					try
+					{
+						System.out.println("hi");
+						int result = JOptionPane.showConfirmDialog(MainFrame, "yes?"); 
+						if(result==0)
+						{	 
+							System.exit(0);
+						}
+					}
+					catch(Exception d)
+					{
+						System.out.println("error");
+					}
+				}
+			});
+			MainFrame.setVisible(true);
+		}
+	}
+
+
+各种事件与接口对应：
+1. `Action`：`ActionListener`：单击事件。  
+2. `Item`：`ItemListener`：  
+3. `Mouse Motion`：`MouseMotionListener`：鼠标动作事件  
+4. `Mouse`：`MouseListener`：鼠标按键事件  
+5. `Key`：`KeyListener`：按键事件  
+6. `Focus`：`FocusListener`：焦点事件  
+7. `Text`:`TextListener`:文本框、文本域事件
