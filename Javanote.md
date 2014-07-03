@@ -3884,6 +3884,7 @@ Java中的Swing
 
 还有两个特殊的对话框：
 `JColorChooser`、`JFileChooser`:颜色选择对话框与文件选择对话框。
+
 文件选择对话框使用示例：
 >  
 	import java.awt.*;
