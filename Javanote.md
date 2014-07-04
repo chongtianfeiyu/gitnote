@@ -4148,6 +4148,8 @@ Java中的菜单
 `JFrame`使用`setJMenuBar(JMenuBar menubar)`来安装菜单工具条。
 `JMenu`可以`add(JMenuItem j)`也可以`add(JMenu j)`,这样就可以产生二级菜单,也就是说，`JMenu`可以当成`JMenuItem`使用.  
 
+同样可以为菜单项（MenuItem）添加监控器。  
+
 菜单使用示例：
 
 >
@@ -4204,3 +4206,6 @@ Java中的菜单
 			MainFrame.setVisible(true);
 		}
 	}
+
+为文本域添加监控器：文本域监控器来自`javax.swing.event.*`包。  
+使用`DocumentListener`来监听文本框内容的改变。
