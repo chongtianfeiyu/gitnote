@@ -4286,3 +4286,7 @@ Java中的菜单
 			MainFrame.setVisible(true);
 		}
 	}	
+
+
+上、下文菜单：也就是右键菜单。  
+`JPopupMenu`:是整个上、下文菜单的容器。
