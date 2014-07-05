@@ -4300,6 +4300,75 @@ Java中的菜单
 `Graphic`相当于画笔，所有的内容都是通过它绘制出来的。  
 `Canvas`与`Panel`都是空白的“矩形区域”。往里面画什么就有什么。
 
-Swing绘图：   
-JPanel也是一个空白区域，但是多了一个“双缓冲机制”。  
+`Swing`绘图：   
+`JPanel`也是一个空白区域，但是多了一个“双缓冲机制”。  
 双缓冲：当我们要在某一个“组件”上绘制图形的时候，先在内存中绘制一个图形，然后将图形整体绘制在组件上。这样就避免在“组件”上一笔一笔地画（每一笔都会导致组件的一次刷新，导致组件闪烁）图形，提高了性能。
+
+
+注：由于`main`方法是`static`方法，导致在`main`方法中不能调用类中的非`static`方法与`static`域，因此这个时候要将这些方法、域设置为`static`的。但往往并不能如此将他们都设置为`static`的。  
+这个时候，有一种处理方式：  
+在`main`方法外创建一个非`static`方法，然后在这个非`static`方法中调用想要的非`static`方法与域。最后在`main`方法中创建一个类对象，通过这个类对象调用前面创建的那个非`static`方法。
+
+上例使用`AWT`绘图使用示例：  
+>
+	import java.awt.*;
+	import java.awt.event.*;
+	import java.util.*;
+	public class AWTDrawingTest
+	{
+		private Frame mainFrame = new Frame();
+		private String RECT_shape = "rect";
+		private String OVAL_shape = "oval";
+		private String shapeToDraw = "";
+		private MyCanvas drawArea = new MyCanvas();
+		class MyCanvas extends Canvas
+		{
+			public void paint(Graphics g) 
+			{
+				Random rand = new Random();
+				if(shapeToDraw.equals(RECT_shape)==true)
+				{
+					g.drawRect(rand.nextInt(200),rand.nextInt(200),50,50); 	
+			}
+>
+				if(shapeToDraw.equals(OVAL_shape)==true)
+				{
+					g.drawOval(rand.nextInt(200),rand.nextInt(200),50,50); 	
+				}
+			}
+		}
+>
+		public void init()
+		{
+			Button ButtRect = new Button("rect");
+			Button ButtOval = new Button("oval");
+			Panel MyPanel = new Panel();
+			ButtRect.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) 
+				{
+					shapeToDraw = RECT_shape;
+					drawArea.repaint();	
+				}	
+			});
+>
+			ButtOval.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) 
+				{
+					shapeToDraw = OVAL_shape;
+					drawArea.repaint();	
+				}	
+			});
+>
+			MyPanel.add(ButtRect);
+			MyPanel.add(ButtOval);
+			drawArea.setPreferredSize(new Dimension(300,300));
+			mainFrame.add(MyPanel);
+			mainFrame.add(drawArea,BorderLayout.SOUTH);
+			mainFrame.pack();
+			mainFrame.setVisible(true);
+		}
+		public static void main(String[] args)
+		{
+			new AWTDrawingTest().init();	
+		}
+	}  
