@@ -4384,4 +4384,127 @@ Java中的菜单
 `BufferedImage`使用：
 `BufferedImage`对象`Image`相当于在内存中绘制一张图片。然后通过该对象的`getGraphics()`方法获得`Graphics`对象`ps`，也就是内存中这张图片`Image`的画笔。  
 在后面的方法中，都是使用这个`ps`对象的各种方法将所有图形绘制在内存中的`BufferedImage`对象`Image`上（这里使用的画笔是内存中的那张图片的画笔）。  
-然后在`paint()`方法的重写中，直接使用这个`Graphics`对象`g`来进行调用`drawImage()`方法绘制（就是将内存中的`Image`对象绘制在我们的显示组件`Canvas`上），这里使用的是显示组件的画笔`g`是`Canvas`的画笔而不是使用原来内存中的那张图片`Image`的画笔`ps`进行绘制。 
+然后在`paint()`方法的重写中，直接使用这个`Graphics`对象`g`来进行调用`drawImage()`方法绘制（就是将内存中的`Image`对象绘制在我们的显示组件`Canvas`上），这里使用的是显示组件的画笔`g`是`Canvas`的画笔而不是使用原来内存中的那张图片`Image`的画笔`ps`进行绘制。
+
+`BufferedImage`使用示例：
+
+>
+	import java.awt.*;
+	import java.awt.event.*;
+	import java.util.*;
+	import java.awt.image.*;
+	public class AWTBufferedImageDrawingTest
+	{
+		private Frame mainFrame = new Frame();
+		private String RECT_shape = "rect";
+		private String OVAL_shape = "oval";
+		private String shapeToDraw = "";
+		private MyCanvas drawArea = new MyCanvas();
+		BufferedImage Image = new BufferedImage(300,300,BufferedImage.TYPE_INT_RGB);
+		private Graphics ps = Image.getGraphics();
+		class MyCanvas extends Canvas
+		{
+			public void paint(Graphics g) 
+			{
+				g.drawImage(Image,0,0,null);
+			}
+		}
+>
+		public void init()
+		{
+			Button ButtRect = new Button("rect");
+			Button ButtOval = new Button("oval");
+			Panel MyPanel = new Panel();
+			ButtRect.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) 
+				{
+					Random rand = new Random();
+					ps.drawRect(rand.nextInt(200),rand.nextInt(200),50,50); 	
+					drawArea.repaint();	
+				}	
+			});
+>
+			ButtOval.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) 
+				{
+					Random rand = new Random();
+					ps.drawOval(rand.nextInt(200),rand.nextInt(200),50,50); 	
+					drawArea.repaint();	
+				}	
+			});
+			mainFrame.setBounds(0,0,300,300);
+			MyPanel.add(ButtRect);
+			MyPanel.add(ButtOval);
+			MyPanel.setBackground(new Color(255,0,0)); 
+			drawArea.setPreferredSize(new Dimension(300,300));
+			mainFrame.add(MyPanel);
+			mainFrame.add(drawArea,BorderLayout.SOUTH);
+			mainFrame.pack();
+			mainFrame.setVisible(true);
+		}
+		public static void main(String[] args)
+		{
+			new AWTBufferedImageDrawingTest().init();	
+		}
+	}  
+
+
+
+可以使用`ImageIO`类将图片读、取在磁盘上的专用类。前面的`BufferedImage`类是将图片在内存中放置。这个`ImageIO`类是将图片在磁盘上输入、输出。
+
+`Graphics`类可以对图形进行处理，如、旋转等。它是`Graphics`类的子类。可用于验证码的产生。
+
+`ImageIO`及`Graphics`类使用示例：
+
+>
+	import java.awt.*;
+	import javax.swing.*;
+	import java.util.concurrent.*;
+	import java.awt.image.*;
+	import javax.imageio.*;
+	import java.io.*;
+	import java.util.*;
+	public class AWTImageIOTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			ThreadLocalRandom rand = ThreadLocalRandom.current();
+			BufferedImage image = new BufferedImage(200,150,BufferedImage.TYPE_4BYTE_ABGR );
+			Graphics ps = image.getGraphics();
+			//use Graphics2D to ratota the image
+			Graphics2D pd = (Graphics2D)ps;
+			pd.setColor(new Color(255,0,0)); 
+			pd.setBackground(new Color(255,0,0));
+			int x=40;
+			for(int i=1;i<=6;i++) 
+			{
+			 	//get the char by random
+				char ch = (char)rand.nextInt(65,65+26); 
+				double ang = rand.nextDouble(Math.PI/12,Math.PI/6);
+				//rotate the pd
+				pd.rotate(ang,x,80); 
+				//draw the char on the image
+				pd.drawString(""+ch, x, 60); 
+				//recover the pd
+				pd.rotate(-ang,x,80); 
+				x=x+20;
+			}
+>		
+			pd.setColor(new Color(0,0,0)); 
+			for(int j=0;j<100;j++)
+			{
+				int xStart = rand.nextInt(20,180);
+				int yStart = rand.nextInt(10,130);
+				int xEnd = rand.nextInt(60,180);
+				int yEnd = rand.nextInt(30,140);
+				pd.drawLine(xStart,yStart,xEnd,yEnd);
+			}
+			ImageIO.write(image,"png",new File(UUID.randomUUID	()+"1.png"));
+		}
+	}
+
+
+
+
+
+ 
