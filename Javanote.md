@@ -4503,8 +4503,126 @@ Java中的菜单
 		}
 	}
 
+Java中的进程与线程
+--------------
+进程：运行中的程序。  
+1. 进程是系统中一个独立存在的实体，拥有自己独立的资源、内存区。一个进程的内存空间*一般是不能允许*其他进程访问。  
+2. 动态性。程序是静止的，运行起来才叫进程。  
+3. 并发性。操作系统中可以同时"并发（concurrent）"。可以运行多个进程。
 
+线程：进程中并发执行流，也叫light-weight Process。没有自己独立的内存、资源。而是和其他的线程共享。
 
+进程的创建成本比线程要高。
 
+并发（`concurrent`）：即使**只有一个CPU**，多个进程或者线程在这个CPU上**快速轮换**地执行。
+在任何时刻，只有与CPU个数相同的进程在真正的执行，其他的进程都处于等待状态。但是人是感受不到这个等待。
 
+并行（`parallel`）：必须有**一个以上的CPU**，在同一时刻至少有与`CPU`个数相同的进程在执行。这些**同时**（而不是快速轮流）执行。这才是真正的同时执行。这些进程就是并行执行。
  
+多线程的好处：  
+1. 功能上，多线程类似于多进程  
+2. 创建成本低、效率高。  
+3. 线程之间通信方便，无需使用管道流。  
+4. `Java`语言的多线程很优秀。
+
+`Java`中创建多线程的方法：  
+1. 继承`Thread`类以创建多线程。
+   注：线程执行体：就是该线程将要做的事情。`run()`方法里面也就是要执行的代码。
+   `Thread`这个类就是线程类。代表着线程。
+   `Thread`类最重要的方法是`run()`，它为`Thread`类的方法`start()`所调用，提供我们的线程所要执行的代码。为了指定我们自己的代码，只需要覆盖它！
+   `main()`方法本身就是一个主线程。它是默认已启动的线程。我们在`main()`方法之外创建我们自己想要的任意线程，然后在`main()`方法这个主线程里面使用`start()`方法启动这些线程。
+a. 继承`Thread`类。重写一个`run()`方法。这个`run()`方法就是线程执行体。里面就是我们要在这个线程里面做的事情。  
+   这个`run()`方法不能有返回值，也不能抛出异常。 	
+   
+b. 在`run()`方法内加入我们要在本线程中执行的代码。例如：通过`Thread`类的`currentThread()`这个静态方法获得当前在运行的线程。 
+
+c. 调用`Thread`对象的`start()`方法创建并启动线程，而不能调用`run()`方法。每`start()`一次都创建了一个新线程并运行一次`run()`方法。因此，如果想在不同线程中执行不同的代码，就需要在`run()`方法中针对不同的线程名再调用不同的代码即可。
+实际上就是创建一个我们的类对象，然后用这个类对象调用它的`start()`方法，因为它已经继承了`Thread`类，所以它有`start()`方法。
+
+`Thread`使用示例：
+>
+	public class  ThreadTest extends Thread
+	{
+		public void f(String str)
+		{
+			System.out.println(str);
+		}
+		//run method includes the code you want to exec in the current Thread. 
+		public void run()
+		{
+			//for different thread exec the different func
+			f(Thread.currentThread().getName());
+		}
+		//the main thread
+		public static void main(String[] args) 
+		{
+			for(int i=0;i<100;i++)
+			{
+				//construct a new thread and run it
+				new ThreadTest().start();
+			}
+>		
+			System.out.println(Thread.currentThread().getName());
+		}
+	}
+
+2. 实现`Runnable`接口
+a. 实现`Runnable`接口。重写`run()`方法。`run()`里面即是我们想要执行的代码。  
+b. 由于`Runnable`接口中并没有`start()`方法,因此只能将`Runnable`对象包装成`Thread`对象才能调用`start()`方法以创建线程并启动。
+`Runnable`接口使用示例：
+>
+	public class  RunnableImplementsTest implements Runnable
+	{
+		//run method includes the code you want to exec in the current Thread. 
+		public void run()
+		{
+			//for different thread exec the different func
+			System.out.println(Thread.currentThread().getName());
+		}
+		//the main thread
+		public static void main(String[] args) 
+		{
+			for(int i=0;i<100;i++)
+			{
+				//construct a new thread and run it
+				(new Thread(new RunnableImplementsTest())).start();
+			}
+			System.out.println(Thread.currentThread().getName());
+		}
+	}
+
+3. 实现`Callable<V>`接口  
+   由于前两种方法中，`run()`方法都不能有返回值。所以我们可以实现`Callable<V>`接口，让我们执行的代码具有返回值。这个接口就是`Runnable`接口的增强版。它可以有返回值，还可以抛出异常。
+a. 实现`Callable<V>`接口，其中的V是我们要执行的代码返回的值类型。重写`call()`方法。该方法具有返回值，还可以抛出异常。  
+b. 创建并启动线程的时候，要先将`Callable`对象包装成`Runnable`对象，然后将`Callable`对象包装成`Runnable`对象（由于`Runnable`只是一个接口，需要将`Callable`对象包装成`Runnable`接口的*实现类对象*,实际上就是先将`Callable`对象包装成`FutureTask<V>`对象)，然后将`Runnable`的实现类对象`FutureTask<V>`对象包装成`Thread`对象，然后用`Thread`对象的`start()`方法来创建并启动新线程。  
+c. 调用`FutureTask<V>`对象的方法`get()`来获得`call()`方法里的返回值。
+
+`Callable<V>`使用示例：
+>
+	import java.util.concurrent.*;
+	public class  CallableImplementsTest implements Callable<String>
+	{
+		//run method includes the code you want to exec in the current Thread. 
+		public String call() throws Exception 
+		{
+			//for different thread exec the different func
+			return Thread.currentThread().getName();
+		}
+		//the main thread
+		public static void main(String[] args) throws Exception
+		{
+			for(int i=0;i<100;i++)
+			{
+				//construct a new thread and run it
+				CallableImplementsTest  cit= new CallableImplementsTest();
+				FutureTask<String> ft = new FutureTask<String>(cit);
+				new Thread(ft).start();
+				System.out.println(ft.get());
+			}
+			System.out.println(Thread.currentThread().getName());
+		}
+	}
+
+IM经验：当我们要向一个方法中传入一个参数，但是实际上我们有的实参的类型不与之匹配，那么就去看看这个方法中参数的类是否有子类，我们是否可以将我们已有的实参包装成这个方法所要求的参数类型的子类，然后将包装而得的子类对象传给这个方法即可。所以我们编程的时候，对于方法，往往要注意对接口编程，就是将方法中的形参数类型设为接口或者其他的抽象类，以保证使用时可以传入更多的类型实参。
+  
+实际上，在`Java`中，需要一个接口的对象、需要一个抽象类的对象、需要一个类的对象，都可以视作需要这个接口的实现类（非抽象的）对象、需要这个抽象类的实现类（非抽象的）的对象，需要这个类的子类的对象。
