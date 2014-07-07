@@ -4648,3 +4648,101 @@ IM经验：当我们要向一个方法中传入一个参数，但是实际上我
 如果`Thread`调用静态方法`yield()`,就会让当前线程让出`CPU`，处于就绪状态。
 
 阻塞状态(`Blocked`)：如`Thread`执行`sleep`之后，当前线程就会进入阻塞状态。进入阻塞状态之后，当`sleep`时间完成之后，线程离开阻塞状态，进入就绪状态。然后，系统再自己让这个就绪状态的线程进入运行状态。
+
+以上状态转换见*Thread Status状态图*。
+
+
+控制线程的几个基本方法：  
+1. `join()`线程。启动多条线程之后，调用`join()`的线程要先完成以后（调用`join()`的线程死亡之后才行），剩下的线程才能继续往下执行。  
+2. 后台线程。也就是`Daemon Thread`。也叫守护线程。因为它的特征是：如果所有的前台线程结束，它会自动死亡。作用是监控前台线程，为前台线程服务。可以将某个线程设为后台线程。那么其他线程都结束之后，它就会死亡。  
+3. 线程暂停。`Thread.sleep(100)`:让线程暂停100ms，进入阻塞状态。暂停完成之后，就会进入就绪状态，然后由系统分配`CPU`。  
+4. 线程让步。`Thread.yield()`:让出`CPU`，进入就绪状态。在执行了`yield()`之后，就会让系统再次进行`CPU`分配，可能刚刚让出`CPU`的线程再次被分配到了`CPU`，继续执行。  
+一般使用`sleep()`而不使用`yield()`，因为前者更稳定。  
+5. 改变线程优先级：线程优先级越高，线程就会获得更多被执行的机会。`setPriority(int value)`方法。
+
+
+`join`使用示例：
+>
+	public class  ThreadJoinTest extends Thread
+	{
+		public void run()
+		{
+			for(int i=0;i<100;i++)
+			{
+				System.out.println(Thread.currentThread().getName()+"----"+i);
+			}
+		}
+		//the main thread
+		public static void main(String[] args) throws Exception
+		{
+			for(int i=0;i<100;i++)
+			{
+				System.out.println(Thread.currentThread().getName()+"-----"+i);
+				//construct new thread 
+				ThreadJoinTest t1 = new ThreadJoinTest();
+				ThreadJoinTest t2 = new ThreadJoinTest();
+				if(i==20)
+				{
+					t1.start();
+					t2.start();
+>				
+					t1.join();
+					t2.join();
+				}
+			}
+		}
+	}
+
+
+
+`Daemon Thread`使用示例：
+>
+	public class  DeamonThreadTest extends Thread
+	{
+		public void run()
+		{
+			for(int i=0;i<100;i++)
+			{
+				System.out.println(Thread.currentThread().getName()+"----"+i);
+			}
+		}
+		//the main thread
+		public static void main(String[] args) throws Exception
+		{
+				//construct new thread 
+				DeamonThreadTest t1 = new DeamonThreadTest();
+				//set the thread t1 as Deamon Thread after the main thread ends it will also die
+				t1.setDaemon(true); 				
+				t1.start();
+				System.out.println(Thread.currentThread().getName()+"-----"+"ends");
+		}
+	}
+
+
+`setPriority`使用示例：
+
+>
+	public class  ThreadPriortityTest extends Thread
+	{
+		public void run()
+		{
+			for(int i=0;i<100;i++)
+			{
+				System.out.println(Thread.currentThread().getName()+"----"+i);
+			}
+		}
+		//the main thread
+		public static void main(String[] args) throws Exception
+		{
+				//construct new thread 
+				ThreadPriortityTest t1 = new ThreadPriortityTest();
+				ThreadPriortityTest t2 = new ThreadPriortityTest();
+				//set the priority of the threads
+				t1.setPriority(Thread.MAX_PRIORITY); 	
+				t2.setPriority(Thread.MAX_PRIORITY-1); 	
+				t1.start();
+				t2.start();
+		}
+	}
+
+ 
