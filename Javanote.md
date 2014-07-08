@@ -4745,4 +4745,158 @@ IM经验：当我们要向一个方法中传入一个参数，但是实际上我
 		}
 	}
 
- 
+线程同步：
+如：银行账户取钱问题，如果是多线程的话，可能多个人同时取款，会超额取钱。  
+竞争资源（共享资源）：如果多个线程需要并发访问、并修改某个对象，该对象就是竞争资源。
+因此就需要控制线程安全，线程安全的方法有：  
+1. 同步代码块：需要显式指定同步监视器。  
+2. 同步方法:不需要显式指定同步监视器。只需要在要作为原子方法的方法前加上`synchronized`标示符即可。其相当于使用方法的调用者作为*同步监视器*。如果方法是示例方法，相当于`this`就是同步监视锁。如果方法是类方法，相当于这个类就是同步监视锁。  
+
+为避免多个线程“自由竞争”修改共享资源导致的不安全问题。于是考虑对资源进行“加锁”。  
+以上两种方法的实现机制：当程序要进入某个被“同步监视锁”所监视的代码之前，本线程必须先去获得“同步监视锁” 。  
+从语法角度来看，任意对象都可以作为同步监视锁，但是从程序逻辑来看，选择“竞争资源”作为同步监视锁。如下例中的`balanceAccount`就是同步监视器。*所谓的同步监视锁，实际上就是这段代码中要监视的对象。*  
+
+同步代码块使用示例：
+>
+	//The account of a person
+	class Account
+	{
+		//the name of the person
+		private String name;
+		//the balanceAccount of the person
+		private int account;
+		Account()
+		{
+		}
+		Account(String aName,int aAccount)
+		{
+			name=aName;
+			account=aAccount;
+		}
+		public void setName(String aName)
+		{
+			this.name=aName;
+		}
+		public void setAccount(int aAccount)
+		{
+			this.account=aAccount;
+		}
+		public String getName()
+		{
+			return this.name;
+		}
+		public int getAccount()
+		{
+			return this.account;
+		}
+	}
+	public class  AccoutThreadTest extends Thread
+	{
+		//the amount of money you want to get 
+		private int drawAccount;
+		//the amount of money in your account
+		private Account balanceAccount;
+		AccoutThreadTest(int adrawAccount,Account abalanceAccount)
+		{
+			this.drawAccount=adrawAccount;
+			this.balanceAccount=abalanceAccount;
+		}
+		public void run() 
+		{
+			//add the concurrelock on the code block
+			synchronized(balanceAccount)
+			{
+				if(drawAccount<=balanceAccount.getAccount())
+				{
+					System.out.println(Thread.currentThread().getName()+", You have got the money you want to draw: "+drawAccount);
+					balanceAccount.setAccount(balanceAccount.getAccount()-drawAccount);
+					System.out.println("The amount of money you left in the account is: "+balanceAccount.getAccount());
+				}
+				else
+				{
+					System.out.println(Thread.currentThread().getName()+", The amount of money in your account is not enough!");
+				}
+			}
+		}
+		//the main thread
+		public static void main(String[] args) throws Exception
+		{
+			Account ac = new Account("wt",1000);
+			new AccoutThreadTest(800,ac).start();
+			new AccoutThreadTest(800,ac).start();
+		}
+	}
+
+同步方法使用示例：
+>
+	//The account of a person
+	class Account
+	{
+		//the name of the person
+		private String name;
+		//the balanceAccount of the person
+		private int account;
+		Account()
+		{
+		}
+		Account(String aName,int aAccount)
+		{
+			name=aName;
+			account=aAccount;
+		}
+		public void setName(String aName)
+		{
+			this.name=aName;
+		}
+		public void setAccount(int aAccount)
+		{
+			this.account=aAccount;
+		}
+		public String getName()
+		{
+			return this.name;
+		}
+		public int getAccount()
+		{
+			return this.account;
+		}
+		//the synchronized method,the this get the synchronized lock
+		public synchronized void draw(int drawAccount)
+		{
+			if(drawAccount<=account)
+				{
+					System.out.println(Thread.currentThread().getName()+", You have got the money you want to draw: "+drawAccount);
+					account=account-drawAccount;
+					System.out.println("The amount of money you left in the account is: "+account);
+				}
+			else
+				{
+					System.out.println(Thread.currentThread().getName()+", The amount of money in your account is not enough!");
+				}
+		}
+	}
+	public class  AccoutThreadFunTest extends Thread
+	{
+		//the amount of money you want to get 
+		private int drawAccount;
+		//the amount of money in your account
+		private Account balanceAccount;
+		AccoutThreadFunTest(int adrawAccount,Account abalanceAccount)
+		{
+			this.drawAccount=adrawAccount;
+			this.balanceAccount=abalanceAccount;
+		}
+		public void run() 
+		{
+			//the balanceAccount object call the synchronized method. this has the synchronized lock
+			balanceAccount.draw(drawAccount);
+		}
+		//the main thread
+		public static void main(String[] args) throws Exception
+		{
+			Account ac = new Account("wt",1000);
+			//construct 2 different threads
+			new AccoutThreadFunTest(800,ac).start();
+			new AccoutThreadFunTest(800,ac).start();
+		}
+	}
