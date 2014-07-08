@@ -5212,6 +5212,23 @@ IM经验：当我们要向一个方法中传入一个参数，但是实际上我
 	}
 
 
+线程池（`Pool`）  
+池的本质，就是一种“缓存”技术。当某些东西创建的时候需要很大代价的时候，用完它不会立刻扔到，而是留下来，供以后使用。是否要缓存一个东西的决定点在于这个东西的创建成本，也要考虑系统的内存。  
+缓存的本质是：以牺牲空间换时间。  
+线程的创建成本比较大。虽然创建线程的成本比创建进程的成本小的多，但相比于普通的Java``对象，`Thread`对象的创建成本依然较大。  
+为解决此问题，我们需要使用线程池。  
+`JDK1.5`之后，提供了良好的线程池支持，依靠`Executors`类以实现线程池。这个类是创建线程池和线程工厂的工具类。 `ExecutorService`就是线程池类。`ScheduledExecutorService`也是线程池，其是`ExecutorService`的子接口，功能比`ExecutorService`强（可以周期性调用某一个线程）。  
+
+线程池使用步骤：  
+1. 使用`Executors`静态工厂工具类创建线程池对象(`ExecutorService`对象或者`ScheduledExecutorService`对象)。线程池对象里面放的是空闲的线程资源。  
+2. 调用`ExecutorService`对象或者`ScheduledExecutorService`对象的方法来提交我们自己的线程(使用`submit()`方法或者`scheduleAtFixedRate()`方法)。线程提交之后并不会立即被启动，而是取决于线程池中是否有空闲的线程资源。  
+3. 线程池没有结束，本程序就不会结束。要调用`shutdown()`方法结束线程池。  
+
+注意这里的`ScheduledExecutorService`线程池可以让某一个线程每隔一定的时间就运行一次，这是一个周期性的运行，这一点可以运用到许多的事儿上。则个线程池的周期性事件的方法是`scheduleAtFixedRate()`方法。
+而且使用线程池更简单。
+ 
+工具类：`Arrays`、`Objects`、`Collections`、`Paths`、`Files`、`Executers`。  
+
 
 
 怎样开不同的线程，各个线程中做不同的事？  
