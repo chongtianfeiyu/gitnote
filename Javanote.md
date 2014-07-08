@@ -4756,6 +4756,17 @@ IM经验：当我们要向一个方法中传入一个参数，但是实际上我
 以上两种方法的实现机制：当程序要进入某个被“同步监视锁”所监视的代码之前，本线程必须先去获得“同步监视锁” 。  
 从语法角度来看，任意对象都可以作为同步监视锁，但是从程序逻辑来看，选择“竞争资源”作为同步监视锁。如下例中的`balanceAccount`就是同步监视器。*所谓的同步监视锁，实际上就是这段代码中要监视的对象。*  
 
+线程同步的关键在于：任意线程进入同步监视器监视的代码之前，都需要对同步监视器加锁。  
+什么时候释放对同步监视器的锁？  
+1. 监视的代码执行完成。  
+2. 在代码中遇到了`break`或者`return`，跳出代码块。  
+3. 执行代码过程中遇到了未捕获的异常。  
+4. 调用同步监视器的`wait()`方法，使线程进入`wait`状态，也就是阻塞状态。如果想某一个线程在运行完之后不会死亡，而是在下次还可以运行（不用再次`start`），那么就可以对此线程使用`wait()`。使该线程进入阻塞状态，以后在别的线程中使用notify()，就可以唤醒这个阻塞的线程。
+
+什么时候不会释放对同步监视器的锁？  
+1. `sleep()`、`yield()`都不会释放。  
+2. `suspend()`也不会释放。  
+  
 同步代码块使用示例：
 >
 	//The account of a person
@@ -4900,3 +4911,315 @@ IM经验：当我们要向一个方法中传入一个参数，但是实际上我
 			new AccoutThreadFunTest(800,ac).start();
 		}
 	}
+
+
+
+线程的通信：同一个进程中的各个线程共享进程的内存空间。  
+1. 如果不加控制，多个线程会“自由”地并发执行。  
+2. 可以通过同步来解决多个线程并发访问竞争资源的问题。同步会导致效率线程降低，也就是前面所言的线程安全的类会导致效率降低。前面所言的线程安全的类适合于多线程的环境，线程不安全的类适合于单线程环境。  
+3. 如果希望各线程之间能更有序地执行。如，生产者-消费者问题，我们希望消费者每次消费的时候都有资源可供消费。这就要求生产者线程与消费者线程之间能够互通消息，才能保证线程之间能够协调有序进行。这就涉及到线程通信的问题。
+这里使用到了`Object`类的几个方法：`wait()`--控制线程暂停，会释放对同步监视器的锁，直到收到唤醒通知、`notify()`--发送唤醒通知，唤醒处于`wait`状态的线程、`notifyAll()`--发送唤醒通知，唤醒处于`wait`状态的线程。  
+但是并不是所有的对象都可以调用者三个方法。只有**同步监视器**才能调用者三个方法。
+如果不使用wait()，就会导致本线程运行完后立刻结束了，线程不会再启动了。也就是说整个线程都结束死亡了，如果不想这个线程在执行这一次之后就死亡，而是想让这个线程此次运行完之后不会死亡，以后还可以不用start就可以运行，那么就要使用wait()，然后在其他线程中使用notify()之后，就会唤醒处于wait状态的线程。这样，就能保证线程在我们可控的顺序下运行。
+
+线程通信使用示例：
+>
+	//The account of a person
+	class Account
+	{
+		//the name of the person
+		private String name;
+		//the balanceAccount of the person
+		private int account;
+		public boolean hasdeposted=false;
+		Account()
+		{
+		}
+		Account(String aName,int aAccount)
+		{
+			name=aName;
+			account=aAccount;
+		}
+		public void setName(String aName)
+		{
+			this.name=aName;
+		}
+		public void setDeposit(boolean b)
+		{
+			this.hasdeposted=b;
+		}
+		public void setAccount(int aAccount)
+		{
+			this.account=aAccount;
+		}
+		public String getName()
+		{
+			return this.name;
+		}
+		public int getAccount()
+		{
+			return this.account;
+		}
+	}
+	class drawThread extends Thread
+	{
+		//the amount of money you want to get 
+		private int drawAccount;
+		//the amount of money in your account
+		private Account balanceAccount;
+		drawThread(int adrawAccount,Account abalanceAccount)
+		{
+			this.drawAccount=adrawAccount;
+			this.balanceAccount=abalanceAccount;
+		}
+		public void run() 	
+		{
+			try
+			{
+				int i;
+				//add the concurrelock on the code block
+				synchronized(balanceAccount)
+				{
+					for(i=0;i<100;)
+					{
+					if(balanceAccount.hasdeposted==true)
+					{
+						if(drawAccount<=balanceAccount.getAccount())
+						{
+							System.out.println(Thread.currentThread().getName()+", You have got the money you want to draw: "+drawAccount);
+							balanceAccount.setAccount(balanceAccount.getAccount()-drawAccount);
+							System.out.println("The amount of money you left in the account is: "+balanceAccount.getAccount());
+							System.out.println(i);
+							i++;
+						}
+						else
+						{
+							System.out.println(Thread.currentThread().getName()+", The amount of money in your account is not enough!");
+						}
+						//set the flag value
+						balanceAccount.setDeposit(false);
+						//notify all the other values
+						balanceAccount.notifyAll();
+					}
+					else
+					{
+						balanceAccount.wait();
+					}
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				System.out.println("error");
+			}
+		}
+	}	
+	class  depositThread extends Thread
+	{
+		//the amount of money you want to get 
+		private int depositAccount;
+		//the amount of money in your account
+		private Account balanceAccount;
+		depositThread(int adepositAccount,Account abalanceAccount)
+		{
+			this.depositAccount=adepositAccount;
+			this.balanceAccount=abalanceAccount;
+		}
+		public void run() 
+		{
+			int j;
+			//add the concurrelock on the code block
+			try
+			{
+				synchronized(balanceAccount)
+				{
+					for(j=0;j<100;)
+					{
+					if(balanceAccount.hasdeposted==false)
+					{
+						System.out.println(Thread.currentThread().getName()+", You have deposit the money you want to : "+depositAccount);
+						balanceAccount.setAccount(balanceAccount.getAccount()+depositAccount);
+						System.out.println("The amount of money you left in the account is: "+balanceAccount.getAccount());
+						System.out.println(j);
+						//set the flag value
+						balanceAccount.setDeposit(true);
+						//notifyAll all the other threads
+						balanceAccount.notifyAll();
+						j++;
+					}
+					else
+					{
+						balanceAccount.wait();
+					}
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				System.out.println("error");
+			}
+		}
+	}
+>	
+	public class ThreadCommuniTest
+	{
+		//the main thread
+		public static void main(String[] args) throws Exception
+		{
+			Account ac = new Account("wt",1000);
+			new depositThread(800,ac).start();
+			new drawThread(800,ac).start();
+		}
+	}
+
+
+线程组与未处理的异常
+`Java`中用一个类`ThreadGroup`表示线程组。  
+怎样将线程方法放入指定的线程组中？在构造线程对象的时候在构造器中设置器所在的线程组。  
+将线程放入线程组之后，就能够对线程组中的线程进行整体的管理。  
+线程组里面还可以包含线程组。
+使用线程组的时候，需要实现`Runnable`接口或者`Callable`接口，而不要去继承`Thread`类。这样方便与将线程加入线程组。  
+线程组对其内的线程的控制：  
+1. setDaemon():将这个线程组设置为后台线程组，但并不是将其内的线程设为后台线程。后台线程组的作用在于：当后台线程组里面所有的线程都死亡了，那么这个后台线程组本身也会自动销毁。否则要销毁后台线程组只能调用其destory()方法。  
+2. setPriority()：设置线程组的优先级，表示线程组里面的线程的优先级不会超过线程组的优先级。但是这只会限制在设置线程组优先级之后加入的线程的优先级，对于设置线程组优先级之前的线程是没有影响的。  
+3. 用于线程异常处理的方法：*在JDK1.5以前*，如果线程出现了异常，系统会自动回调它所在的线程组的uncaughtException()方法来修复异常。也就是说，让线程组帮助线程处理异常。*在JDK1.5以后*，可以由线程自己设置异常处理器(本线程类或者类对象调用给异常处理方法即可），无需线程组帮忙处理了。
+
+线程异常处理的三种方法，由于任何一个线程所要运行的代码都放在该线程的run()方法内部，所以如果要在run()方法外处理异常，就需要run()方法throws Exception，然而，由于run()方法是重写而来，原来的run()方法是没有throws Exception的，所以重写之后也不能throws Exception。因此，我们就需要使用其他的方式而不是依靠run()方法throw来处理异常。所以在Thread类和ThreadGroup类中都有专门的异常处理方法。
+
+线程异常处理方法：  
+方法1：使用`ThreadGroup`类的处理方法进行处理
+>
+	public class ThreadGroupExceptionTest implements Runnable
+	{
+		public void run()
+		{	
+			for(int i=0;i<100;i++)
+			{
+				System.out.println(100/(i-20));
+			}
+		}
+		public static void main(String[] args) 
+		{
+			ThreadGroup tg = new ThreadGroup("tg1"){
+				//set the thread exception dealer func
+				//the threadgroup deal the exception for the thread
+				public void uncaughtException(Thread t, Throwable e) 
+				{
+					System.out.println("The Error occure in the thread: "+t.currentThread().getName()+e.getMessage());
+				}
+			};
+>			
+			ThreadGroupExceptionTest tgt = new ThreadGroupExceptionTest();
+			//construct the thread, add it to the threadgroup
+			Thread t = new Thread(tg,tgt);
+			t.start();
+>			
+			//construct the thread, add it to the threadgroup
+			Thread t1 = new Thread(tg,tgt);
+			t1.start();
+>			
+			//calculate the num of the thread in the threadgroup
+			System.out.println(tg.activeCount());
+>			
+			//the threadgroup with dealing fun an deal with the exception came out of the threads in the threadgroup but not the thread came out of the threadgroup
+			System.out.println(20/0);
+		}
+	}
+
+
+
+方法2:使用`Thread`类的处理方法,各个`Thread`对各自的`Thread Exception`进行处理
+>
+	public class ThreadExceptionTest implements Runnable
+	{
+		public void run()
+		{	
+			for(int i=0;i<100;i++)
+			{
+				System.out.println(100/(i-20));
+			}
+		}
+		public static void main(String[] args) 
+		{
+			ThreadExceptionTest tgt = new ThreadExceptionTest();
+>			
+			Thread t = new Thread(tgt);
+			//set the exception dealer func 
+			// the thread itself but not the threadgroup deal with its own but not all the exceptions for the thread
+			t.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
+				public void uncaughtException(Thread t, Throwable e) 
+				{
+					System.out.println("The Error occure in the thread: "+t.currentThread().getName()+e.getMessage());
+				}
+			}); 
+			t.start();
+>			
+			Thread t1 = new Thread(tgt);
+			//set the exception dealer func 
+			// the thread itself but not the threadgroup deal with its own but not all the exceptions for the thread
+			t1.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
+				public void uncaughtException(Thread t, Throwable e) 
+				{
+					System.out.println("The Error occure in the thread: "+t.currentThread().getName()+e.getMessage());
+				}
+			}); 
+			t1.start();
+>			
+			//the thread dealing fun can also deal the exception came out of the main thread
+			Thread.currentThread().setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
+				public void uncaughtException(Thread t, Throwable e) 
+				{
+					System.out.println("The Error occure in the thread: "+t.currentThread().getName()+e.getMessage());
+				}
+			}); 
+			System.out.println(20/0);
+		}
+	}
+
+
+方法3：使用`Thread`类的`static`处理方法,对所有`Thread`出现的`Thread Exception`进行处理
+>
+	public class ThreadDefaultExceptionTest implements Runnable
+	{
+		public void run()
+		{	
+			for(int i=0;i<100;i++)
+			{
+				System.out.println(100/(i-20));
+			}
+		}
+		public static void main(String[] args) 
+		{
+			//set the exception dealer func 
+			// the thread itself but not the threadgroup deal with all the exceptions for the threads
+			Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){			
+				public void uncaughtException(Thread t, Throwable e) 
+				{
+					System.out.println("The Error occure in the thread: "+t.currentThread().getName()+e.getMessage());
+				}
+			}); 
+>			
+			ThreadDefaultExceptionTest tgt = new ThreadDefaultExceptionTest();
+			Thread t = new Thread(tgt);
+			t.start();
+>			
+			Thread t1 = new Thread(tgt);
+			t1.start();
+>			
+			//the thread dealing fun can also deal the exception came out of the main thread
+			System.out.println(20/0);
+		}
+	}
+
+
+
+
+怎样开不同的线程，各个线程中做不同的事？  
+1. 只写一个线程类，一个线程类中只能有一个`run()`方法，然后用这一个线程类创建多个不同的线程，调用`start()`方法，其中的`run()`方法中进行判断，针对不同的线程执行不同的代码即可。  
+2. 做几个不同的事就写几个线程类，每个线程类都有自己的`run()`方法，各个`run()`方法里就是各个线程要做的事。然后对各个线程类建立自己的对象，对各个对象调用`start()`方法。
+
+
+匿名内部类可用于：  
+1. 创建接口变量所引用的对象。  
+2. 创建抽象类变量所引用的对象。  
+3. 创建任何一个类变量所引用的其子类对象，即使没有写出它的子类的名字，这也就是匿名内部类的特点，父类的子类、接口的实现类、抽象类的实现类等都没有类名，而是直接创建了这些类的类对象。
