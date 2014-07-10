@@ -5481,6 +5481,8 @@ URL类使用示例：
 		}
 	}
 
+`TCP`通信
+
 `TCP`协议：如果两台计算机需要连接，那么`TCP`协议就会让他们之间建立一个连接：用于发送与接收数据的虚拟链路。见`TCP`协议图。  
 实际上这条链路两端连接的东西叫：`socket`，**相当于一个插座**。客户端程序和主机端程序都是建立在`socket`之上的。在客户端，通过`TCP`协议将程序发出的信息包转换、排列、发送出去(通过`socket`)；在主机端，在`socket`收到了数据之后，也通过`TCP`协议将`socket`收到的数据转换恢复过来。也叫套接字。实际上就是**插座**的意思。   
 `TCP`协议负责收集这些信息包，并将它们按适当的次序排好、通过下面的`socket`发送。在接收端的`socket`收到数据之后再通过`TCP`协议将其正确还原。  
@@ -5570,3 +5572,101 @@ b. 通过`I/O`流(使用`PrintStream`)向服务器段发送数据，也可以通
 输出时最好都转化成PrintStream进行输出(将OutputStream转化为PrintStream)，因为更方便。  
 输入时最好都转化为BufferedReader进行输入(将InputStream转化为BufferedReader)，因为这样最方便。  
 以上两条就是输入、输出（无论是网络还是磁盘）的最好的方法。
+
+
+`UDP`协议通信  
+`UDP`协议无需建立虚拟链路，其传输是不可靠的。  
+A节点以DatagramSocket发送数据报(类似与集装箱)，数据报携带数据，数据报上有目标地址，大部分情况下，数据报会抵达目标地址。  
+在某些时候，数据报会丢失——丢失了也不管。  
+UDP协议可能出现的情况：先发送的信息，反而后抵达目的。  
+
+常用的类：`DatagramSocket`与`DatagramPacket`。
+`DatagramSocket`：相当于“码头”，用于发送、接收数据报（也就是数据集装箱）。  
+`DatagramPacket`：相当于“数据集装箱”，也就是数据报。其作用是将数据装在一起。    
+客户端一般不指定端口，因为不知道所需端口是否已经被占用。  
+发送端：  
+1. 先创建码头(DatagramSocket)。无需固定IP。  
+2. 创建有数据、有目标地址(接收端服务器的IP地址与端口)的数据报。  
+3. 发送
+
+接收端：  
+1. 创建有固定IP、固定端口的码头(DatagramSocket)。  
+2. 创建空的数据报。  
+3. 接收。
+ 
+注意：在接收端接收到数据报之后，就可以从这个数据报中找到该数据报等待发送者的IP地址与端口。从而可以用这个IP地址向发送者返回数据报。  
+
+UDP协议通讯与TCP协议通信的区别在于：  
+TCP协议通信时，需要使用I/O来发送与读取数据。  
+UDP协议通信时，不需要使用I/O来发送与读取数据。  
+
+UDP协议使用示例：  
+
+UDP一端：  
+>
+	import java.net.*;
+	public class UDPATest
+	{
+		final static int MAX_SIZE=102400;
+		final static int PORT=30000;
+		public static void main(String[] args) 
+		{
+			try
+			{
+				//construct a DatagramSocket with specific port
+				DatagramSocket dgs = new DatagramSocket(PORT);
+				while(true)
+				{
+					//construct a DatagramPacket, it is aimed at storing the data which get by DatagramSocket
+					DatagramPacket dgp = new DatagramPacket(new byte[MAX_SIZE],MAX_SIZE);
+					//store the data into the DatagramPacket
+					dgs.receive(dgp); 
+					System.out.println(new String(dgp.getData(),0,dgp.getLength()));
+				}
+			}
+>			
+			catch(Exception e)
+			{
+				System.out.println("error");
+			}
+		}
+	}  
+
+UDP另一端：  
+>
+	import java.net.*;
+	import java.io.*; 
+	public class UDPBTest
+	{
+		final static int Server_PORT=30000;
+		public static void main(String[] args) 
+		{
+			try
+			{
+				//construct client's DatagramSocket without specific port
+				DatagramSocket dgs = new DatagramSocket();
+				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				String content = null;
+				while((content=br.readLine())!=null)
+				{
+					InetAddress iaa = InetAddress.getByAddress(new byte[]{10,23,96,124});
+					//construct a DatagramPacket, it is aimed at storing the data which will be transmitted by DatagramSocket,with server's address and port.
+					DatagramPacket dgp = new DatagramPacket(content.getBytes(),content.length(),iaa,Server_PORT); 
+					//send the data
+					dgs.send(dgp); 
+				}
+			}
+>			
+			catch(Exception e)
+			{
+				System.out.println("error");
+			}
+		}
+	}
+
+
+
+在使用TCP协议建立聊天程序的时候，需要建立一个服务器，将所有的内容进行转发到相应的客户端。  
+但是在使用UDP协议建立聊天程序的时候，无需建立服务器，可以二者直接聊天。  
+
+
