@@ -5486,20 +5486,81 @@ URL类使用示例：
 `TCP`协议负责收集这些信息包，并将它们按适当的次序排好、通过下面的`socket`发送。在接收端的`socket`收到数据之后再通过`TCP`协议将其正确还原。  
 `TCP`协议保证了数据包在传送过程中准确无误。其使用重发机制：也就是收信者接收到消息之后，需要发送确认信息。否则发送者会重复发送刚才发送的信息。通过这种机制，`TCP`协议为应用程序提供了可靠的通信连接。使其能够适应网络环境的各种变化。保证通信的可靠。
  
-TCP通信的关键：  
-1. socket--相当于“虚拟链路”两端的插座，其负责完成通信。  
-2. ServerSocket--其只负责“接受”连接，用于产生socket。  
+`TCP`通信的关键：  
+1. `socket`--相当于“虚拟链路”两端的插座，其负责完成通信。  
+2. `ServerSocket`--其只负责“接受”连接，用于产生`socket`。  
 
 所以为了实现客户端与服务端的通信，两端都要有`socket`，也就是需要两个`socket`。步骤如下：  
 1. 在服务器端  
 a. 创建`ServerSocket`对象，但是注意，`ServerSocket`本身并不是`socket`，其不能用来通信，而是用于监听的。  
-b. `ServerSocket`对象处于服务器端，该对象调用`accept()`方法后，就会一直等待，监听客户端是否发送请求。当监听到客户端的请求之后，该方法就会返回一个`socket`对象，否则就会一直处于等待状态（accept方法会阻塞线程）。这个就是客户端的`socket`对象，用于通信。  
+b. `ServerSocket`对象处于服务器端，该对象调用`accept()`方法后，就会一直等待，监听客户端是否发送请求。当监听到客户端的请求之后，该方法就会返回一个`socket`对象，否则就会一直处于等待状态（`accept`方法会阻塞线程）。这个就是客户端的`socket`对象，用于通信。  
 创建`ServerSocket`时，使用端口有规定。  
-c. 通过I/O流(BufferedReader)读取客户端发送过来的数据，也可以通过I/O流(使用PrintStream)向客户端发送数据。  
+c. 通过`I/O`流(`BufferedReader`)读取客户端发送过来的数据，也可以通过`I/O`流(使用`PrintStream`)向客户端发送数据。  
 2. 在客户端  
-a. 直接创建socket对象，参数有IP地址与程序端口号，IP地址是服务器主机的IP地址，程序端口号就是服务器端程序所使用的端口号。  
-b. 通过I/O流(使用PrintStream)向服务器段发送数据，也可以通过I/O流(BufferedReader)从服务器端接收数据。
+a. 直接创建`socket`对象，参数有`IP`地址与程序端口号，`IP`地址是服务器主机的`IP`地址，程序端口号就是服务器端程序所使用的端口号。  
+b. 通过`I/O`流(使用`PrintStream`)向服务器段发送数据，也可以通过`I/O`流(`BufferedReader`)从服务器端接收数据。
 
+数据传输`socket`使用示例：  
+`ClientSocket`：  
+>  
+	import java.net.*;
+	import java.io.*;
+	public class ClientSocketTest
+	{
+		public static void main(String[] args) 	throws Exception
+		{
+				try
+				{
+					//construct an InetAddress object
+					 InetAddress iad = InetAddress.getByAddress(new byte[]{10,23,94,(byte)225});
+					//connect to the server
+					Socket s = new Socket(iad,30000);
+>					
+					//no matter when and where to output, you'd better transform the OutputStream into the PrintStream object.
+					//no matter when and where to input, you'd better transform the InputStream into the BufferedReader object.
+>					
+					//read from the inputstream which came from the server socket.
+					InputStreamReader isr = new InputStreamReader(s.getInputStream());
+					BufferedReader br = new BufferedReader(isr);
+					System.out.println(br.readLine());
+>					
+					//write into the printStream which link to the server socket
+					PrintStream ps = new PrintStream(s.getOutputStream());
+					ps.println("hello");
+				}
+				catch(Exception e)
+				{
+					System.out.println("error");
+				}
+			}	
+	}
+
+
+`ServerSocket`:  
+>
+	import java.net.*;
+	import java.io.*;
+	public class ServerSocketTest
+	{
+		public static void main(String[] args) throws Exception
+			{
+				ServerSocket ssc = new ServerSocket(30000); 
+				System.out.println("Waiting for connections......");
+				Socket sk = ssc.accept();
+>				
+				//no matter when and where to output, you'd better transform the OutputStream into the PrintStream object.
+				//no matter when and where to input, you'd better transform the InputStream into the BufferedReader object.
+>				
+				//write into the printStream which link to the client socket
+				PrintStream ps = new PrintStream(sk.getOutputStream());
+				ps.println("hi");
+>				
+				//read from the inputstream which came from the client socket.
+				InputStreamReader isr = new InputStreamReader(sk.getInputStream());
+				BufferedReader br = new BufferedReader(isr);
+				System.out.println(br.readLine());
+			}	
+	}
 注：使用ipconfig可以查询本机IP地址，在子网中，查询的就是本机IP。如果是在公网中，那么就有自己独立的IP地址，而不是与人共用的IP地址。
 在ip138上查询的是公网IP，也就是分配给学校的IP地址，公网IP地址整个学校也只有那么几个。公网IP和本机的子网掩码一起进行计算得到的就是处于子网中的本机IP地址，这个本机IP地址就是通过ipconfig命令查询而来的IP地址。
 
