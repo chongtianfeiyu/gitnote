@@ -5605,6 +5605,38 @@ UDP协议使用示例：
 `UDP`一端：  
 >
 	import java.net.*;
+	import java.io.*; 
+	public class UDPBTest
+	{
+		final static int Server_PORT=30000;
+		public static void main(String[] args) 
+		{
+			try
+			{
+				//construct client's DatagramSocket without specific port
+				DatagramSocket dgs = new DatagramSocket();
+				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				String content = null;
+				while((content=br.readLine())!=null)
+				{
+					InetAddress iaa = InetAddress.getByAddress(new byte[]{10,23,94,(byte)253});
+					//construct a DatagramPacket, it is aimed at storing the data which will be transmitted by DatagramSocket,with server's address and port.
+					//the DatagramPacket should has the address and the port it aimed at
+					DatagramPacket dgp = new DatagramPacket(content.getBytes(),content.length(),iaa,Server_PORT); 
+					//send the data
+					dgs.send(dgp); 
+				}
+			}
+			catch(Exception e)
+			{
+				System.out.println("error");
+			}
+		}
+	}
+
+`UDP`另一端：  
+>
+	import java.net.*;
 	public class UDPATest
 	{
 		final static int MAX_SIZE=102400;
@@ -5624,39 +5656,6 @@ UDP协议使用示例：
 					System.out.println(new String(dgp.getData(),0,dgp.getLength()));
 				}
 			}
->			
-			catch(Exception e)
-			{
-				System.out.println("error");
-			}
-		}
-	}  
-
-`UDP`另一端：  
->
-	import java.net.*;
-	import java.io.*; 
-	public class UDPBTest
-	{
-		final static int Server_PORT=30000;
-		public static void main(String[] args) 
-		{
-			try
-			{
-				//construct client's DatagramSocket without specific port
-				DatagramSocket dgs = new DatagramSocket();
-				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-				String content = null;
-				while((content=br.readLine())!=null)
-				{
-					InetAddress iaa = InetAddress.getByAddress(new byte[]{10,23,96,124});
-					//construct a DatagramPacket, it is aimed at storing the data which will be transmitted by DatagramSocket,with server's address and port.
-					DatagramPacket dgp = new DatagramPacket(content.getBytes(),content.length(),iaa,Server_PORT); 
-					//send the data
-					dgs.send(dgp); 
-				}
-			}
->			
 			catch(Exception e)
 			{
 				System.out.println("error");
@@ -5666,7 +5665,101 @@ UDP协议使用示例：
 
 
 
-在使用TCP协议建立聊天程序的时候，需要建立一个服务器，将所有的内容进行转发到相应的客户端。  
-但是在使用UDP协议建立聊天程序的时候，无需建立服务器，可以二者直接聊天。  
+在使用`TCP`协议建立聊天程序的时候，需要建立一个服务器，将所有的内容进行转发到相应的客户端。  
+但是在使用`UDP`协议建立聊天程序的时候，无需建立服务器，可以二者直接聊天。  
 
 
+MuleticastSocket类：也是一个UDP协议，也是一个"码头",使用的时候也是需要与数据集装箱"DatagramPacket"联合使用。  
+这是一个广播Socket，无需服务器。先设立一个特殊的IP地址(广播地址)，任何一个客户端向这个特殊的IP地址发送数据后，这个数据会被自动广播到所有加入了该IP地址的客户端。  
+该类的方法setTimeToLive(int ttl):  
+
+发送：  
+与DatagramSocket类的使用方式是一样的，只是数据报地址是一个特殊的IP地址（广播地址）。  
+
+接收：  
+1. 要先调用joinGroup()方法加入这个广播地址。
+2. 然后才能接收广播数据。
+
+广播发送、接收使用示例：  
+>
+	import java.net.*;
+	import java.io.*; 
+	public class MultiBroadCastTest
+	{
+		//the default port
+		final static int MULTI_PORT=30000;
+		//the default IP address
+		final static String CAST_IP="230.0.0.1";
+		final static int MAX_SIZE=102400;
+		public static void main(String[] args) throws Exception
+		{
+			new Thread(new SendThread()).start();
+			new Thread(new RecieveThread()).start();
+		}
+	}
+>	
+	//the send thread
+	class SendThread implements Runnable
+	{
+		public void run()
+		{
+			try
+			{ 	
+				//construct a multicastsocket
+				MulticastSocket socket = new MulticastSocket();
+				socket.setTimeToLive(1);
+				InetAddress iaa = InetAddress.getByName(MulticastSocketSendTest.CAST_IP) ;
+				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				String content = null;
+				while((content=br.readLine())!=null)
+				{
+					//construct a DatagramPacket, it is aimed at storing the data which will be transmitted by DatagramSocket,with server's address and port.
+					DatagramPacket dgp = new DatagramPacket(content.getBytes(),content.getBytes().length,iaa,MulticastSocketSendTest.MULTI_PORT); 
+					//send the data
+					socket.send(dgp); 
+				}
+			} 
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+>	
+	//the receive thread
+	class RecieveThread implements Runnable
+	{
+		public void run()
+		{
+			try
+			{ 
+				//construct a multicastsocket
+				MulticastSocket socket = new MulticastSocket(MulticastSocketSendTest.MULTI_PORT);
+				InetAddress iaa = InetAddress.getByName(MulticastSocketSendTest.CAST_IP) ;
+				socket.setTimeToLive(1);
+				socket.joinGroup(iaa);
+				while(true)
+				{
+					//construct a DatagramPacket, it is aimed at storing the data which get by DatagramSocket
+					DatagramPacket dgp = new DatagramPacket(new byte[MulticastSocketSendTest.MAX_SIZE],MulticastSocketSendTest.MAX_SIZE);
+					//store the data into the DatagramPacket
+					socket.receive(dgp); 
+					System.out.println(new String(dgp.getData(),0,dgp.getLength()));
+				}
+			} 
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+TTL:控制要被发送的数据报可以跨过多少网段。
+TTL=0：该数据报只能停留在本机。 
+TTL=1：该数据报只能停留在当前的局域网中。  
+TTL=32：该数据报只能停留在本站点的网络中。  
+TTL=64：该数据报只能停留在本地区。  
+TTL=128：该数据报只能停留在本大洲。  
+TTL=255：这是最大的，该数据报能到达全世界。
+ 
+
+注：无论是在UDP通信还是MulticastSocket广播通信，发送端的Socket对象都无需设置IP地址与Port端口；接收端的Socket对象必须设置接收Port端口。发送端的Packet对象需要设置目的IP地址与端口Port，接收端的Packer对象无需设置Port接口或者IP地址。
