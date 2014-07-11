@@ -5590,7 +5590,7 @@ UDP协议可能出现的情况：先发送的信息，反而后抵达目的。
 3. 发送
 
 接收端：  
-1. 创建有固定IP、固定端口的码头(DatagramSocket)。  
+1. 创建有固定IP、固定端口的码头(`DatagramSocket`)。  
 2. 创建空的数据报。  
 3. 接收。
  
@@ -5602,7 +5602,7 @@ UDP协议通信时，不需要使用I/O来发送与读取数据。
 
 UDP协议使用示例：  
 
-UDP一端：  
+`UDP`一端：  
 >
 	import java.net.*;
 	public class UDPATest
@@ -5632,7 +5632,7 @@ UDP一端：
 		}
 	}  
 
-UDP另一端：  
+`UDP`另一端：  
 >
 	import java.net.*;
 	import java.io.*; 
