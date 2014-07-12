@@ -1223,41 +1223,107 @@ ClassCastException：类型转换异常：非引用子类对象的父类引用�
 	animal
 各种框架里面大量使用了反射，但是只对用户暴露了类名与该类的配置文件，防止被修改。
 
+
+#Java中的注解
+----------------
+例如：在重写一个方法的时候，在方法上面加上`@Override`，在编译阶段就保证编译成功。这就是注解(`Anotation`)的作用，这是和注释不一样的。  
+`Anotation`是一个接口，`Override`之类的都是它的实现类。
+获取注解对象只有一种方法：反射。
+
+#Java中的XML
+--------------
+数据存储的几种方式：  
+1. 键值对形式，name：“li”  
+2. `XML`描述  
+3. 数据库，可以存储数据和操作数据
+数据量比较大的时候，使用数据库。
+扩展性(`Extended`)标识语言，用于标识描述数据信息。其是`SGML`标识语言的简化。
+  
+再，由于`HTML`语言的语法不够严谨，所以在`HTML`4.0.1版本之后，将其过渡至`XHTML`(扩展性`Extended`）语言,`XHTML`更加严谨、规范。`XHTML`可以理解为是`HTML`向`XML`语言过渡的中间产物。  
+
+`HTML`与`XML`之间的区别在于：  
+1. `HTML`是固定标识，只能写它能识别的标识。`XML`中的标签可以自由定义。  
+2. `HTML`较为随意，`XML`很严谨。  
+3. `HTML`将数据和其显示结合在一起，不方便对数据进行操作。`XML`将数据与其显示分开，纯粹对数据进行描述。数据描述是数据描述，显示是显示。
+
+`XML`的好处：  
+1. 结构严谨，规范。  
+2. 是标准的数据交换文件，已用于通用的配置信息文件。  
+3. 结构简单，便于书写，增强阅读性。  
+4. 将数据进行结构化，是数据之间具有明确的层次关系。
+
+`XML`文档示例：  
+>
+	<?xml version="1.0"?>
+	<students>
+		<student>
+			<name>zhangsan</name>
+			<age>20</age>
+		</student>
+>		
+		<student>
+			<name>lisi</name>
+			<age>22</age>
+		</student>
+>		
+		<student>
+			<name>wangwu</name>
+			<age>21</age>
+		</student>
+>		
+		<student>
+			<name>zhaoliu</name>
+			<age>23</age>
+		</student>
+	</students>
+ 
+`XML`文档中**只能有一个顶层元素**。如上面的`<students>`这个元素，也叫根元素。也就是最外层的标签，只能有一个。
+
+`CDATA`区：当我们的文档中，某一段数据不想被解析，只希望作为单纯的字符而已。那么，可以将这段字符放在CDATA区，放在<![CDATA[ *数据* ]]>标签里面。这样，里面的数据就能够不解析，而是作为单纯的字符。
+
+XML中所有标记的属性值必须用""或者''括起来。
+
+XML中名字可以使用字母、数字、中文（需要在XML声明的时候知道encoding属性)
+
+
+
 #Java中的单例类
 -----------------
-与单例类相联系的是一个设计模式：模板模式。
-某些时候，我们只想为某个类创建一个对象。这时候就需要使用单例类。
-要实现单例：
-不能暴露构造器。否则可以自由创建多个实例。所以，需要人工写一个无参构造器，且设为private形式，这样可以防止JDK自己创建默认构造器。且构造器只能在类内使用。
-设置一个静态field用于缓存在3中的方法所创建的实例，且这个field可用于检测保证仅创建了一个实例。
-暴露一个方法，用该方法来返回一个实例。设为public。由于调用这个方法的时候没有实例，所以需要使用类来调用该方法。所以这个方法必须是static的。同时，该方法内部必须在创建一个实例之前先检测2中的field，保证只存在一个实例，这样才能保证这是一个单例类。
-使用3中创建的方法来创建一个对象。
-Eg：
-public class singleTon
-{
-	public int a;
-	private singleTon() //创建private构造器，防止JDK自己创建构造器
-	{
-	}
+与单例类相联系的是一个设计模式：模板模式。  
+某些时候，我们只想为某个类创建一个对象。这时候就需要使用单例类。  
+要实现单例：  
+不能暴露构造器。否则可以自由创建多个实例。所以，需要人工写一个无参构造器，且设为`private`形式，这样可以防止`JDK`自己创建默认构造器。且构造器只能在类内使用。  
+设置一个静态`field`用于缓存在3中的方法所创建的实例，且这个`field`可用于检测保证仅创建了一个实例。  
+暴露一个方法，用该方法来返回一个实例。设为`public`。由于调用这个方法的时候没有实例，所以需要使用类来调用该方法。所以这个方法必须是`static`的。同时，该方法内部必须在创建一个实例之前先检测*2*中的`field`，保证只存在一个实例，这样才能保证这是一个单例类。  
+使用*3*中创建的方法来创建一个对象。
 
-	private static singleTon h; //创建static field，用于缓存创建的单例对象，同时检测是否单例。
-
-	public static singleTon f() //创建static方法，以创建单例对象，返回该对象引用。
+示例如下：
+>
+	public class singleTon
 	{
-		if(h==null)
+		public int a;
+		private singleTon() //创建private构造器，防止JDK自己创建构造器
 		{
-			h=new singleTon();
 		}
-		return h;
-    }
-	public static void main(String[] args)
-	{
-		System.out.println(singleTon.f().a); //使用static单例对象创建方法来创建单例。
-	}
-	
-	{
-		a=10;
-	}
+>
+		private static singleTon h; //创建static field，用于缓存创建的单例对象，同时检测是否单例。
+>	
+		public static singleTon f() //创建static方法，以创建单例对象，返回该对象引用。
+		{
+			if(h==null)
+			{
+				h=new singleTon();
+			}
+			return h;
+	    }
+		public static void main(String[] args)
+		{
+			System.out.println(singleTon.f().a); //使用static单例对象创建方法来创建单例。
+		}
+>		
+		{
+			a=10;
+		}
 	}
 
 
