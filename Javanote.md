@@ -2337,7 +2337,10 @@ b. loadFactor：负载因子。
 这里的一致，指的是必须在这两个方法中要考虑相同多的类属性。  
 那就是：
 >
-在`equals()`方法中要保证`name`与`num`属性都相等才行，那么在`hashCode()`方法中也必须使用这两个属性来求出`hash`值，从而保证返回的`hash`值能够代表这个两个属性。俱缺一不可。
+在`equals()`方法中要保证`name`与`num`属性都相等才行，那么在`hashCode()`方法中也必须使用这两个属性来求出`hash`值，从而保证返回的`hash`值能够代表这个两个属性。俱缺一不可。  
+
+也就是说，对于我们自己写的类对象，如果要存入`HashSet`中，那么就要正确重写`equals()`方法与`hashCode()`方法。  
+但是对于已经在**JDK**中有的类，我们就不必自己重写这两个方法。因为**JDK**中的类继c承自`Object`类，都已经实现了这两个方法。  
 
 因此，这两个方法相对于上面的必须改写为：
 >
@@ -2679,27 +2682,27 @@ b. loadFactor：负载因子。
 所谓的重构：就是让方法适用于更多的情况。
 
 ##Map接口的使用(见图：`Map_Structure.png`)
-`Map`里面存放的东西是：很多的`key-value`对。每一项数据都是这样的键值对。也就是说，`map`就是很多的`key-value`对的集合。
+`Map`里面存放的东西是：很多的`key-value`对。每一项数据都是这样的键值对。也就是说，`Map`就是很多的`key-value`对的集合。
   
-`map`中将`value`当做`key`的附属物。在`key-value`的存储中，只需考虑`key`的存储即可。可以存储之后，`value`会跟着`key`进行存储。  
+`Map`中将`value`当做`key`的附属物。在`key-value`的存储中，只需考虑`key`的存储即可。`key`存储之后，`value`会跟着`key`进行存储。  
 如果，只考虑`key`的存储，那么将所有的`key`存储在一起，就是一个`Set`。 
  
-实际上，`map`与`Set`的一一对应的：
+实际上，`Map`与`Set`的一一对应的：
 `HashSet`的底层是依靠`HashMap`实现的，`HashMap`依靠`hash`算法以确定在其底层数组中的位置。  
 `TreeSet`的底层是依靠`TreeMap`实现的，`TreeSet`底层就是一个**红黑树**。
   
-常用的实现了`map`接口的类有3个：`HashMap`与`TreeMap`、`HashTable`。  
-a. `HashMap`  
+常用的实现了`Map`接口的类有3个：`HashMap`与`TreeMap`、`HashTable`。  
+### `HashMap`实现类  
 会根据其存、取的元素对象的`key`值的`hashCode()`方法的返回值来确定这个`key`值的存放位置，也随之确定`key-value`对的储存位置。  
 
-*`HashMap`也不允许`key`重复。那么怎样才是`key`重复。*  
+`HashMap`也不允许`key`重复。那么怎样才是`key`重复？这里和`HashSet`是一样的。  
 - 通过`equals()`返回`true`.    
 - 通过`hashCode()`返回值相等.   
 那么，在我们用一个**自己写的类**作为`HashMap`的`key`的时候，必须要自己正确地重写这个类的`equals()`方法和`hashCode()`方法；  
-但是对于已经在**JDK**中有的类，我们就不必自己重写这两个方法。因为**JDK**中的类继承自Object类，都已经实现了这两个方法。  
+但是对于已经在`JDK`中有的类，我们就不必自己重写这两个方法。因为`JDK`中的类继承自`Object`类，都已经实现了这两个方法。  
 `HashMap`实际上是无序放置的，所以，为了有序存、取。可以使用`HashMap`的子类`LinkedHashMap`来进行存取。这样就是有序的。
 
-`HashMap`的使用:
+`HashMap`的使用示例:
 >
 	import java.util.*;
 	class apple
@@ -2772,20 +2775,21 @@ a. `HashMap`
 		}
 	}  
 
-b. `TreeMap`  
+### `TreeMap`实现类  
 其底层的红黑树只对`key`进行排序放置。这就表示`key`必须是可以比较大小的。  
 - 自然排序：对于`key`都要实现`Comparable`接口。  
 - 定制排序：要求在创建`TreeMap`的时候提供一个`Comparator`以实现比较。
 
-*`TreeMap`也不允许`key`重复。那么怎样才是`key`重复。*  
-- 只要这两个元素对象通过`compare()`方法返回值是0，那么`TreeSet`就认为二对象相等。而与`equals()`方法无关（只与`compare()`方法有关）。所以我们要重写放入`TreeSet`中的元素对象的所属类中`compareTo()`方法。这个方法是`comparable`接口中的方法，所以，对于我们自己所写的类，必须要实现这个接口中这个唯一的这个方法。
+`TreeMap`也不允许`key`重复。那么怎样才是`key`重复？  
+- 只要这两个元素对象通过`compare()`方法返回值是0，那么`TreeSet`就认为二对象相等。而与`equals()`方法无关（只与`compare()`方法有关）。  
+- 所以我们要重写放入`TreeSet`中的元素对象的所属类中`compareTo()`方法。这个方法是`comparable`接口中的方法，所以，对于我们自己所写的类，必须要实现这个接口中这个唯一的这个方法。
 
 如果是**JDK**已有的类，我们就不必去自己实现这个方法了，因为已有的类以及实现了这个方法。这就是*自然排序*。  
  
 对于我们自己写的类需要自己去实现这个`compare()`方法或者我们对于JDK中已有的类希望按照自己的方式去排序，就需要在创建`TreeMap`的使用要传入一个`Comparator`对象，这就是所谓的*定制排序*。  
 也就是说在我们用一个**自己写的类**作为`TreeMap`的`key`的时候，必须要自己正确地使这个类实现`Comparator`接口的`compare()`方法；实际上采用的是匿名内部类的形式给`hashMap`提供一个`Comparator`对象。
 
-`TreeMap`的使用
+`TreeMap`的使用示例：
 >
 	import java.util.*;
 	class apple 
@@ -2840,7 +2844,7 @@ b. `TreeMap`
 		public static void main(String[] args)
 		{
 			//use TreeMap class
-			//class String has implements the interface comparable itself that we do not have to implement it by ourselves.
+			//the key class String has implements the interface comparable itself that we do not have to implement it by ourselves.
 			TreeMap<String, Integer> ts = new TreeMap<>();
 			ts.put("张三",90);
 			ts.put("李四",80);
@@ -2849,7 +2853,7 @@ b. `TreeMap`
 			System.out.println(ts);
 >	
 			//use TreeMap class
-			//class apple do not has implements the interface comparator itself that we must implement it by ourselves.In this sample，we use anonymous class to override the func of compare() in the interface Compatator.
+			//the ke class apple do not has implements the interface comparator itself that we must implement it by ourselves.In this sample，we use anonymous class to override the func of compare() in the interface Compatator.
 			TreeMap<apple,Integer> ts1 = new TreeMap<>(new Comparator<apple>(){
 			//use anonymous class to override the func compare() in the interface Comparator to provide a Comparator object for TreeMap.
 			@Override
@@ -2908,7 +2912,7 @@ b. `TreeMap`
 		}
 	}
 
-c. `HashTable`  
+### `HashTable`  
 `HashTable`与`HashMap`的区别：  
 - `HashTable`自**JDK1.0**开始即有，已落后，能不用就不用。与`Vector`类似。    
 - `HashTable`不允许使用`null`作`key`值，但是`HashMap`允许。  
@@ -2917,7 +2921,7 @@ c. `HashTable`
 
 总之，无论是`Set`还是`Map`。  
 1. 前面带了`Hash`表明的是这个集合存、取元素寻找位置的方式是通过`equals()`方法和`hashCode()`方法的返回值来确定存、取元素在底层数组中的位置的。  
-2. 前面带了`Tree`表明的是这个集合存、取元素的是在红黑树中进行的，这个排序过程是通过两种方式进行的，只有元素对象具有排序功能，就能够在红黑树中进行存、取。  
+2. 前面带了`Tree`表明的是这个集合存、取元素的是在红黑树中进行的，这个排序过程是通过两种方式进行的，只要元素对象具有排序功能，就能够在红黑树中进行存、取。  
 要么是对象本身就拥有比较功能，也就是**JDK**中已经提供了。要么就是我们自己写的类，需要在定义集合的时候向这个集合中通过匿名内部类的形式传入`Comparator`对象。
 
 
@@ -2927,12 +2931,12 @@ c. `HashTable`
 
 
 
-Java中的异常处理
+#Java中的异常处理
 ----------------
 
 
 
-Java中的输入与输出
+#Java中的输入与输出
 -----------
 所谓的输入与输出，实际上就是以内存为中心，硬盘↔内存，内存→显示屏，键盘→内存。这三者之间的信息传输的过程。
 
