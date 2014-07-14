@@ -2614,18 +2614,17 @@ b. loadFactor：负载因子。
 
 
 
-Java中的操作集合的工具类
----------------
-工具类：  
+##操作Collection的工具类Collections
+常用工具类：  
 `Arrays`类：操作数组。  
 `Objects`类：操作对象。  
 `Collections`类：操作集合。  
 `Integer`类：操作将`String`转换为`Integer`。
 
-当我们在已有的这个类中没有找到所需要的方法的时候，要达到我们的目的，就需要自己去写这个方法，这个时候要注意把这个方法包装放在一个类中，作为`static`方法出现，这样才是良好的面向对象方法。
->
+当我们在已有的这个类中没有找到所需要的方法的时候，要达到我们的目的，就需要自己去写这个方法，这个时候要注意把这个方法包装放在一个类中，作为`static`方法出现，这样就产生了一个工具类，这样才是良好的面向对象方法。  
+例如：
 我们有一个`String`数组，需要依据数组的元素去确定这个元素的`index`，这个时候，发现工具类`Arrays`中并没有这种方法。  
-所以需要自己去创建这个方法`int find(String[] strArrays,String str)`，要将它包装在一个类中。
+所以需要自己去创建这个方法`int find(String[] strArrays,String str)`，要将它作为`static`方法包装在一个类中。
 >
 	//find the index of the elem in the array 
 	class arraysUtil
@@ -2644,7 +2643,9 @@ Java中的操作集合的工具类
 			return -1;
 		}
 	}
-`Collections`所有方法都是`static`方法。
+
+这样我们就创建了一个工具类`arraysUtil`类，以后可以直接使用这个类的`static`方法来查找字符串数组中的元素的`index`。
+`Collections`工具类中所有方法都是`static`方法。
 >
 	import java.util.*;
 	public class collectiosTest
@@ -2677,9 +2678,8 @@ Java中的操作集合的工具类
 
 所谓的重构：就是让方法适用于更多的情况。
 
-Java中的map
---------
-`map`里面存放的东西是：很多的`key-value`对。每一项数据都是这样的键值对。也就是说，`map`就是很多的`key-value`对的集合。
+##Map接口的使用(见图：`Map_Structure.png`)
+`Map`里面存放的东西是：很多的`key-value`对。每一项数据都是这样的键值对。也就是说，`map`就是很多的`key-value`对的集合。
   
 `map`中将`value`当做`key`的附属物。在`key-value`的存储中，只需考虑`key`的存储即可。可以存储之后，`value`会跟着`key`进行存储。  
 如果，只考虑`key`的存储，那么将所有的`key`存储在一起，就是一个`Set`。 
