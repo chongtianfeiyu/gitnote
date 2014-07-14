@@ -6064,19 +6064,37 @@ T-SQL的组成：
 >
 	insert     into    student2   (stu_Id, stu_Name,stu_Age,stu_Ger)      select stu_Id, stu_Name,stu_Age,stu_Ger from student;    --将student表中中某几个字段的数据插入到表student2中
 
-###数据查找
+###数据查询
+a. 基础查询
 >
 	 --select     需要显示的字段		  查找数据来源		查找条件
 	   select 		 * 			     from student 		where  stu_Age>33;--精确查询，大于33岁的条目
 	   select 	  stu_Id,stu_Name 	 from student 		where  address like '北京%';--使用like进行模糊查询，使用了通配符 
-	   select       *               from country       where Code like "A%";--查找带有A的字符串
-
+	   select        *               from country       where Code like "A%";--查找带有A的字符串
+	   select top 10 percent * from student;--查询前10%
+	   select * from student order by stu_Age;--查询结果按学生年龄升序排列，默认升序，desc是降序。
 查找所用通配符：
 "_"：一个字符  
 "%"：任意长度的字符串  
 "[]"：括号内指定范围内的一个字符  
 "[^]"：括号内指定范围之外的一个字符
 
+可以利用as关键字给字段名等取别名。
+  
+`T-SQL`中的**字符串函数**  
+(注：仅在SQL server中才有，其它数据库中不与之同名):用于对字符串进行操作。
+	select charindex("am","I am a boy",1);--查找已知字符串的位置
+	select len(stu_Name) as length stu_Id from student ;--计算姓名字符串的长度
+	select getdate();--返回当前时间
+
+`T-SQL`中的**数学函数**  
+
+`T-SQL`中的**系统函数**  
+	select convert(varchar(2),stu_Age)--将年龄转换为varchar类型
+b. 聚合查询  
+
+c. 链接查询  
+d. 
 ###数据修改
 >
 	 --update      表名          修改操作                    被修改条件
