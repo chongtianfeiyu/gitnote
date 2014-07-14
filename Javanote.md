@@ -1942,7 +1942,7 @@ Matcher类：表示一个匹配工具类。
 2. 获取该网页的响应内容（就是网站将网页的内容发送过来）。  
 3. 提取出网页内容中的超链接地址。此步骤中使用正则表达式，使用这两个类的作用。
 
-Java中的国际化
+#Java中的国际化
 --------------
 所谓的java的国际化，就是希望程序本身自适应所有的用户（各种语言界面）环境。就是`I18N`。
 
@@ -2004,7 +2004,7 @@ CMD中：
 	Locale currentLocale=Locale.getDefault(Locale.Category.DISPLAY);
 
 
-Java中的Format类的使用
+#Java中的Format类的使用
 -----------------  
 `Format`类有三个子类：`MessageFormat、NumberFormat、DateFormat`。  
 
@@ -2061,7 +2061,7 @@ Java中的Format类的使用
 
 
 
-Java中的容器类
+#Java中的容器类
 ---------
 Java中的容器用于装对象。  
 那么这些容器中应该有哪些方法？  
@@ -2105,13 +2105,13 @@ c. `Queue`，被队列实现，队列是特殊的线性表，也就是在继承�
 以上这些实现类中，`HashSet、TreeSet、ArrayList、LinkedList、ArrayDeque`这5个类要重点掌握。
 
 
-Java中的容器类的使用。  
+##Java中的容器类的使用  
 1、要使用接口作变量，而不是使用类做变量。
 >
 	Collection<String> c1 = new HashSet<>();
 
-这里使用了接口Collection做变量，而没有使用类HashSet作变量。  
-同时，这里的Collection使用泛型规定了容器中对象类型，那么后面的类HashSet就可以不必写出对象类型，这就是所谓的“菱形语法”。
+这里使用了接口`Collection`做引用变量，而没有使用类`HashSet`作引用变量。  
+同时，这里的`Collection`使用泛型规定了容器中对象类型，那么后面的类`HashSet`就可以不必写出对象类型，这就是所谓的“菱形语法”。
 
 `Removeall()`与`addall()`是针对容器与容器之间的操作。  
 `Retainall()`是容器之间求交集的操作。  
@@ -2129,7 +2129,7 @@ Java中的容器类的使用。
 	{
 	}
 
-Java中的HashSet
+#Java中的HashSet
 --------------------
 `HashSet`的存储机制：其底层是一个数组。  
 `HashSet`的构造器：`HashSet(int initialCapacity, float loadFactor)`。  
@@ -5715,7 +5715,7 @@ UDP协议可能出现的情况：先发送的信息，反而后抵达目的。
 `DatagramPacket`：相当于“数据集装箱”，也就是数据报。其作用是将数据装在一起。    
 客户端一般不指定端口，因为不知道所需端口是否已经被占用。  
 发送端：  
-1. 先创建码头(DatagramSocket)。无需固定IP。  
+1. 先创建码头`(DatagramSocket`)。无需固定IP。  
 2. 创建有数据、有目标地址(接收端服务器的IP地址与端口)的数据报。  
 3. 发送
 
@@ -5949,7 +5949,7 @@ b. 语句创建，创建数据库、表的时候，一定要使用`master`数据
 注意：在`SQL`语言中，往往不能以语句位置来确定语句的执行顺序。只能以`begin……end`来代替其他语言中的`{}`来确定语句的执行顺序。  
 示例如下：
 >
-	if exist(select * from database student)--exit方法的返回值是true或者false，它的参数是一条select语句，如果语句执行结果有记录就是true，如果select语句执行结果为空就为false。
+	if exists(select * from database student)--exit方法的返回值是true或者false，它的参数是一条select语句，如果语句执行结果有记录就是true，如果select语句执行结果为空就为false。
 	  print("yes)--在这里，如果是true的话，两个语句都可以执行，但是如果是false，第一个语句不执行，第二个语句不是和第一个语句一起被控制的，它还是会执行。
 	  drop database student--因为，在这里，if这个判断只能控制print这个句子，而不能控制drop这个句子，无论如何，drop这个句子都会执行。
 	else
@@ -5957,7 +5957,7 @@ b. 语句创建，创建数据库、表的时候，一定要使用`master`数据
 >
 所以，这里如果想让这两个句子一起都被`if`判断所控制，只能使用`begin……end`来让他们连在一起。
 >
-	if exist(select * from database student)
+	if exists(select * from database student)
 	begin  
 	  print("yes)--在这里，使用了begin……end将这两个语句连在一起，使他们一起被if判断所控制
 	  drop database student
@@ -6033,4 +6033,60 @@ b. 语句创建，创建数据库、表的时候，一定要使用`master`数据
 怎样删除一张表？  
 >
 	if exist(select * from sysobjects where name="student")--删除student表，sysobjects是一个对象视图，每一个数据库中都有一个，记录的是这个数据库中的详细信息，如，我们自己建立的每一个用户数据库中都有一个sysobjects对象视图，里面包含了这个数据库中所有的字段、约束等信息。
-	   drop table sysobjects
+	   drop table sysobjects;
+
+##数据库管理界面(GUI)使用
+注：
+1. 将某一个字段设为标识列：是将某一列作为标识。就是将这一列的值设置为自增加，需要先将这个字段设置为`primary key`，然后才能设置为`auto increment`。标识列可以不用编辑，自己会增加。  
+2. 想一个外键表中添加外键字段的值的时候，必须保证在主键表中相同字段中有同样的值才能保证添加成功。
+
+##对数据库中数据的操作
+1. 增  
+2. 删  
+3. 改  
+4. 查
+
+`SQL`：`Structured Query Language`，任何数据库都要遵循这样的`SQL`规范。  
+`T-SQL`:`SQL`的加强版。里面有些内容不是标准`SQL`。  
+T-SQL的组成：  
+1. DDL(数据定义语言)：用于建立数据库、表、视图等数据库对象。如，create table、drop table等。  
+2. DML(数据操作语言)：用于增、删、改、查的数据库中的数据。如，select(查)、insert(增)、update(改)、delete(删)。  
+3. DCL(数据控制语言):用于控制存取许可、存取权限等，如，grant、revoke等。  
+
+注：SQL总不等于的写法：“<>”。
+###数据插入
+>
+	insert    into     表名       (列名)                                        values(要插入的值);        --字符串需要加''。插入数据最重要的是匹配。
+	insert    into    student    (stu_Id,stu_Name,stu_Age,stu_Ger,teachId)     values(4,'wt',30,1,22);   --向表student中插入单行数据
+>
+	insert     into     表名1       要被插入的字段      数据来源 
+	insert     into    student1                   select * from student;   --将表student中的数据备份插入到表student1中,但是备份并没有备份表约束，只备份了数据与表结构
+>
+	insert     into    student2   (stu_Id, stu_Name,stu_Age,stu_Ger)      select stu_Id, stu_Name,stu_Age,stu_Ger from student;    --将student表中中某几个字段的数据插入到表student2中
+
+###数据查找
+>
+	 --select     需要显示的字段		  查找数据来源		查找条件
+	   select 		 * 			     from student 		where  stu_Age>33;--精确查询，大于33岁的条目
+	   select 	  stu_Id,stu_Name 	 from student 		where  address like '北京%';--使用like进行模糊查询，使用了通配符 
+	   select       *               from country       where Code like "A%";--查找带有A的字符串
+
+查找所用通配符：
+"_"：一个字符  
+"%"：任意长度的字符串  
+"[]"：括号内指定范围内的一个字符  
+"[^]"：括号内指定范围之外的一个字符
+
+###数据修改
+>
+	 --update      表名          修改操作                    被修改条件
+	   update     student      set stu_Age=stu_Age+10      where stu_Name like "[A Z]e";
+###数据删除
+>
+	 --delete      删除操作数据源        删除条件
+	   delete      from student       where stu_Id=2;--删除stu_Id=2的数据行
+	   truncate    table student       --删除整张表里的数据
+
+注：  
+1. 在外键表中插入数据的时候，要考虑外键字段中插入的数据在主键字段中已经存在。  
+2. 在主键表中删除数据的时候，要保证主键字段中要被删除的数据在外键表相应字段中没有被引用，否则不能被删掉。这样把主外键删掉会导致问题，因为关系数据库中的表都是连接起来如一张网一样。
