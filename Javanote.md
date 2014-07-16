@@ -6183,7 +6183,7 @@ T-SQL编程中，变量有两种，局部变量与全局变量。
 ###数据修改
 >
 	 --update      表名          修改操作                    被修改条件
-	   update     student      set stu_Age=stu_Age+10      where stu_Name like "[A Z]e";
+	   update     student      set stu_Age=stu_Age+10      where stu_Name like '[A Z]e';
 ###数据删除
 >
 	 --delete      删除操作数据源        删除条件
@@ -6220,3 +6220,260 @@ T-SQL编程中，变量有两种，局部变量与全局变量。
 5. 使用`Statement`对象执行`sql`语句。通过`execuUpdate()`方法来对数据进行更新，包括增、删、改操作。  
    使用`executeQuery()`方法进行数据的查询，得到`ResultSet`对象，该对象就是查询数据库后获得的数据集合的封装。通过该对象的方法`getString()`取得各段结果。`getString()`方法的参数可以是列名或者下标(注意，在`JDBC`中，下标从0开始)，下标更快。  
 6. 关闭释放资源。
+
+##桥连与直连
+以上的JDBC就是所谓的**直连**，也就是说，当一个数据库实现了JDBC规范，那么就可以直接通过相应的API来连接数据库。但是，如果某些数据库(如、微软单机数据库Access)没有实现JDBC规范，而是实现了ODBC规范。那么就不能进行直连了。  
+桥连：Java中提供了JDBC-ODBC桥，这样就可以通过JDBC连接ODBC，然后再连接至数据库。这就是所谓的桥连。只有Access才用桥连，其他都用直连。
+
+
+#Java中的DAO层
+----
+按照软件的三层架构，分为表示层、业务层、持久层。(见图：`SoftWare_Structure.png`)  
+其中的持久层负责处理软件用户的要求，如：运算，从数据库中存、取数据等功能。所以持久层也叫数据存取层也就是`DAO`层。  
+一般而言，有几张表就有几个`DAO`类。
+那么，怎样写`DAO`层？  
+`DAO`层实际上就是一个类，这个类里面提供了对该`DAO`层所对应的表的增、删、改、查操作的所有方法。  
+一个`DAO`层的类原型如下：  
+>
+	public class StudentDao
+	{
+		public void add() 
+		{
+	
+		}
+	
+		public void delete()
+		{
+	
+		}
+	
+		public void update()
+		{
+	
+		}
+	
+		public void find() throws SQLException
+		{
+			
+		}
+	}
+
+这个类就是一个`DAO`层，对应与`student`表，作用是：操作`student`表中的数据(增、删、改、查)。
+
+如下即是一个针对`student`表的`DAO`层的具体实现： 
+
+a. `DAO`层接口代码：
+>
+	package com.trilever.DAO;
+	import java.sql.*;
+	import com.trilever.DAOManager.*;
+	public class StudentDao
+	{
+		public void add() throws SQLException
+		{
+			String sql = "insert into student (stu_Id,stu_Name,stu_Age,stu_Ger,teachId,group_Id) values(7,'wsdf',35,0,22,2)";
+			DaoManager fdm = new DaoManager();
+			int row = fdm.insertManager(sql);
+			System.out.println(row);
+		}
+>	
+		public void delete() throws SQLException
+		{
+			String sql = "delete from student where stu_Id=7";
+			DaoManager fdm = new DaoManager();
+			int row = fdm.deleteManager(sql);
+			System.out.println(row);
+		}
+>	
+		public void update() throws SQLException
+		{
+			String sql = "update student set stu_Age=stu_Age+10 where stu_Name like \"[a z]\" ";
+			DaoManager fdm = new DaoManager();
+			int row = fdm.updateManager(sql);
+			System.out.println(row);
+		}
+>	
+		public void find() throws SQLException
+		{
+			String sql = "select stu_Id,stu_Name,stu_Age from student";
+			DaoManager fdm = new DaoManager();
+			ResultSet mk = fdm.findManager(sql);
+			while (mk.next())
+			{
+				System.out.print(mk.getString("stu_Id") + " ");
+				System.out.print(mk.getString("stu_Name") + " ");
+				System.out.println(mk.getString("stu_Age"));
+			}
+			//对于查询而言，不能再使用结果集之前就关闭了结果集，所以要在DaoManager类中增加一个closeFunc()方法，以用于在使用了结果集ResultSet之后再关闭它
+			fdm.closeFunc();
+		}
+	}
+
+b. `DAO`层具体实现代码：
+>
+	package com.trilever.DAOManager;
+	import java.sql.Connection;
+	import java.sql.DriverManager;
+	import java.sql.ResultSet;
+	import java.sql.SQLException;
+	import java.sql.Statement;
+	public class DaoManager
+	{
+		private Connection conn = null;
+		private Statement stat = null;
+		private ResultSet rs = null;
+		private String driver = "com.mysql.jdbc.Driver";
+		private String url = "jdbc:mysql://localhost:3306/class";
+		private String user = "root";
+		private String password = "wt312041990";
+		private int row = 0;
+		public ResultSet findManager(String sql) throws SQLException
+		{
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				stat = conn.createStatement();
+				// 执行sql查询语句
+				rs = stat.executeQuery(sql);
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			}
+			return rs;
+		}
+>		
+		public int  insertManager(String sql) throws SQLException
+		{
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				stat = conn.createStatement();
+				// 执行sql查询语句
+				row = stat.executeUpdate(sql);
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			}
+			finally
+			{
+				this.closeFunc();
+			}
+			return row;
+		}
+>	
+		public int deleteManager(String sql) throws SQLException
+		{
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				stat = conn.createStatement();
+				// 执行sql查询语句
+				row = stat.executeUpdate(sql);
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			}
+			finally
+			{
+				this.closeFunc();
+			}
+			return row;
+		}
+>		
+		public int updateManager(String sql) throws SQLException
+		{
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				stat = conn.createStatement();
+				// 执行sql查询语句
+				row = stat.executeUpdate(sql);
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			}
+			finally
+			{
+				this.closeFunc();
+			}
+			return row;
+		}
+		//对于数据库的查询，返回的结果集ResultSet，在使用完结果集之前不能关闭该结果集，所以要专门用一个方法来专门关闭结果集。
+		public void closeFunc()
+		{
+			try
+			{
+				if (rs != null)
+				{
+					rs.close();
+					rs = null;
+				}
+				if (stat != null)
+				{
+					stat.close();
+					stat = null;
+				}
+				if (conn != null)
+				{
+					conn.close();
+					conn = null;
+				}
+			} catch (Exception e2)
+			{
+				e2.printStackTrace();
+				System.out.println("关闭失误！");
+			}
+		}
+	} 
+
+c. `DAO`层测试代码：
+>
+	package com.trilever.daoTest;
+	import java.sql.SQLException;
+	import com.trilever.DAO.*;
+	public class DAOTest
+	{
+		public static void main(String[] args) throws SQLException
+		{
+			new StudentDao().find();
+			new StudentDao().add();
+			new StudentDao().delete();
+			new StudentDao().update();
+		}
+	}
