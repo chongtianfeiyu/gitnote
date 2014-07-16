@@ -6262,6 +6262,7 @@ T-SQL编程中，变量有两种，局部变量与全局变量。
 
 如下即是一个针对`student`表的`DAO`层的具体实现： 
 
+1.0版本：  
 a. `DAO`层接口代码：
 >
 	package com.trilever.DAO;
@@ -6475,5 +6476,408 @@ c. `DAO`层测试代码：
 			new StudentDao().add();
 			new StudentDao().delete();
 			new StudentDao().update();
+		}
+	}
+
+
+
+2.0版本：  
+a. `DAO`层接口代码：  
+>
+	/*
+	 * 本类即是针对于student表的DAO层，主要提供功能就是数据的增删改查。
+	 */
+	package com.trilever.DAO;
+	import java.sql.*;
+	import com.trilever.DAOManager.*;
+	import com.trilever.entity.*;
+	public class StudentDao
+	{
+		public boolean add(Student stu) throws SQLException
+		{
+			String sql = "insert into student (stu_Id,stu_Name,stu_Age,stu_Ger,teachId,group_Id) values("
+					+ stu.getStu_Id()
+					+ ","
+					+ "'"
+					+ stu.getStu_Name()
+					+ "'"
+					+ ","
+					+ stu.getStu_Age()
+					+ ","
+					+ stu.isStu_Ger()
+					+ ","
+					+ stu.getTeachId() + "," + stu.getGroup_Id() + ")";
+			System.out.println(sql);
+			DaoManager fdm = new DaoManager();
+			int row = fdm.insertManager(sql);
+			if (row != 0)
+				return true;
+			else
+				return false;
+		}
+>	
+		public boolean delete(int id) throws SQLException
+		{
+			String sql = "delete from student where stu_Id=" + id;
+			System.out.println(sql);
+			DaoManager fdm = new DaoManager();
+			int row = fdm.deleteManager(sql);
+			if (row != 0)
+				return true;
+			else
+				return false;
+		}
+>	
+		public boolean update(Student stu) throws SQLException
+		{
+			String sql = "update student set stu_Age =" + stu.getStu_Age()
+					+ " where stu_Name='we'";
+			System.out.println(sql);
+			DaoManager fdm = new DaoManager();
+			int row = fdm.updateManager(sql);
+			if (row != 0)
+				return true;
+			else
+				return false;
+		}
+>	
+		public Student find(int id) throws SQLException
+		{
+			String sql = "select stu_Id,stu_Name,stu_Age,teachId, group_Id from student";
+			DaoManager fdm = new DaoManager();
+			ResultSet mk = fdm.findManager(sql);
+			Student stu = new Student();
+			while (mk.next())
+			{
+				stu.setStu_Id(mk.getInt("stu_Id"));
+				stu.setStu_Name(mk.getString("stu_Name"));
+				stu.setStu_Age(mk.getInt("stu_Age"));
+				stu.setStu_Ger(true);
+				stu.setTeachId(mk.getInt("teachId"));
+				stu.setGroup_Id(mk.getInt("group_Id"));
+			}
+			// 对于查询而言，不能再使用结果集之前就关闭了结果集，所以要在DaoManager类中增加一个closeFunc()方法，以用于在使用了结果集ResultSet之后再关闭它
+			fdm.closeFunc();
+			return stu;
+		}
+	}
+
+
+b. `DAO`层实体类代码：代表数据库中的任意一个实体，使代码更加面向对象。  
+	
+	package com.trilever.entity;
+	public class Student
+	{
+		private int stu_Id;
+		private String stu_Name;
+		private int stu_Age;
+		private boolean stu_Ger;
+		private int teachId;
+		private int group_Id;
+		public Student()
+		{
+			super();
+		}
+		public int getStu_Id()
+		{
+			return stu_Id;
+		}
+		public void setStu_Id(int stu_Id)
+		{
+			this.stu_Id = stu_Id;
+		}
+		public Student(int stu_Id, String stu_Name, int stu_Age, boolean stu_Ger,
+				int teachId, int group_Id)
+		{
+			super();
+			this.stu_Id = stu_Id;
+			this.stu_Name = stu_Name;
+			this.stu_Age = stu_Age;
+			this.stu_Ger = stu_Ger;
+			this.teachId = teachId;
+			this.group_Id = group_Id;
+		}
+		public Student(String stu_Name, int stu_Age, boolean stu_Ger, int teachId,
+				int group_Id)
+		{
+			super();
+			this.stu_Name = stu_Name;
+			this.stu_Age = stu_Age;
+			this.stu_Ger = stu_Ger;
+			this.teachId = teachId;
+			this.group_Id = group_Id;
+		}
+		@Override
+		public String toString()
+		{
+			return "Student [stu_Name=" + stu_Name + ", stu_Age=" + stu_Age
+					+ ", stu_Ger=" + stu_Ger + ", teachId=" + teachId
+					+ ", group_Id=" + group_Id + "]";
+		}
+		@Override
+		public boolean equals(Object arg0)
+		{
+			// TODO Auto-generated method stub
+			return super.equals(arg0);
+		}
+		public String getStu_Name()
+		{
+			return stu_Name;
+		}
+		public void setStu_Name(String stu_Name)
+		{
+			this.stu_Name = stu_Name;
+		}
+		public int getStu_Age()
+		{
+			return stu_Age;
+		}
+		public void setStu_Age(int stu_Age)
+		{
+			this.stu_Age = stu_Age;
+		}
+		public int isStu_Ger()
+		{
+			if (stu_Ger = true)
+				return 1;
+			else
+				return 0;
+		}
+		public void setStu_Ger(boolean stu_Ger)
+		{
+			this.stu_Ger = stu_Ger;
+		}
+		public int getTeachId()
+		{
+			return teachId;
+		}
+		public void setTeachId(int teachId)
+		{
+			this.teachId = teachId;
+		}
+		public int getGroup_Id()
+		{
+			return group_Id;
+		}
+		public void setGroup_Id(int group_Id)
+		{
+			this.group_Id = group_Id;
+		}
+	}
+
+c. `DAO`层具体实现代码：
+>
+	/*
+	 * 本类就是DAO层增、删、改、查各方法的具体实现
+	 */
+	package com.trilever.DAOManager;
+	import java.sql.Connection;
+	import java.sql.DriverManager;
+	import java.sql.ResultSet;
+	import java.sql.SQLException;
+	import java.sql.Statement;
+	public class DaoManager
+	{
+		private Connection conn = null;
+		private Statement stat = null;
+		private ResultSet rs = null;
+		private String driver = "com.mysql.jdbc.Driver";
+		private String url = "jdbc:mysql://localhost:3306/class";
+		private String user = "root";
+		private String password = "wt312041990";
+		private int row = 0;
+		public ResultSet findManager(String sql) throws SQLException
+		{
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				stat = conn.createStatement();
+				// 执行sql查询语句
+				rs = stat.executeQuery(sql);
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			}
+			return rs;
+		}
+>
+		public int insertManager(String sql) throws SQLException
+		{
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				stat = conn.createStatement();
+				// 执行sql查询语句
+				row = stat.executeUpdate(sql);
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			}
+			finally
+			{
+				this.closeFunc();
+			}
+			return row;
+		}
+>	
+		public int deleteManager(String sql) throws SQLException
+		{
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				stat = conn.createStatement();
+				// 执行sql查询语句
+				row = stat.executeUpdate(sql);
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			}
+			finally
+			{
+				this.closeFunc();
+			}
+			return row;
+		}
+>		
+		public int updateManager(String sql) throws SQLException
+		{
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				stat = conn.createStatement();
+				// 执行sql查询语句
+				row = stat.executeUpdate(sql);
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			}
+			finally
+			{
+				this.closeFunc();
+			}
+			return row;
+		}
+		//对于数据库的查询，返回的结果集ResultSet，在使用完结果集之前不能关闭该结果集，所以要专门用一个方法来专门关闭结果集。
+		public void closeFunc()
+		{
+			try
+			{
+				if (rs != null)
+				{
+					rs.close();
+					rs = null;
+				}
+				if (stat != null)
+				{
+					stat.close();
+					stat = null;
+				}
+				if (conn != null)
+				{
+					conn.close();
+					conn = null;
+				}
+			} catch (Exception e2)
+			{
+				e2.printStackTrace();
+				System.out.println("关闭失误！");
+			}
+		}
+	}
+
+c. `DAO`层测试代码：有一种软件编写方法是面向测试的编程，即先写出测试代码，然后再写主程序。  
+>
+	/*
+	 * 本类就是DAO层的测试类
+	 */
+	package com.trilever.daoTest;
+	import java.sql.SQLException;
+	import com.trilever.DAO.*;
+	import com.trilever.entity.*;
+	public class DAOTest
+	{
+		public static void main(String[] args) throws SQLException
+		{
+			DAOTest dt = new DAOTest();
+			dt.findTest();
+		}
+>	
+		public void addTest() throws SQLException
+		{
+			Student stu = new Student(13, "wssgsdgs", 35, false, 23, 2);
+			StudentDao stuD = new StudentDao();
+			boolean result = stuD.add(stu);
+			if (result == true)
+			{
+				System.out.println("增加数据成功");
+			} else
+				System.out.println("增加数据失败");
+		}
+>	
+		public void deleteTest() throws SQLException
+		{
+			int id = 10;
+			StudentDao stuD = new StudentDao();
+			boolean result = stuD.delete(id);
+			if (result == true)
+			{
+				System.out.println("刪除数据成功");
+			} else
+				System.out.println("刪除数据失败");
+		}
+>	
+		public void updateTest() throws SQLException
+		{
+			Student stu = new Student(12, "wssgsdgs", 35, false, 23, 2);
+			StudentDao stuD = new StudentDao();
+			boolean result = stuD.update(stu);
+			if (result == true)
+			{
+				System.out.println("修改数据成功");
+			} else
+				System.out.println("修改数据失败");
+		}
+>	
+		public void findTest() throws SQLException
+		{
+			StudentDao stuD = new StudentDao();
+			Student result = stuD.find(1);
+			System.out.println(result);
 		}
 	}
