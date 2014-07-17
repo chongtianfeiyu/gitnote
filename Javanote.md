@@ -6880,3 +6880,154 @@ c. `DAO`层测试代码：有一种软件编写方法是面向测试的编程，
 			System.out.println(result);
 		}
 	}
+
+#Java中的PraparedStatement
+-----
+`PraparedStatement`这个接口继承了`Statement`接口。  
+当在`Java`中依次执行多条`SQL`语句时，如果这些`SQL`语句的结构都相同只是语句的参数不同，那么在使用`Statement`进行`SQL`语句的执行就会将`SQL`语句发送给数据库服务器，然后数据库依次编译每一条`SQL`语句并执行，这样就会导致多次编译的问题，实际上这些语句的结构都是相同的，用不着多次编译。  
+此时就可以使用`PraparedStatement`来执行`SQL`语句了。这样就可以是结构相同参数不同的语句只编译一次，提升效率。实际上就是采用预编译机制。
+
+使用`PraparedStatement`有两种方式：  
+使用示例1：
+>	
+	package com.trilever.SQL;
+	import java.sql.Connection;
+	import java.sql.DriverManager;
+	import java.sql.PreparedStatement;
+	import java.sql.ResultSet;
+	import java.sql.SQLException;
+	import java.sql.Statement;
+	public class PreparedStatementTest
+	{
+		public static void main(String[] args) throws SQLException
+		{
+			Connection conn = null;
+			Statement stat = null;
+			ResultSet rs = null;
+			String driver = "com.mysql.jdbc.Driver";
+			String url = "jdbc:mysql://localhost:3306/class";
+			String user = "root";
+			String password = "wt312041990";
+			int row = 0;
+			PreparedStatement pst = null;
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				// 执行sql查询语句
+				String sql = "insert into student (stu_Id,stu_Name,stu_Age,stu_Ger,teachId,group_Id) values(?,?,?,?,?,?)";
+				//创建一个PreparedStatement对象，以后可以向这个对象中传递参数。
+				pst = conn.prepareStatement(sql);
+>	
+				// 可以直接无数次向这个语句中传递参数，这样可以让数据库只编译一次这个语句，但是可以执行n次SQL语句。
+				pst.setInt(1, 20);
+				pst.setString(2, "trilever");
+				pst.setInt(3, 18);
+				pst.setByte(4, (byte) 1);
+				pst.setInt(5, 22);
+				pst.setInt(6, 1);
+				row = pst.executeUpdate();
+				System.out.println(row);
+>	
+				// 可以直接无数次向这个语句中传递参数，这样可以让数据库只编译一次这个语句，但是可以执行n次SQL语句。
+				pst.setInt(1, 21);
+				pst.setString(2, "trileverwt");
+				pst.setInt(3, 18);
+				pst.setByte(4, (byte) 1);
+				pst.setInt(5, 22);
+				pst.setInt(6, 1);
+				row = pst.executeUpdate();
+				System.out.println(row);
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			} finally
+			{
+				conn.close();
+				pst.close();
+			}
+		}
+	}
+
+示例2：使用`addBatch()`
+>
+	package com.trilever.SQL;
+	import java.sql.Connection;
+	import java.sql.DriverManager;
+	import java.sql.PreparedStatement;
+	import java.sql.ResultSet;
+	import java.sql.SQLException;
+	import java.sql.Statement;
+	public class BatchPreparedStatementTest
+	{
+		public static void main(String[] args) throws SQLException
+		{
+			Connection conn = null;
+			Statement stat = null;
+			ResultSet rs = null;
+			String driver = "com.mysql.jdbc.Driver";
+			String url = "jdbc:mysql://localhost:3306/class";
+			String user = "root";
+			String password = "wt312041990";
+			int row = 0;
+			PreparedStatement pst = null;
+			try
+			{
+				// 装载、注册类
+				Class.forName(driver);
+				// 修建Java应用程序与数据库之间连接的路径
+				conn = DriverManager.getConnection(url, user, password);
+				if (!conn.isClosed())
+				{
+					System.out.println("connects succees!");
+				}
+				// 创建用于数据运输的车
+				// 执行sql查询语句
+				String sql = "insert into student (stu_Id,stu_Name,stu_Age,stu_Ger,teachId,group_Id) values(?,?,?,?,?,?)";
+				//创建一个PreparedStatement对象，以后可以向这个对象中传递参数。
+				pst = conn.prepareStatement(sql);
+>	
+				// 可以直接无数次向这个语句中传递参数，这样可以让数据库只编译一次这个语句，但是可以执行n次SQL语句。
+				pst.setInt(1, 23);
+				pst.setString(2, "trilever");
+				pst.setInt(3, 18);
+				pst.setByte(4, (byte) 1);
+				pst.setInt(5, 22);
+				pst.setInt(6, 1);
+				//将参数集加入到批处理中
+				pst.addBatch();
+>				
+				pst.setInt(1, 24);
+				pst.setString(2, "trileverwt");
+				pst.setInt(3, 18);
+				pst.setByte(4, (byte) 1);
+				pst.setInt(5, 22);
+				pst.setInt(6, 1);
+				//将参数集加入到批处理中,用这种批处理的方法，可以让处理大量的同结构的SQL语句更加快捷。
+				pst.addBatch();
+				int[] rows = pst.executeBatch();
+				for(int n:rows)
+				{
+					System.out.println(n);
+				}
+			} catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+				System.out.println("包没有找到");
+			} finally
+			{
+				conn.close();
+				pst.close();
+			}
+		}
+	}
+
+
