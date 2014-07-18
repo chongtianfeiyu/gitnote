@@ -7664,3 +7664,151 @@ e. `DAO`层测试代码：有一种软件编写方法是面向测试的编程，
 			a=10;
 		}
 	}
+
+
+##工厂模式
+`Factory`模式
+当我们的程序中需要多种类对象的时候，可以创建一个`Factory`类，专门用于创建类对象。这些类具有相同的特性，都实现了某一个接口，然后面向接口编程。即可实现工厂模式。
+
+##观察者模式
+`Observer`模式：是对象的行为模式，又称为发布-订阅模式(`Public/Subscribe`),源-监听模式(`Source/Lisetener`)模式。  
+
+`AWT/Swing`的事件处理中使用了观察者模式。使用了委托事件模型：对事件的处理并不是由事件源本身去处理的，而是委托交由其它的对象进行处理。
+
+几个概念：  
+1. 事件源：产生事件的源头。事件发生的目的对象。也即是**被观察者**  
+2. 事件对象：封装了事件的详细信息的对象。  
+3. 事件处理者:对事件的处理并不是由事件源本身完成的，而是委托事件处理者进行处理的。也就是**观察者**，观察者可以有多个。  
+事件处理者能处理事件的前提是：事件处理者(观察者)在事件源(被观察者)那里进行过注册。
+
+观察者模式定义了一个一对多的依赖关系，让一个或多个观察者对象监视一个呗观察者。  
+这样，当一个被观察者在状态上的变化能够通知所有的依赖与该被观察者对象的那些观察者对象的时候，这些观察者对象就能够对此做出反应。
+
+观察者模式示例如下：  
+a.被观察者：
+>
+	package com.trilever;
+	import java.util.LinkedList;
+	import java.util.List;
+	public class Arvil
+	{
+		//事件本身
+		Event e = new Event();
+		List<Iboy> Iboys = new LinkedList<>();
+		//注册观察者
+		public void addListenner()
+		{
+			Iboys.add(new Jim());
+			Iboys.add(new Lilei());
+		}
+		//产生事件
+		public void setEvent(int i)
+		{
+			e.happy=i;
+		}
+		public List<Iboy> getBoys()
+		{
+			return Iboys;
+		}
+	}
+	
+b. 观察者接口，因为一个被观察者可以被多个观察者观察。
+>
+	package com.trilever;
+	//观察者接口，相当于Swing中的ActionListenner接口，我们需要使用匿名内部类来获得这个ActionListenner接口的实例对象
+	public interface Iboy
+	{
+		public void makeHappy(Event e);
+	}
+
+c. 观察者1
+>
+	package com.trilever;
+	//实际观察者1
+	public class Jim implements Iboy
+	{
+		@Override
+		public void makeHappy(Event e)
+		{
+			switch (e.happy)
+			{
+			case 0:
+				System.out.println("jim0");
+				break;
+>	
+			case 1:
+				System.out.println("jim1");
+				break;
+>	
+			case 2:
+				System.out.println("jim2");
+				break;
+>	
+			default:
+				break;
+			}
+		}
+	}
+
+d. 观察者2
+>
+	package com.trilever;
+	//观察者2
+	public class Lilei implements Iboy
+	{
+		@Override
+		public void makeHappy(Event e)
+		{
+			switch (e.happy)
+			{
+			case 0:
+				System.out.println("lilei0");
+				break;
+>	
+			case 1:
+				System.out.println("lilei1");
+				break;
+>	
+			case 2:
+				System.out.println("lilei2");
+				break;
+>	
+			default:
+				break;
+			}
+		}
+	}
+
+e. 事件：
+>
+	package com.trilever;
+	//事件对象，对事件的封装，目的是提供给观察者。
+	public class Event
+	{
+		int happy = 0;
+		public void setHappy(int i)
+		{
+			this.happy = i;
+		}
+	}
+
+f. 测试类：
+>
+	package com.trilever;
+	//测试类
+	public class ObserverLTest
+	{
+		public static void main(String[] args)
+		{
+			Arvil a = new Arvil();
+			a.addListenner();
+			a.setEvent(2);
+			for (Iboy i : a.getBoys())
+			{
+				i.makeHappy(a.e);
+			}
+		}
+	}
+
+
+
