@@ -1,9 +1,9 @@
 #Java基础知识
 ---
-1. Java源代码->.class文件（字节码）->机器码(二进制码)  
-源代码与.class文件(字节码)之间是Java编译器，字节码与机器码之间是JVM(Java虚拟机)
-2. Java中，applet是用于在浏览器段运行的程序，servlet是用于在服务器端运行的程序。因此，applet相当于javascript运行在浏览器段。servlet相当于PHP运行在服务器端。Java对服务器端与浏览器端都进行了扩展。
-3. Node.Js就是在浏览器端运行的PHP代码。
+1. `Java`源代码->`.class`文件（字节码）->机器码(二进制码)  
+源代码与`.class`文件(字节码)之间是`Java`编译器(`JDK`)，字节码与机器码之间是`JVM`(`Java`虚拟机)
+2. `Java`中，`applet`是用于在浏览器段运行的程序，`servlet`是用于在服务器端运行的程序。因此，`applet`相当于`javascript`运行在浏览器段。`servlet`相当于`PHP`运行在服务器端。`Java`对服务器端与浏览器端都进行了扩展。
+3. `Node.Js`就是在浏览器端运行的PHP代码。
 4. 
 `Java se`:桌面应用
 
@@ -15,14 +15,14 @@
 `Java`源代码->二进制代码（平台无关）->`linux`(`windows`)机器码
          编译器                   JVM 
 
-如果只运行`java`程序，安装`JRE`即可。如果编写`java`程序，那就还需要安装`JDK`。
-
-
-    JRE=JVM+一些核心的库
+如果只运行`Java`程序，安装`JRE`即可。如果编译`Java`程序，那就还需要安装`JDK`。
+>
+	JDK=JRE+.java文件被编译时所需的一些类库
+    JRE=JVM+.class文件运行时所需的一些的库
 
 实际安装中，其实`JDK`中本来就带有`JRE`，所以不用另外安装公共`JRE`。安装`JDK`即可。
 
-`Java/Bin`目录：`java`提供的各种工具，如`javac` ，`javap`等
+`Java/Bin`目录：`Java`提供的各种工具，如`javac` ，`javap`等
 
 在安装`JDK`设置环境变量的时候。`Path`中加入的是`JDK`的`bin`目录路径。  
 这个路径下面是各种`java`工具。系统会在这些路径下查找我们所需要的工具。这个路径是给`shell`使用的。
@@ -1727,12 +1727,13 @@ B、在外部类之外使用static内部类的时候。
 通过`-e`选项告诉`jvm`哪一个`class`才是整个项目的主类。
 >
 	jar -cvfe myname.jar hello *.class//后面的说明hello.class是主类，*.class表示压缩文件的来源为目录下所有的class文件。
-产生的文件在已经装了JVM的情况下可以点击运行。  
+产生的文件在已经装了`JVM`的情况下可以点击运行。  
 如果没有安装JVM，可以使用：
 >
 	java -jar my.jar来进行运行。//用于运行控制台程序。
 	javaw -jar my.jar//这是用于运行界面程序。
 
+`Ant`工具是一个更强大的生成`jar`包的工具。
 
 Java中的入口方法
 ------------------------
@@ -2921,11 +2922,11 @@ b. loadFactor：负载因子。
 ----------------
 
 
-
+-----------
 #Java中的输入与输出
 -----------
-所谓的输入与输出，实际上就是以内存为中心，硬盘↔内存，内存→显示屏，键盘→内存。这三者之间的信息传输的过程。
-
+所谓的输入与输出，实际上就是以*内存为中心*，硬盘↔内存，内存→显示屏，键盘→内存，网络↔内存。这三者之间的信息传输的过程。
+##基础知识
 `File`类：代表硬盘里面的一个文件或者目录。  
 `File`类的方法：  
 1. `listRoots()`：列出所有的根目录。  
@@ -2935,19 +2936,114 @@ b. loadFactor：负载因子。
 5. `listFiles()`：列出当前目录下所有的文件。  
 6. `listFiles(FileFilter filter)`：列出当前目录下符合条件的文件与目录。  
 7. `listFiles(FilenameFilter filter)`：列出当前目录下符合条件的文件与目录。  
-  
-`I/O`流：`File`类只能访问磁盘中的文件与目录，但是不能读取文件。  
-如果要读取文件，就需要使用`I/O`流。  
-按流的方向来分：  
->
-输入、输出流都是在内存的角度来看的。  
 
-按流处理的数据来分：  
+`File`类使用示例：  
+> 
+	import java.io.*;
+	import java.util.*;
+	public class fileTest
+	{
+		public static void main(String[] args) 
+		{
+			//get the path of the file.
+			File file = new File("E:/git/git_note");
+			System.out.println(file.getPath());
+>			
+			//list the roots of the disk
+			File[] roots = File.listRoots(); 
+			System.out.println(Arrays.toString(roots));
+>			
+			//verify the existense of the directory then mkdir
+			File file1 = new File("git_note");
+			System.out.println(file1.exists());
+			if(!file1.exists())
+			{
+				file1.mkdir();
+			}	
+>			
+			File file2 = new File("E:/Books");
+			//list the directories in the disk
+			File[] file3 = file2.listFiles();
+			for(File temp_file:file3)
+			{
+				System.out.println(temp_file);
+			}
+>					
+			//list all the  files with specified suffin in the directory		
+			myFilterlist(file2);
+			//list all the files in the directory	
+			mylist(file2);
+		}
+>	
+		//list all the  files with specified suffin in the directory
+		public static void myFilterlist(File dir) 
+		{
+			File[] temp = dir.listFiles(new FileFilter()
+				{
+				public boolean accept(File pathname) 
+				{
+					try
+					{
+						if(pathname.getCanonicalPath().endsWith(".txt"))
+							{
+								return true;
+							}
+					}
+					catch(IOException ex)
+					{
+						ex.printStackTrace();
+					}
+					return false;
+				}
+				}
+				);
+				for(File f2:temp)
+				{	
+					System.out.println(f2);
+				}
+>							
+				File[] temp1 = dir.listFiles();
+				for(File f1:temp1)
+				{
+					if(f1.isDirectory())
+						{
+							myFilterlist(f1);
+						}
+				}
+		}
+>		
+		//list all the files in the directory
+		public static void mylist(File dir) 
+		{
+			if(dir.isDirectory())
+			{
+				File[] temp = dir.listFiles();
+				for(File f2:temp)
+				{	
+					if(f2.isFile())
+					{
+						System.out.println(f2);
+					}
+					else
+					mylist(f2);
+				}
+			}
+		}
+	}
+ 
+`I/O`流：`File`类只能访问磁盘中的文件与目录*名字与路径*，但是不能*读取文件*。  
+如果要读取文件，就需要使用`I/O`流。  
+
+按**流的方向**来分：  
+分为输入、输出流。  
+注：输入、输出流都是在内存的角度来看的。  
+
+按**流处理的数据类型**来分：  
 >
 字节流：处理的对象是字节。功能强大，例如：图片、音乐。  
 字符流：处理的对象时字符。主要用于文本文件，如：`txt`文件。处理文本文件时，比字节流更方便。
 
-按流的角色来分：  
+按**流的角色**来分：  
 >
 节点流：直接与一个`I/O`的物理节点（如，磁盘上的文件、网络等）关联。  
 包装流(处理流/过滤流)：以节点流为基础，包装之后得到的流。  
@@ -2955,30 +3051,36 @@ b. loadFactor：负载因子。
 常用的有4个抽象流类：  
 `InputStream`、`OutputStream`：字节流。  
 `Reader`、`Writer`：字符流。  
-所有的`I/O`流都是以以上的四个流为基础的。
-  
-**一个流对象相当于一根水管**，里面的每一滴水就相当于一个数据单元，如果是字节流，那就是一个字节。如果是字符流，那就相当于一个字符。  
-对于输入流而言，创建一个输入流对象的时候，里面就有数据。  
-例如:将一个文件`File`对象包装进一个输入流对象。里面就拥有了水滴。我们要做的就是将这个输入流对象中的那些数据传送到程序中，也就是内存中。  
-对于输出流而言，是不同的。创建一个输出流对象的时候，里面是没有数据的，也就是说里面没有水滴，我们所要做的就是将程序中所产生的数据传送到这个空水管中。  
+所有的`I/O`流都是以上的四个流为**基础**的。
 
-下面从流的角色分类进行讨论：  
-A. 节点流类：  
+##各种流类的使用  
+**一个流对象相当于一根水管**，里面的每一滴水就相当于一个数据单元，如果是字节流，那就是一个字节。如果是字符流，那就相当于一个字符。  
+  
+a. 对于输入流而言，创建一个输入流对象的时候，里面就有数据。  
+例如:  
+将一个文件`File`对象包装进一个输入流对象。里面就拥有了水滴。我们要做的就是将这个输入流对象中的那些数据传送到程序中，也就是内存中。  
+b. 对于输出流而言，是不同的。创建一个输出流对象的时候，里面是没有数据的，也就是说里面没有水滴，我们所要做的就是将程序中所产生的数据传送到这个空水管中。
+  
+按照节点流类与包装流类进行分类：
+节点流类：表示与一个外界的实体相连接的流类。如，文件、网络等。  
+包装流类：不是直接与外界实体相连接，而是将节点流类进行包装之后的流类，功能更强大。
+
+###节点流类  
 a. 文件节点流（与文件相连接，对文件内容进行操作）。  
 b. 数组节点流（与字节、字符数组相连接，对数组内容进行操作）。  
 c. 管道节点流（与管道相连接，对管道内容进行操作）。  
 d. 字符串节点流（与字符串相连接，对字符串内容进行操作）。  
 
 
-**文件节点流**：用于访问文件的节点流。他们和文件相连接。  
-`FileInputStream`、`FileOutputStream`：字节流。  
-`FileReader`、`FileWriter`：字符流。  
+**文件节点流**：用于*访问文件的节点流*。他们和文件相连接。  
+`FileInputStream`、`FileOutputStream`：文件字节流。  
+`FileReader`、`FileWriter`：文件字符流。  
 
 `FileInputStream`方法：  
-1. `read()/read(byte[] b)`：将文件中的字节读入到内存中。  
+ `read()/read(byte[] b)`：将文件中的字节读入到内存中。  
 
 `FileOutputStream`方法：  
-1. `write(byte[] b)`：将内存中的`byte`数组写入到文件中。
+ `write(byte[] b)`：将内存中的`byte`数组写入到文件中。
 
 文件节点流类使用举例：
 >
@@ -3045,37 +3147,111 @@ d. 字符串节点流（与字符串相连接，对字符串内容进行操作�
 
 
 **管道节点流类**：用于访问管道。它们和管道相连接。  
-`PipedInputStream`、`PipedOutputStream`：访问管道流类。  
-`PipedReader`、`PipedWriter`：访问管道流类。  
-所谓的管道：两个进程之间进行通信的连接。
+`PipedInputStream`、`PipedOutputStream`：访问管道字节流类。  
+`PipedReader`、`PipedWriter`：访问管道流字符流类。  
+所谓的管道：两个线程之间进行通信的连接。所以要使用管道节点流类，需要运行两个线程，内存中的两个线程都与管道相连接，其中一个线程具有管道输入流对象，另一个线程具有管道输出流对象。然后两个线程就可以通过管道进行线程间数据的传输。  
+管道节点流使用示例：  
+>
+	import java.io.*;
+	class sender extends Thread
+	{
+		private PipedOutputStream out=new PipedOutputStream();
+		public  PipedOutputStream getPipeOutputStream()
+		{
+			return out;
+		}
+		public void run()
+		{
+			String s=new String("hi,how are you");
+			try
+			{
+				out.write(s.getBytes());
+				out.close();
+			}
+			catch(IOException e)
+			{
+				System.out.println(e.getMessage());
+			}
+		}
+	}
+	class reciever extends Thread
+	{
+		private PipedInputStream in=new PipedInputStream();
+		public PipedInputStream getPipeInputStream()
+		{
+			return in;
+		}
+		public void run()
+		{
+			byte[] buf=new byte[1024];
+			String str=null;
+			try
+			{
+				int len=in.read(buf);
+				str=new String(buf,0,len);
+				System.out.println(str);
+				in.close();
+			}
+			catch(IOException e)
+			{
+				System.out.println(e.getMessage());
+			}
+		}
+	}
+	public class pipeStreamTestDrive
+	{
+		public static void main(String args[])throws Exception
+		{
+			sender s=new sender();
+			reciever r=new reciever();
+			PipedOutputStream outs=s.getPipeOutputStream();
+			PipedInputStream ins=r.getPipeInputStream();
+			outs.connect(ins);
+			s.start();
+			r.start();
+		}
+	}
+
 
 **字符串节点流类**：用于访问字符串。他们与字符串相连接。它们就没有字节流类了，只有字符流类。  
 `StringReader`、`StringWriter`：访问字符串流类。以字符串作为节点。  
 
+字符串节点流类使用示例：
+>
 
-System.in就是一个字节流对象，其就是和键盘相联系的。  
-System.out也是一个字节流对象，是与显示器相联系的。
-B. 包装流类：就是将别的流类包装成新的流类。节点流是直接与I/O节点（文件、键盘、网络、磁盘等）相关联，包装之后成为包装类效率更高。   
+`System.in`就是一个字节流对象，其就是和键盘相联系的。  
+`System.out`也是一个字节流对象，是与显示器相联系的。
+
+###包装流类
+就是将*节点流类包装成新的流类*。节点流是直接与`I/O`节点（文件、键盘、网络、磁盘等）相关联，包装之后成为包装类效率更高。   
 a. 缓冲流类。  
 b. 过滤流类。  
 c. 打印流类。  
 d. 转换流类。  
 
-**缓冲流类**：由于内、外存的读取速度不一样。所以需要缓冲流类来进行缓冲。缓冲流类实际上是通过*将其他的节点流类包装形成的新的缓冲流类*。建立于过滤流之上。其好处是可以调用`readLine()`每次读取一行。
-`BufferedInputStream`、`BufferedOutputStream`：实际上是`inputStream`、`outputStream`包装而成的流类。  
-`BufferedReader`、`BufferedWriter`：实际上是`Reader`、`Writer`包装而成的流类。    
+注意：所有的流类，无论是节点流类还是包装流类，全部都继承自`inputStream`、`outputStream`、`Reader`、`Writer`流类。
 
-**过滤流类**：实际中我们在程序中并不是直接使用节点流类，而是使用通过包装各节点流类的过滤流类。实际上过滤流类是*抽象类*，不能直接将过滤流类进行示例话。所以，都是通过包装成*缓冲流类*进行使用的。  
+**缓冲流类**：由于内、外存的读取速度不一样。所以需要缓冲流类来进行缓冲。  
+缓冲流类实际上是通过*将其他的节点流类包装形成的新的缓冲流类*。建立于过滤流之上。其好处是可以调用`readLine()`每次读取一行。  
+由缓冲流类的构造方法可以看出：缓冲流类对象实际上都是`inputStream`、`outputStream`、`Reader`、`Writer`流对象包装而成的。   
+`BufferedInputStream`、`BufferedOutputStream`：实际上是`inputStream`、`outputStream`对象包装而成的流类。  
+`BufferedReader`、`BufferedWriter`：实际上是`Reader`、`Writer`对象包装而成的流类。
+ 
+
+**过滤流类**：实际中我们在程序中并不是直接使用节点流类，而是使用通过包装各节点流类的过滤流类。一般都是将*过滤流类*包装成*缓冲流类*进行使用的。  
 使用过滤流的优点：  
 1. 其建立在节点流的基础之上，可以消除节点流之间的差异，这样就会更加方便地进行面向过滤流编程。  
-2. 使用过滤流的方法进行**I/O**更加便捷。  
-`FilterInputStream`、`BufferedOutputStream`:  
+2. 使用过滤流的方法进行`I/O`更加便捷。  
+`FilterInputStream`、`FilterOutputStream`:  
 `FilterReader`、`FilterWriter`：
 
-**打印流类**：用于在屏幕、打印机等上面打印的流类。
-`printStream`、`printWriter`：分别是`FileOutputStream`、`FileWriter`这两个节点流包装而来。包装之后更加方便。
+过滤流类使用示例如下：
+>
 
-**转换流类**：用于将字节流转换为字符流。很有用。  
+**打印流类**：用于在屏幕、打印机等上面打印的流类。
+`printStream`、`printWriter`：分别是由`FileOutputStream`、`FileWriter`这两个节点流包装而来。包装之后更加方便。前者用于在屏幕上打印，后者用于在打印机上打印。
+
+**转换流类**：用于将*字节流转换为字符流*。很有用。  
 `InputStreamReader`、`OutputStreamWriter`:转换流类。
 
 转换流类、缓冲流类使用示例：
@@ -3100,20 +3276,51 @@ d. 转换流类。
 			{
 				System.out.println(tempstr);
 			}
->		
 		}
 	}
 
 
 **两个特殊的流对象**：`DataInputStream`、`DataOutputStream`,它们继承了过滤流。  
 它们的特点就是：拥有的方法更多，可以读、写各种数据。  
+`Data`流对象使用示例：
+>
+	import java.io.*;
+	public class DataStreamTest
+	{
+		public static void main(String[] args) throws Exception
+		{
+			//construct a Stream class
+			FileOutputStream fis= new FileOutputStream("E:/Java_source/fileStreamTest1.java");
+>			
+			//construct the DataOutputStream. 
+			DataOutputStream dos = new DataOutputStream(fis);
+>	
+			//write the string into the file
+			String tempstr = new String("hello");
+			dos.writeBytes(tempstr);
+			dos.close();
+>			
+			//construct a Stream class
+			FileInputStream fis1= new FileInputStream("E:/Java_source/fileStreamTest.java");
+>	
+			//construct the DataInputStream.
+			DataInputStream dis = new DataInputStream(fis1);
+>			
+			//read the string from the file
+			byte[] by = new byte[1280];
+			dis.readFully(by); 
+			String str = new String(by);
+			System.out.println(str);
+			dis.close();
+		}
+	}
 
 所有以`InputStream`结尾的流类都是*字节输入流*。  
 所有以`OutputStream`结尾的流类都是*字节输出流*。  
 所有以`Reader`结尾的流类都是*字符输入流*。  
 所有以`Writer`结尾的流类都是*字符输入流*。  
 
-**两个特殊的流对象**：`ObjectInputStream`、`ObjectOutputStream`，这两个类是用于序列化储存对象或者。见Java中的序列化。  
+**两个特殊的流对象**：`ObjectInputStream`、`ObjectOutputStream`，这两个类是用于序列化储存对象。见`Java`中的序列化。  
 
 
 Java中的序列化
@@ -6183,8 +6390,8 @@ T-SQL编程中，变量有两种，局部变量与全局变量。
 6. 关闭释放资源。
 
 ##桥连与直连
-以上的JDBC就是所谓的**直连**，也就是说，当一个数据库实现了JDBC规范，那么就可以直接通过相应的API来连接数据库。但是，如果某些数据库(如、微软单机数据库Access)没有实现JDBC规范，而是实现了ODBC规范。那么就不能进行直连了。  
-桥连：Java中提供了JDBC-ODBC桥，这样就可以通过JDBC连接ODBC，然后再连接至数据库。这就是所谓的桥连。只有Access才用桥连，其他都用直连。
+以上的`JDBC`就是所谓的**直连**，也就是说，当一个数据库实现了`JDBC`规范，那么就可以直接通过相应的`API`来连接数据库。但是，如果某些数据库(如、微软单机数据库`Access`)没有实现`JDBC`规范，而是实现了`ODBC`规范。那么就不能进行直连了。  
+桥连：`Java`中提供了`JDBC-ODBC`桥，这样就可以通过`JDBC`连接`ODBC`，然后再通过`ODBC`连接至数据库。这就是所谓的桥连。只有`Access`才用桥连，其他都用直连。
 
 
 #Java中的DAO层
