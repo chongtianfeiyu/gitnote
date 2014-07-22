@@ -1251,60 +1251,6 @@ ClassCastException：类型转换异常：非引用子类对象的父类引用�
 `Anotation`是一个接口，`Override`之类的都是它的实现类。
 获取注解对象只有一种方法：反射。
 
-#Java中的XML
---------------
-数据存储的几种方式：  
-1. 键值对形式，name：“li”  
-2. `XML`描述  
-3. 数据库，可以存储数据和操作数据
-数据量比较大的时候，使用数据库。
-扩展性(`Extended`)标识语言，用于标识描述数据信息。其是`SGML`标识语言的简化。
-  
-再，由于`HTML`语言的语法不够严谨，所以在`HTML`4.0.1版本之后，将其过渡至`XHTML`(扩展性`Extended`）语言,`XHTML`更加严谨、规范。`XHTML`可以理解为是`HTML`向`XML`语言过渡的中间产物。  
-
-`HTML`与`XML`之间的区别在于：  
-1. `HTML`是固定标识，只能写它能识别的标识。`XML`中的标签可以自由定义。  
-2. `HTML`较为随意，`XML`很严谨。  
-3. `HTML`将数据和其显示结合在一起，不方便对数据进行操作。`XML`将数据与其显示分开，纯粹对数据进行描述。数据描述是数据描述，显示是显示。
-
-`XML`的好处：  
-1. 结构严谨，规范。  
-2. 是标准的数据交换文件，已用于通用的配置信息文件。  
-3. 结构简单，便于书写，增强阅读性。  
-4. 将数据进行结构化，是数据之间具有明确的层次关系。
-
-`XML`文档示例：  
->
-	<?xml version="1.0"?>
-	<students>
-		<student>
-			<name>zhangsan</name>
-			<age>20</age>
-		</student>
->		
-		<student>
-			<name>lisi</name>
-			<age>22</age>
-		</student>
->		
-		<student>
-			<name>wangwu</name>
-			<age>21</age>
-		</student>
->		
-		<student>
-			<name>zhaoliu</name>
-			<age>23</age>
-		</student>
-	</students>
- 
-`XML`文档中**只能有一个顶层元素**。如上面的`<students>`这个元素，也叫根元素。也就是最外层的标签，只能有一个。
-
-`CDATA`区：当我们的文档中，某一段数据不想被解析，只希望作为单纯的字符而已。那么，可以将这段字符放在CDATA区，放在<![CDATA[ *数据* ]]>标签里面。这样，里面的数据就能够不解析，而是作为单纯的字符。
-
-XML中所有标记的属性值必须用""或者''括起来。
-
-XML中名字可以使用字母、数字、中文（需要在XML声明的时候知道encoding属性)
 
 
 
@@ -6474,6 +6420,57 @@ T-SQL编程中，变量有两种，局部变量与全局变量。
 3. 但列中的值的重复性高，就不要对其加索引  
 4. 当数据表过短不必建立索引
 
+##SQL中的存储过程
+过程：就是方法、函数。
+存储过程类似与C语言中的*函数*，用于管理任务或应用复杂业务规则，存储过程可以带参数，也可以返回结果，可以包含数据操纵语句、变量、逻辑、控制语句。  
+以前业界常将其作为衡量程序员水平的标准。但是现在作为`Java`程序员，此功能被弱化，因为`Java`程序讲究的是与具体的数据库的分离。但是`.net`平台依旧很看重存储过程的时候。
+当我们在编程中使用`SQL`语言进行数据库交互的时候，要将程序中`SQ`L语句传递给数据库，让数据库进行处理，效率低。  
+所以，我们可以将这些`SQL`语句写在数据库中，构成一个`SQL`过程，在编程代码中，直接调用这个过程，向该过程传递`SQL`操作所需要的参数，即可。这样效率提高了。  
+可以使用`T-SQL`编程，使用`if、where`等这些逻辑控制语句。
+
+###存储过程的使用示例：  
+数据库中创建转账的存储过程：
+>
+	create procedure zhuanzhang
+		@inId int,//参数列表
+		@outId int,
+		@money int,//此三者是作为输入参数
+		@inMoney int output,
+		@outMoney int output//output关键字表明此二参数是作为输出参数的
+	as
+		update bank set currentMoney = currentMoney +@money where cid = @inId
+		update bank set currentMoney = currentMoney -@money where cid = @outId
+		select @inMoney = currentMoney from bank where cid = @inId
+		select @outMoney = currentMoney from bank where cid = @outId//这里可以使用T-SQL编程，可以用流程控制等语句。
+
+在`Java`代码中调用存储过程使用示例：
+>
+	try
+	{
+		int outId=1;
+		int inId=2;
+		int money=100;//此三者为输入值
+		Class.forName(driver);
+		conn = DriverManager.getConnection(url, user, password);
+>
+		CallableStatement csts=conn.prepareCall("{call zhuanzhang(?,?,?,？,?)}");//调用存储过程
+>
+		csts.setInt(1,inId);
+		csts.setInt(2,outId);
+		csts.setInt(3,money);//此三者设置输入
+>
+		csts.registerOutParameter(4,Types.INTEGER);
+		csts.registerOutParameter(5,Types.INTEGER);//此二者设置输出
+>	
+		csts.execute();//执行存储过程
+		int out1 = csts.getInt(4);
+		int out2 = csts.getInt(5);//获得存储方法的返回值
+	}
+
+###存储过程的优势
+提高速度。效率更高。  
+但为什么`Java`中不推荐使用存储过程？  
+`Answer`:因为在`Java`中，提倡将代码与数据库进行分离，也就是说，希望同一个代码可以适用于不同的数据库。而使用存储过程后，就需要针对不同的数据库写不同的存储过程，不适用于与`Java`的特点。
 
 
 #Java中的JDBC
@@ -8126,9 +8123,15 @@ f. 测试类：
 
 #HTML
 ##基础知识
-开发B/S应用的技术：asp(过时了)，php，jsp，asp.net。无论是哪一种技术，都有使用HTML，在浏览器中只运行解析HTML代码。HTML是基础根本。  
-HTML也是一种规范。HTML5功能强大，所欲web2.0。   
+开发`B/S`应用的技术：`asp`(过时了)，`php`，`jsp`，`asp.net`。这些都是在服务器端的开发`B/S`架构网站的技术。服务器端无论是使用哪一种技术，在浏览器端都是运行解析的都是`HTML`代码。`HTML`是基础根本。  
+`HTML`也是一种规范。`HTML5`功能强大，属于`web2.0`。   
 是一种解释执行的语言。
+
+当我们想`Web`服务器发出请求之后，`Web`服务器就会向我们发送一个很长的字符串，也就是`HTML`代码。接收到这个`HTML`文档之后，我们的浏览器就解析使用这个`HTML`代码。  
+
+由于`HTML`语言的语法不够规范，所以出现了`XML`语言，以避免其劣势。但仍未代替`HTML`，目前`XML`的主要作用依旧是：写配置文件。  
+目前`HTML`进化为`XHTML=HTML+部分的XML`。
+
 
 重点：任何一种标记语言，基本上标记都是成双成对出现的。*每一对标记表示一个对象*，放在这个标记括号里面的东西，例如：`border`、`name`这些都是表示这一对标记所代表的*对象的属性*，就好比面向对象语言里面的对象与属性的关系一样。
 示例如下：
@@ -8151,9 +8154,9 @@ HTML也是一种规范。HTML5功能强大，所欲web2.0。
 
 `html`标记表示一个网页文档对象，`head`标记表示文档的头部，`body`标记表示文档的正文部分。这些对象都没有写属性。
 一对标记放在另一对标记里面，表示一个对象放在另外一个对象里面，就是包含的关系不是表示一个对象的属性，而是表示一个对象是另一个对象的一部分。  
-就好比，在`Java`中，类与类的关系：继承(is a)，属性(has a。一个类是另一个类的属性，表示一种描述，班级与班级名称即是如此关系)，包含(own a。内部类，表示内部类是外部类的一个部分，而不是一个属性，如，学生与班级的关系即是如此)。
-HTML标记语言里不区分大、小写。
-常用标记：  
+就好比，在`Java`中，类与类的关系：继承(`is a`)，属性(`has a`。一个类是另一个类的属性，表示一种描述，班级与班级名称即是如此关系)，包含(`own a`。内部类，表示内部类是外部类的一个部分，而不是一个属性，如，学生与班级的关系即是如此)。
+`HTML`标记语言里不区分大、小写。
+##HTML中常用标记：  
 `<html bgcolor="red" background="背景图片"></html>`:表示这是一个网页文档对象。
 `&nbsp`：表示一个空格。
 `<p></p>`:表示一个段落。段落前后有空行。
@@ -8163,9 +8166,110 @@ HTML标记语言里不区分大、小写。
 `<ol type="I"></ol>`:表示一个列表。有序的。大写罗马数字表示。  
 `<ul></ul>`:无序列表对象
 `<li></li>`:表示列表中的每一项对象。  
-`<img src="地址" alt="提示">`:表示一个图片对象。当图片无法显示的时候，就会显示`alt`中的提示。
-`<a href="目标地址">显示的文字</a>`：表示一个超链接对象。  
-当然也可以在一个对象中套另外一个对象，例如，在一个超链接对象里面套一个图片对象，这样就可以在点击图片的时候启动链接。再例如，在`html`对象里面可以包含`head`对象与`body`对象。
+`<img src="地址" alt="提示">`:表示一个图片对象。当图片无法显示的时候，就会显示`alt`中的提示。  
+
+`<a href="目标地址">显示的文字</a>`：`<a></a>`表示一个超链接对象。  
+还可以使用*邮件链接*。写法：`<a href="mailto:目标地址"></a>`  
+还有锚点链接。也是使用`<a></a>`标记。写法：`<a name="第三章"></a>`  
+热点链接：就是将图片上的某个区域设为链接。
+
+当然也可以在一个对象中套另外一个对象，例如，在一个超链接对象里面套一个图片对象，这样就可以在点击图片的时候启动链接。再例如，在`html`对象里面可以包含`head`对象与`body`对象。  
+`<META http-equiv="refresh" content="5";url=test.html>`标记，作用：作用是告诉浏览器的一些例如默认字符集等内容,例如：本标记的含义是自动刷新跳转到`test.html`页面。总之，`meta`标记很有用  
+`<Marquee>滚动的文字</Marquee>`：该标记表示滚动的文字或者图片。  
 
 那么哪种标记是一对的，哪种是一个的？  
-`Answer`:当这个标记的对象要显示出文字或者图片的时候，就是一对的，中间放的是要显示的东西。如，链接对象上要显示出内容，所以是一对的。线条hr标记对象不用显示出东西，所以是一个的。img图片标记不用显示出文字内容，所以是一对的。
+`Answer`:当这个标记的对象要显示出文字或者图片的时候，就是一对的，中间放的是要显示的东西。如，链接对象上要显示出内容，所以是一对的。线条`hr`标记对象不用显示出东西，所以是一个的。`img`图片标记不用显示出文字内容，所以是一个的。
+
+##表单
+`HTML`页面的作用：显示与接收数据。以与用户进行交互。  
+在HTML页面中，存在表单，表单的作用就是：里面放置各种输入控件，以接收用户的输入。  
+`<form></form>`:该标记表示一个表单。里面放的是各种控件。  
+表单的属性有：  
+1. name：表示表单的名字  
+2. action：请求处理的目的地址  
+3. method：默认值有get/post，表示两种提交方式。get请求会在地址栏显示*请求内容*，而post请求不会显示。所以对于敏感信息的提交要使用post请求。默认是get请求。  
+
+控件的种类：单行、多行、密码、单选、多选、下拉输入、提交按钮、重置按钮等。控件对象时放在表单对象里面的。  
+
+表单及里面控件的使用示例：  
+>
+	<form name="save stu" action="http://www.sina.com.cn" method="get">
+	账号：<input name="账号" width="20" type="text" maxlength="10"  value="trilever"/>
+	<br />
+	密码：<input name="密码" width="20" type="password" value="wt312041990" maxlength="10" />
+	<br />
+	描述：<textArea rows="10" cols="10" style="background-attachment:fixed"  name="描述" >
+	</textarea>
+	<br />
+	<input name="submit" type="submit"  value="Submit" size="10" />
+	<input name="submit"  type="reset" value="Reset" size="10" />
+	<br />
+	<input name="sex"  type="radio"  checked="checked"/>Male
+	<input name="sex"  type="radio"/>Female
+	<br />
+	<input name="a"  type="checkbox" />a
+	<input name="b"  type="checkbox" />b
+	<input name="c"  type="checkbox" />c
+	<input name="d"  type="checkbox" />d
+	<br />
+	下拉<select name="city" size="3" multiple="multiple">
+		<option value="北京">北京</option>
+	    <option value="上海" selected="selected">上海</option>
+	    <option value="广州">广州</option>
+	    </select>
+	<br />
+	</form>
+
+#Java中的XML
+--------------
+数据存储的几种方式：  
+1. 键值对形式，name：“li”  
+2. `XML`描述  
+3. 数据库，可以存储数据和操作数据
+数据量比较大的时候，使用数据库。
+扩展性(`Extended`)标识语言，用于标识描述数据信息。其是`SGML`标识语言的简化。  
+再，由于`HTML`语言的语法不够严谨，所以在`HTML`4.0.1版本之后，将其过渡至`XHTML`(扩展性`Extended`）语言,`XHTML`更加严谨、规范。`XHTML`可以理解为是`HTML`向`XML`语言过渡的中间产物。  
+
+`HTML`与`XML`之间的区别在于：  
+1. `HTML`是固定标识，只能写它能识别的标识。`XML`中的标签可以自由定义。  
+2. `HTML`较为随意，`XML`很严谨。  
+3. `HTML`将数据和其显示结合在一起，不方便对数据进行操作。`XML`将数据与其显示分开，纯粹对数据进行描述。数据描述是数据描述，显示是显示。
+
+`XML`的好处：  
+1. 结构严谨，规范。  
+2. 是标准的数据交换文件，已用于通用的配置信息文件。  
+3. 结构简单，便于书写，增强阅读性。  
+4. 将数据进行结构化，是数据之间具有明确的层次关系。
+
+`XML`文档示例：  
+>
+	<?xml version="1.0"?>
+	<students>
+		<student>
+			<name>zhangsan</name>
+			<age>20</age>
+		</student>
+>		
+		<student>
+			<name>lisi</name>
+			<age>22</age>
+		</student>
+>		
+		<student>
+			<name>wangwu</name>
+			<age>21</age>
+		</student>
+>		
+		<student>
+			<name>zhaoliu</name>
+			<age>23</age>
+		</student>
+	</students>
+ 
+`XML`文档中**只能有一个顶层元素**。如上面的`<students>`这个元素，也叫根元素。也就是最外层的标签，只能有一个。
+
+`CDATA`区：当我们的文档中，某一段数据不想被解析，只希望作为单纯的字符而已。那么，可以将这段字符放在CDATA区，放在<![CDATA[ *数据* ]]>标签里面。这样，里面的数据就能够不解析，而是作为单纯的字符。
+
+XML中所有标记的属性值必须用""或者''括起来。
+
+XML中名字可以使用字母、数字、中文（需要在XML声明的时候知道encoding属性)
