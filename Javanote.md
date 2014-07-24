@@ -8375,6 +8375,7 @@ f. 测试类：
 
 #JavaScript
 -----
+##JavaScript基础知识
 基于对象，并未完全满足面向对象三个特征。但是有类与对象的概念。  
 是一种弱语言：可以不声明变量类型。声明变量用`var`修饰符。区分大小写。解释执行。  
 脚本语言。  
@@ -8382,3 +8383,51 @@ f. 测试类：
 
 `Java`、`JSP Servelet`、`PHP`代码都在服务器端运行，他们都在`Tomcat`等这些服务器容器中被编译运行后产生了`HTML`、`JS`、`CSS`代码，然后发送给客户端浏览器进行执行。  
 `SQL`脚本在数据库中被执行。  
+`JS`代码放在在`HTML`中哪儿都可以，如果是前台，最好放`HTML`最后面。如果是是后台，随便放哪里都可以。最好放在`head`标签中。  
+`JS`代码在客户端完全是可以被抓取到的，因为要被服务器端完全的发送给浏览器，由浏览器对这些`JS`代码进行解释执行。只要你写出来就可以被人看到。
+`JS`代码中带有`HTML`代码也可以被解析。声明变量全部使用`var`，可以将`var`理解为`object`。  
+
+内置对象：`document`，`alert`等。  
+`parseInt()`方法：将字符串转换为数字。
+
+##JavaScript中的Function
+方法都是通过事件进行调用的，当事件发生之后，就会调用方法。如，`onload`事件、`onclick`事件。都可以用于激发事件。  
+方法同样可以`return`数据，方法的返回值可以用于显示、初始化其他变量等等。但是不同的是，方法的声明中无需写返回值类型。  
+方法的参数列表中也无需写数据类型。只需参数名称。  
+
+注意：如果一个内容是使用双引号("")括起来,那么这个内容中的所有需要使用""的地方都要改成''才可以。  
+
+`JS`基础语法使用示例：  
+>
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>无标题文档</title>
+	<script type="text/javascript">
+		document.writeln("hi")
+		var name = "how are you?"
+		document.writeln("hi"+name);
+		alert("great");
+		function test()
+		{
+			alert("ni");
+		}
+		function test1()
+		{
+			return "thank you ";
+		}
+		function test2(a)
+		{
+			var str = test1();
+			alert(str);
+			alert(a);
+		}
+	</script>
+	</head>
+	<body onload="test()">
+	<input type="button" onclick="test2('good')" />
+	</body>
+	</html>
+
+
