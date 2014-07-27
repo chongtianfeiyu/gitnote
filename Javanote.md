@@ -8387,8 +8387,9 @@ f. 测试类：
 `JS`代码在客户端完全是可以被抓取到的，因为要被服务器端完全的发送给浏览器，由浏览器对这些`JS`代码进行解释执行。只要你写出来就可以被人看到。
 `JS`代码中带有`HTML`代码也可以被解析。声明变量全部使用`var`，可以将`var`理解为`object`。  
 
-内置对象：`document`，`alert`等。  
-`parseInt()`方法：将字符串转换为数字。
+内置对象：`document`代表整个网页，`alert`等。  
+`parseInt()`方法：将字符串转换为数字。  
+
 
 ##JavaScript中的Function
 方法都是通过事件进行调用的，当事件发生之后，就会调用方法。如，`onload`事件、`onclick`事件。都可以用于激发事件。  
@@ -8429,5 +8430,137 @@ f. 测试类：
 	<input type="button" onclick="test2('good')" />
 	</body>
 	</html>
+
+注意理解`JS`中的对象模型：
+以下为示例：
+`document`代表整个网页，那么`document.Cal`就表示这个网页中的Form这个表单对象。`document.Cal.document.Cal.Num1`代表这个表单中的`Text`框对象本身。`document.Cal.document.Cal.Num1.value`代表`Text`框对象中的值。我们可以在`Script`中的方法中修改对象中的值。`Form`对象的`name`就相当于`Java`中对象实例的名字一样，`Form`对象中包含的`Text`框对象的名字相当与`Java`中的类的内部类对象的名字一样的。
+>	
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="description" content="The Calculator designed by trilever"/>
+	<title>Calculator</title>
+	<script type="text/javascript">
+		function f(v)
+		{
+			var s1=parseFloat(document.Cal.Num1.value);
+			var s2=parseFloat(document.Cal.Num2.value);
+			var rst;
+			if(checkData()==false)
+			{
+				return;
+			}
+			
+			switch (v)
+			{
+				case "+":
+				{
+					rst=(s1+s2);
+					break;
+				}
+				case "-":
+				{
+					rst=(s1-s2);
+					break;
+				}
+				case "*":
+				{
+					rst=(s1*s2);
+					break;
+				}
+				case "/":
+				{
+					rst=(s1/s2);
+					checkData("/");
+					break;
+				}
+				case "%":
+				{
+					rst=(s1%s2);
+					break;
+				}
+			}
+			document.Cal.rst.value=rst;
+		}
+		function checkData(v)
+		{
+			if(document.Cal.Num1.value == "")
+			{
+				alert ("第一个数不能是空");
+				return false;
+			}
+			if(document.Cal.Num2.value == "")
+			{
+				alert ("第二个数不能是空");
+				return false;
+			}
+			if(isNaN(document.Cal.Num1.value))
+			{
+				alert ("第一个数不是数字");
+				return false;
+			}
+			if(isNaN(document.Cal.Num2.value))
+			{
+				alert ("第二个数不是数字");
+				return false;
+			}
+			if(v=="/"&&document.Cal.Num2.value==0)
+			{
+				alert("被除数不能为零")
+				return false;
+			}
+			return true;
+		}
+	</script>
+	</head>
+>	
+	<body>
+		<form name="Cal"/>
+	    Num1:<input type="text" name="Num1"/><br/>
+	    Num2:<input type="text" name="Num2"/><br/>
+	    Result:<input type="text" value="" name="rst"/><br />
+	    <input type="button" name="jia" value="+" onclick= "f('+')"/>
+	    <input type="button" name="jian" value="-" onclick= "f('-')"/>
+	    <input type="button" name="cheng" value="*" onclick= "f('*')"/>
+	    <input type="button" name="chu" value="/" onclick= "f('/')"/>
+	    <input type="button" name="yu" value="%" onclick= "f('%')"/>
+	    </form>
+	</body>
+	</html>
+
+思考一个问题？  
+`Java`中，类的成员变量到底代表了什么？只是表示这个类的某些属性用于描述这个类(由这个类产生的类对象)的性质？类的方法到底是做什么用的？是不是只是为了对这个类的属性进行操作从而使整个类(对象)体现出不同的属性。  
+`Java`中的类的内部类到底是代表了什么？是不是代表了这个类内部所拥有的细分的零件部分。这个内部类与外部类的方法之间的关系是什么样的？是不是外部类的方法可以修改内部类创建的对象的属性。也就是说，人体这个外部类可以修改手这个内部类对象的属性？
+
+
+#Java Web
+-----
+所谓的`Java Web`  就是用`Java`做网站。  
+动态网站：能与数据库进行交换的网站。  
+技术流派如下：  
+1. `JSP`网站空间贵，`ASP`技术已经淘汰，但是空间便宜。  
+2. `PHP`语法借鉴了`C`、`Java`等语言，装在`Apache`服务器上，语言简单，开发简单。功能没有`Java`、`.Net`强大。做超大型项目还是不行。
+
+3. `JSP/Servelet`:学习`Java`语言做`B/S`的技术。学习`Java`做`C/S`的技术就是`AWT/Swing`。  
+
+4. `ASP.NET`:就是`ASP`的升级版，这就是学习`C#`语言做`B/S`的技术，学习`C#`做`C/S`的技术就是`winforms`。微软的技术特点就是什么事都帮你做好，具体内部实行的细节保密不会告诉你。`Java`的技术特点就是告诉你方向，细节部分都得自己去做细节部分可以暴露出来，所以`Java`内部的东西都是可控的，任何东西都是自己明白的。
+不要去那种小做网站的公司工作。  
+
+#JSP/Servlet
+----
+`JSP/Servlet`是`SUN`制定的用`Java`开发`Web`应用程序的规范。  
+`JSP`规范是建立在`Servelet`规范之上的。先有`Servelet`,后有`JSP`。  
+`Servlet`：是一个可以部署到`Web`服务器上的可以被客户端访问的`Java`类。  
+`JSP`：文件后缀`jsp`，`JSP`页面=`DHTML(HTML+CSS+JS)+Java`。该页面转译后就是一个`Servlet`。  
+我们要做的事：依据`JSP/Servlet`这个规范开发出应用组件(就是`Web`应用程序)，然后将这组件放在容器中(`Tomcat`)，让其运行。供客户端访问调用我们写的程序。
+
+`TomCat`的配置：  
+`config`目录下的`Server.XML`文件用于配置`TomCat`端口号。  
+其`TomCat User.XML`文件用于配置登陆用户的账号等信息。在`TomCat`中添加账号的时候，不但要添加用户还需要添加角色。  
+如下：  
+>
+	<role rolename="manager-gui"/>
+    <user password="123" roles="manager-gui" username="trilever"/>
 
 
