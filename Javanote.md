@@ -8563,4 +8563,107 @@ f. 测试类：
 	<role rolename="manager-gui"/>
     <user password="123" roles="manager-gui" username="trilever"/>
 
+使用`MyElipse`插件进行`Web`应用开发，其是`Eclipse`的插件。
+一个`Web`服务器中可以放有多个应用程序项目。一个应用程序项目中可以有多个`Servelet`，各个`Servelet`负责不同的任务。
+要学会`TomCat`的自动部署和手动部署。  
+手动部署：就是将你自己创建的`Web`项目中的`WebRoot`目录下的文件全部复制到`TomCat`的`WebApps`目录下与项目同名的文件夹中(要在`WebApps`目录下先建立一个与项目同名的文件夹才可以，然后将那些文件复制进去)。
+自动部署：`IDE`会自动将手动部署的复制这些步骤全部自动完成。
+我们自己写代码都是写在我们项目的文件夹中，而不是在`TomCat`的目录中。但是如果是放在项目的`WebRoot`目录下，就会自动被同步到`TomCat`的`WebApps`目录下面。
+
+##Servlet
+其本质就是一个特殊的`Java`类。
+
+建立一个`Servelet`的步骤：
+1. 创建一个类，继承自`HttpServelet`。  
+2. `OverRide`两个方法，`doGet()`与`doPost()`。  
+3. 去`web.XML`配置文件中进行注册配置`servlet`。此步很重要。  
+使用示例如下：  
+
+创建类的代码：  
+>
+	package com.trilever;
+	import java.io.IOException;
+	import java.io.PrintWriter;
+	import javax.servlet.ServletException;
+	import javax.servlet.http.HttpServlet;
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
+	public class Doc extends HttpServlet
+	{
+		/* (non-Javadoc)
+		 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+		 */
+		@Override
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+				throws ServletException, IOException
+		{
+			// TODO Auto-generated method stub
+	//		super.doGet(req, resp);
+			//使用System.out是在服务器段进行打印，而不是在客户端。
+			System.out.println("mark");
+			//使用PrintWriter类是在客户端打印，也就是想客户端输出
+			resp.setContentType("text/html");
+			PrintWriter out = resp.getWriter();
+			out.write("<html>");
+			out.write("<head>");
+			out.write("godo");
+			out.write("</head>");
+			out.write("<br>");
+			out.write("<body>");
+			out.write("love");
+			out.write("<br>");
+			out.write("make");
+			out.write("</body>");
+			out.write("</html>");
+		}
+>	
+		/* (non-Javadoc)
+		 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+		 */
+		@Override
+		protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+				throws ServletException, IOException
+		{
+			// TODO Auto-generated method stub
+	//		super.doPost(req, resp);
+			resp.setContentType("text/html");
+			PrintWriter out = resp.getWriter(); 
+			out.write("<html>");
+			out.write("<head>");
+			out.write("godo");
+			out.write("</head>");
+			out.write("<br>");
+			out.write("<body>");
+			out.write("love");
+			out.write("<br>");
+			out.write("make");
+			out.write("</body>");
+			out.write("</html>");
+		}
+	}
+>
+`Web.XML`文件配置：  
+>
+	<servlet>
+      <servlet-name>doctor</servlet-name>
+      <servlet-class>com.trilever.Doc</servlet-class>
+    </servlet>
+	<servlet-mapping>
+      <servlet-name>doctor</servlet-name>
+      <url-pattern>/doctors</url-pattern>
+    </servlet-mapping>
+>
+在浏览器中输入：http://localhost:8080/Hos/doctors 即可在服务器中调用`doGet()`方法，其向客户端发送我们想要的内容。
+
+
+访问调用一个Servlet时的工作原理：  
+1. Ip+Port：调用服务器的服务。  
+2. 加上项目名：调用这个项目。找到这个应用程序所在的项目。一个项目中可以有多个Servlet类。  
+3. 通过Web.XML文件中的配置信息，找到我们想要的类(Servlet)。查找步骤是:通过配置文件中的url-parttern找到servlet-name，通过servlet-name找到servlet-class，这个就是我们想要找到的类。然后，这个类(就是前面我们自己创建的继承了HttpServelet类的那个类)就会自动调用doGet()或者doPost()(具体调用哪一个是依据我们request的模式进行选择)对我们的请求进行回应。这两个方法的回应返回给我们的浏览器，然后在浏览器中就可以接收到这两个方法中发出的内容，并进行解析从而获得页面。
+
+
+WebApp的请求应答模式：
+
+所谓的Web服务器就是Tomcat这样的服务器。
+见截图所示：
 
