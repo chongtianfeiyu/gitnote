@@ -8617,15 +8617,34 @@ WebServer：就是用来运行WebApp应用程序的服务器。
       <servlet-name>doctor</servlet-name>
       <url-pattern>/doctors</url-pattern>
     </servlet-mapping>
-###ServletConfig
+###ServletConfig参数对象
 `init()`方法中的`ServletConfig`参数包含了这个`Servlet`对象的所有配置信息，这个配置信息从`web.xml`中读出了的。  
 关于Servlet参数，见图：
 
+###request参数对象
+在我们的`doPost()`或者`doGet()`方法中，会传递给它们一个`HttpServletRequest`参数对象，这个对象是`Web`服务器(也就是容器`Tomcat`)将*客户端发送的请求的所有信息进行包装*而获得。`HttpServletReqest`是一个接口，这里是面向接口编程，实际传递给方法的是它的实现类对象(具体实现是有容器帮我们进行的，因为对请求信息的包装是容器帮助我们进行的)。以后可以通过`request`对象的方法来获得其封装的内容。  
+`request`对象的方法：
+1. `getparameter(name)`：获得文本框、单选框等`HTML`中`Form`元素提交的内容。`name`是这些元素的名字。  
+2. `getparametervalues(name)`:获得多选框中提交的内容，`name`是多选框的名字。  
+3. `getparameternames()`:获得`Form`中所有元素的名字，当我们不知道`Form`中有那些元素的时候可以使用。  
+4. `getConTextpath()`:获得`WebApp`的名称，也称为虚拟路径，一般是项目名称。举例：`Tomcat`容器好比一个医院，我们一个网站(也就是一个`Web`应用程序)相当于一个科室，每个`Tomcat`服务器中可以放多个网站。每一个`Servlet`就相当于一个医生(负责对每一个客户端的请求作出回应)，每个科室有好多个医生。就好比一个网站有很多个`Servlet`用于接收处理各种各样的请求。  
+5. `getServletPath()`：如果是请求的一个`Servlet`，那么返回这个`Servlet`的`url-parttern`。如果请求的是一个`jsp`页面，那么返回`jsp`文件名。  
+6. 
+
+
+因此我们可以在`Servlet`中通过这一个参数获得所接收请求的内容数据，如，获得一个`Form`中提交的各种数据，然后针对这些请求的内容予以回应并发送给客户端。这就是交互式网页的思维方式。因此，我们可以知道**一个`Servlet`的作用功能就是针对客户端`HTML`文档中的某一个表单或者一个超链接所提交的内容的一个回应。**
+
+我们所言的框架，其底层就是对这些`Servlet`的包装、组合。
 ###Servlet方法重写
 我们自己写的`Servlet`中需要重写`doPost()`方法与`doGet()`方法的意义何在？  
 `Answer`：因为我们自己写的`Servlet`类中继承了`HttpServlet`中的`server()`方法，而这个`server()`方法中会依据客户端发送的请求是`post`还是`get`类型去选择调用`Servlet`类中的`doPost()`方法或者`doGet()`方法，所以我们自己重写了`doPost()`方法与`doGet()`方法就相当于重写了`server()`方法。  
-所以当服务器接收到客户端的一个请求之后，就会自己调用该`Servlet`的`server()`方法，然后这个`server()`方法会依据接收到的请求类型确定应该调用`doPost()`还是`doGet()`方法去处理这个请求。
+所以当服务器接收到客户端的一个请求之后，就会自己调用该`Servlet`的`server()`方法，然后这个`server()`方法会依据接收到的请求类型确定应该调用`doPost()`还是`doGet()`方法去处理这个请求。  
 
+
+在一个网页中发出请求访问`Servlet`的方法？
+1. 通过网页中的超链接进行`Servlet`的请求访问。链接目的地址使用`Servlet`的`url`进行访问请求的发送。但是用这种方法的请求方式只有`get`方法。
+2. 通过`Form`表单的提交进行`Servlet`的请求访问。在`action`属性中用`Servlet`的`url`以进行访问请求的发送。这种方式的请求可以是`get`也可以是`post`方法。
+3. 直接在地址栏中填写`Servlet`的`url`地址进行请求访问。
 ###建立一个`Servelet`的操作步骤：
 1. 创建一个类，继承自`HttpServelet`。  
 2. `OverRide`两个方法，`doGet()`与`doPost()`。  
@@ -8732,7 +8751,7 @@ WebServer：就是用来运行WebApp应用程序的服务器。
 
 
 
-纠正一个错误观点：Enum关键字与Class关键字并不是同级的，Enum包含了Class与集合的东西。Enum还表示一个集合，其是几个类对象的集合。 
+纠正一个错误观点：`Enum`关键字与`Class`关键字并不是同级的，`Enum`包含了**`Class`与集合**的特征。`Enum`还表示一个集合，其是几个类对象的集合。 
 如，
 	public Enum Seasons
 	{
