@@ -8571,13 +8571,14 @@ WebServer：就是用来运行WebApp应用程序的服务器。
 
 #JSP/Servlet
 ----
+##基础知识
 `JSP/Servlet`是`SUN`制定的用`Java`开发`Web`应用程序的规范。  
 `JSP`规范是建立在`Servelet`规范之上的。先有`Servelet`,后有`JSP`。  
 `Servlet`：是一个可以部署到`WebServer`服务器上的可以供客户端访问、处理客户端请求的`Java`类。  
 `JSP`：文件后缀`jsp`，`JSP`页面=`DHTML(HTML+CSS+JS)+Java`。该页面转译后就是一个`Servlet`。  
 我们要做的事：依据`JSP/Servlet`这个规范开发出应用组件(就是`Web`应用程序)，然后将这组件放在容器中(`Tomcat`)，让其运行。供客户端访问调用我们写的程序。
 
-`TomCat`的配置：  
+##`TomCat`的配置
 `config`目录下的`Server.XML`文件用于配置`TomCat`端口号。  
 其`TomCat User.XML`文件用于配置登陆用户的账号等信息。在`TomCat`中添加账号的时候，不但要添加用户还需要添加角色。  
 如下：  
@@ -8593,14 +8594,43 @@ WebServer：就是用来运行WebApp应用程序的服务器。
 我们自己写代码都是写在我们项目的文件夹中，而不是在`TomCat`的目录中。但是如果是放在项目的`WebRoot`目录下，就会自动被同步到`TomCat`的`WebApps`目录下面。
 
 ##Servlet
+###基础知识
 其本质就是一个特殊的`Java`类。
 
-建立一个`Servelet`的步骤：
+其实例的创建(`new`)、销毁都是由容器完成的，而不需要人工手动执行(一般的类都需要人工手动创建实例)。
+`Servlet`类与普通的区别见图：
+###Servlet生命周期
+所谓的`Servlet`类对象的生命周期：就是指一个`Servlet`类对象创建(由`Web`容器`Tomcat`完成)到消亡的整个过程。  
+由于我们自己创建的`Servlet`类继承自`HttpServlet`类，也就是说继承了`server(……)`方法、`init(……)`方法、`destory()`方法。  
+那么，当服务器第一次接收到调用这个`Servelet`的类对象请求的时候，就会由容器创建一个`Servlet`类实例对象，然后服务器中就会调用`init(……)`方法(一个生命周期中`init()`方法只调用一次)进行初始化然后调用`server(……)`(一个生命周期中`server()`方法要调用多次)方法，以后每次接收到新的服务请求的时候，都会调用`server()`方法。当关闭服务器或者关闭这个`Servlet`(在`Tomcat`控制台中停止一个`Web`应用就会关闭这个应用中所有的`Servlet`)的时候，就会调用`destory()`方法。  
+注意：当一个`Servlet`部署完成后，*启动`Web`服务器的时候*，就是一个`Web`应用程序(其中包含多个`Servlet`)启动的时候。即使此时并没有来自客户端的服务请求，但是此时的`Web`应用程序项目还是启动了。然后当接收到来自客户端的请求的时候，就会调用其中包含的各个`Servlet`的`init()`方法等。  
+
+怎样修改一个`Web`应用程序(包含多个`Servlet`)启动的时候的行为？例如，在`Web`应用程序启动(也就是启动`Web`服务器的时候或者在`Tomcat`控制台中启动一个`Web`应用项目(一个`Web`应用项目中包含多个`Servlet`))，就调用`init()`方法而不是等到接收到客户端请求的时候才调用该方法。  
+`Answer`：配置修改`web.xml`文件。  
+>	
+	<servlet>
+      <servlet-name>doctor</servlet-name>
+      <servlet-class>com.trilever.Doc</servlet-class>
+	  <load-on-startup>1</load-on-startup>//此句用于设置在Web服务器启动本项目的时候即调用本Servlet的init()方法。0或1或2……用于指定在启动Web服务器时所要具体调用哪个Servlet的init()方法，例如：如果有多个Servlet，都设置为startup时启动，那么就要依据这里的数字顺序进行启动。
+    </servlet>
+	<servlet-mapping>
+      <servlet-name>doctor</servlet-name>
+      <url-pattern>/doctors</url-pattern>
+    </servlet-mapping>
+###ServletConfig
+`init()`方法中的`ServletConfig`参数包含了这个`Servlet`对象的所有配置信息，这个配置信息从`web.xml`中读出了的。  
+关于Servlet参数，见图：
+
+###Servlet方法重写
+我们自己写的`Servlet`中需要重写`doPost()`方法与`doGet()`方法的意义何在？  
+`Answer`：因为我们自己写的`Servlet`类中继承了`HttpServlet`中的`server()`方法，而这个`server()`方法中会依据客户端发送的请求是`post`还是`get`类型去选择调用`Servlet`类中的`doPost()`方法或者`doGet()`方法，所以我们自己重写了`doPost()`方法与`doGet()`方法就相当于重写了`server()`方法。  
+所以当服务器接收到客户端的一个请求之后，就会自己调用该`Servlet`的`server()`方法，然后这个`server()`方法会依据接收到的请求类型确定应该调用`doPost()`还是`doGet()`方法去处理这个请求。
+
+###建立一个`Servelet`的操作步骤：
 1. 创建一个类，继承自`HttpServelet`。  
 2. `OverRide`两个方法，`doGet()`与`doPost()`。  
 3. 去`web.XML`配置文件中进行注册配置`servlet`。此步很重要。  
 使用示例如下：  
-
 创建类的代码：  
 >
 	package com.trilever;
@@ -8675,16 +8705,16 @@ WebServer：就是用来运行WebApp应用程序的服务器。
       <url-pattern>/doctors</url-pattern>
     </servlet-mapping>
 >
-在浏览器中输入：http://localhost:8080/Hos/doctors 即可在服务器中调用`doGet()`方法，其向客户端发送我们想要的内容。该文件中的`url-pattern`就是向客户端暴露的用于访问该Servlet的地址路径。
+在浏览器中输入：http://localhost:8080/Hos/doctors 即可在服务器中调用`doGet()`方法，其向客户端发送我们想要的内容。该文件中的`url-pattern`就是向客户端暴露的用于访问该`Servlet`的地址路径。
 
 
-访问调用一个`Servlet`时的工作原理：  
+###访问调用一个`Servlet`时的工作原理  
 1. `Ip+Port`：调用服务器的服务。  
 2. 加上项目名：调用这个项目。找到这个应用程序所在的项目。一个项目中可以有多个`Servlet`类。  
 3. 通过`Web.XML`文件中的配置信息，找到我们想要的类(`Servlet`)。查找步骤是:通过配置文件中的`url-parttern`找到`servlet-name`，通过`servlet-name`找到`servlet-class`，这个就是我们想要找到的类。然后，这个类(就是前面我们自己创建的继承了`HttpServelet`类的那个类)就会自动调用`doGet()`或者`doPost()`(具体调用哪一个是依据我们`request`的模式进行选择)对我们的请求进行回应。这两个方法的回应返回给我们的浏览器，然后在浏览器中就可以接收到这两个方法中发出的内容，并进行解析从而获得页面。
 
 
-`WebApp`的请求应答模式：  
+##`WebApp`的请求应答模式：  
 1. 用户输入地址或者填写表单上的数据提交之后，这些数据会被送到服务器上，定位服务器上的资源文件的地址就是`URL`。客户端就是依据`URL`去找到服务器上的资源的。  
 2. 当服务器收到用户请求之后，就会调用相应的程序进行回应，这些结果就是一些`HTML`文档被这些相应的方法返回给客户端。例如、`Servelet`中的`doGet()、doPost()`方法。这两种方法中就是向客户端返回`HTML`文档内容。  
 3. 当客户端浏览器接收到那些方法中返回的`HTML`文本后，就会进行解析，向用户呈现出网页。  
@@ -8697,3 +8727,21 @@ WebServer：就是用来运行WebApp应用程序的服务器。
 所谓的集群服务器，就是使用多个服务器。  
 1. 防止其中一台当机之后，可以使用其他的机器接替他的工作。  
 2. 可以做负载均衡，将单机的流量分配到多个机器上，就是所谓的负载均衡。  
+
+
+
+
+
+纠正一个错误观点：Enum关键字与Class关键字并不是同级的，Enum包含了Class与集合的东西。Enum还表示一个集合，其是几个类对象的集合。 
+如，
+	public Enum Seasons
+	{
+		Spring,
+		Summer(),
+		Autumn,
+		Winter();
+		Seasons()
+		{
+
+		}
+	}
