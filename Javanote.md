@@ -8593,6 +8593,8 @@ WebServer：就是用来运行WebApp应用程序的服务器。
 自动部署：`IDE`会自动将手动部署的复制这些步骤全部自动完成。
 我们自己写代码都是写在我们项目的文件夹中，而不是在`TomCat`的目录中。但是如果是放在项目的`WebRoot`目录下，就会自动被同步到`TomCat`的`WebApps`目录下面。
 
+注：JSP页面就是HTML+Java。其页面中包含这两种代码。  
+
 ##Servlet
 ###基础知识
 其本质就是一个特殊的`Java`类。
@@ -8618,10 +8620,10 @@ WebServer：就是用来运行WebApp应用程序的服务器。
       <url-pattern>/doctors</url-pattern>
     </servlet-mapping>
 ###ServletConfig参数对象
-`init()`方法中的`ServletConfig`参数包含了这个`Servlet`对象的所有配置信息，这个配置信息从`web.xml`中读出了的。  
-关于Servlet参数，见图：
+`init()`方法中的`ServletConfig`参数包含了这个`Servlet`对象的所有配置信息，这个配置信息从`web.xml`中读出来的。  
+关于`Servlet`参数，见图：
 
-###request参数对象
+###Servlet中的request参数对象
 在我们的`doPost()`或者`doGet()`方法中，会传递给它们一个`HttpServletRequest`参数对象，这个对象是`Web`服务器(也就是容器`Tomcat`)将*客户端发送的请求的所有信息进行包装*而获得。`HttpServletReqest`是一个接口，这里是面向接口编程，实际传递给方法的是它的实现类对象(具体实现是有容器帮我们进行的，因为对请求信息的包装是容器帮助我们进行的)。以后可以通过`request`对象的方法来获得其封装的内容。  
 `request`对象的方法：
 1. `getparameter(name)`：获得文本框、单选框等`HTML`中`Form`元素提交的内容。`name`是这些元素的名字。  
@@ -8629,7 +8631,10 @@ WebServer：就是用来运行WebApp应用程序的服务器。
 3. `getparameternames()`:获得`Form`中所有元素的名字，当我们不知道`Form`中有那些元素的时候可以使用。  
 4. `getConTextpath()`:获得`WebApp`的名称，也称为虚拟路径，一般是项目名称。举例：`Tomcat`容器好比一个医院，我们一个网站(也就是一个`Web`应用程序)相当于一个科室，每个`Tomcat`服务器中可以放多个网站。每一个`Servlet`就相当于一个医生(负责对每一个客户端的请求作出回应)，每个科室有好多个医生。就好比一个网站有很多个`Servlet`用于接收处理各种各样的请求。  
 5. `getServletPath()`：如果是请求的一个`Servlet`，那么返回这个`Servlet`的`url-parttern`。如果请求的是一个`jsp`页面，那么返回`jsp`文件名。  
-6. 
+6. `getRequestURI()`:获得`Servlet`的相对路径。  
+7. `getRequestURL()`:获得`Servlet`的绝对路径，包括`IP`、端口号等等。  
+8. `getScheme()`:获得使用的协议。  
+9. `getRemoteAddr()`:获得客户端的`IP`地址。
 
 
 因此我们可以在`Servlet`中通过这一个参数获得所接收请求的内容数据，如，获得一个`Form`中提交的各种数据，然后针对这些请求的内容予以回应并发送给客户端。这就是交互式网页的思维方式。因此，我们可以知道**一个`Servlet`的作用功能就是针对客户端`HTML`文档中的某一个表单或者一个超链接所提交的内容的一个回应。**
@@ -8742,17 +8747,78 @@ WebServer：就是用来运行WebApp应用程序的服务器。
 所谓的`Web`服务器就是`Tomcat`这样的服务器。是一个容器，也是`Servlet`引擎，也称之为容器。
 见截图所示：
 
-所谓的`JSP`文档，可以将其视为`HTML`文档。  
 所谓的集群服务器，就是使用多个服务器。  
 1. 防止其中一台当机之后，可以使用其他的机器接替他的工作。  
 2. 可以做负载均衡，将单机的流量分配到多个机器上，就是所谓的负载均衡。  
 
 
+##请求转发与重定向
+`Servlet`的作用是处理客户端的请求，那么各个`Servlet`之间是怎样进行通信的？就好比，科室(`Web`应用程序)中的各个医生(`Servlet`)在其中一个不能诊断的时候怎样将病人交给另一个病人。  
+`Answer`:通过请求转发与重定向。  
+也就是说一个客户端请求可以调用多个不同的`Servlet`。
 
+**请求转发**：由前可知，一个客户端发送给服务器的请求信息被包装成一个`request`对象发送给目的`Servlet`。一个`request`对象中包含两部分的内容：`parameter`和`attribute`。其中的`parameter`部分包含的信息对于接收的`Servlet`而言是可以查看但不能修改的，如客户端的`IP`地址、`URL`等。而`attribute`部分的内容对于接收的`Servlet`而言是可以修改的，每一个`Servlet`对这个`request`对象的修改都反映在`attribute`中而不是在`parameter`部分。而且多个`Servlet`都可以接收这个`request`并且对这个`request`的`attribute`部分进行修改，这个`request`在各个`Servlet`之间进行传递就是请求转发（请求转发是通过一个对象进行的)。`parameter`是只读的，而`attribute`是可读写的。  
+就好比，当看一个医生A的时候，病历就相当于`request`，其中的病人名字、年龄等内容就是在`parameter`部分，是不能被医生修改的，医生诊断结果就写在`attribute`部分，当一个医生无法确定的时候就会让护士将这个病人交给医生B，医生B就可以修改A医生在病历上所作的诊断结果(`attribute`部分)。将病人交给医生B的过程就是请求转发，其中的护士就是负责进行请求转发的对象。
+在请求转发中使用的对象就是`RequestDispatcher`类对象。
+注：`request`可以看作是封装了`map`，里面都是键值对，如、`parameter`中就是一个个的键值对在里面，`attribute`中也是键值对在里面。
+请求转发使用示例：
+
+`Servlet1`中的`doGet()`方法重写：
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException
+		{
+			System.out.println("hello");
+			//Servlet对象Bailang对request对象的修改体现在其中的Attribute上。
+			request.setAttribute("zhanghao", "123");
+			//通过RequestDispatcher对象对request进行转发重定向。转发给Servlet对象Heigou 
+			RequestDispatcher rd = request.getRequestDispatcher("/Heigou");
+			rd.forward(request, response);
+		}
+
+`Servlet2`中的`doGet()`方法重写：
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException
+		{
+			//获得转发的request对象中的attribute值。
+			String zhanghao = (String) request.getAttribute("zhanghao");
+			System.out.println(zhanghao);
+			//Servlet对象重写设置attribute值，并将request对象转发给Servlet对象Yanjingshe。
+			request.setAttribute("zhanghao","456");
+			RequestDispatcher rd = request.getRequestDispatcher("/Yanjingshe");
+			rd.forward(request, response);
+		}
+
+`Servlet3`中的`doGet()`方法重写：
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException
+		{
+			String zhanghao = (String) request.getAttribute("zhanghao");
+			System.out.println(zhanghao);
+			//Servlet对象重写设置attribute值，并将request对象转发给Servlet对象Yanjingshe。
+			request.setAttribute("zhanghao","456");
+		}
+
+**重定向**：  
+1. 在请求转发中，`request`在几个`Servlet`间传递的时候，`request`中的参数是会被传递的。而在`response`的重定向中，`request`中的参数是不会被传递的，而是生成新的`request`值。这就是二者的区别所在。  
+2. 在请求转发中，`URL`地址不发生改变，即使发生了转发依旧不发生改变。但是在重定向中`URL`地址会发生变化。所以，请求转发会导致一个问题，对于客户端的表单提交，当发生刷新的时候，就会发生重复提交，因为`URL`地址是不变的。此时可以使用重定向防止表单重复提交。  
+3. 请求转发中不用加`WebApp`项目名称，而重定向中，要么加`WebApp`项目名称要么使用去掉"/"的重定向后`Servlet`名称。  
+4. 请求转发只能在同一个`WebApp`中的各个`Servlet`之间进行转发，而重定向则可以定向到不同的`WebApp`中的`Servlet`中，因为重定向不涉及参数的传递(因为参数传递会发生丢失)。但是，如果在使用重定向的时候确实想传递`request`参数，也是有办法的，那就是在`response`的重定向中加上要传递的那些参数即可。  
+5. 在请求转发中，第一个`Servlet`接收到`post`请求，那么请求转发后接收到的`Servlet`全部都接收到`post`请求。反之亦然。但是，如果是重定向，即使第一个`Servlet`接收到的是`post`请求，那么重定向后接收到的`Servlet`依旧都是`get`请求。因为任何一次转发默认的是`get`请求。对于请求转发而言，即使多次转发，依旧是只算一次请求在各个`Servlet`之间传递(只有一个`request`对象)。而对于重定向而言，每重定向一次，就是产生了一次新的请求(产生新的`request`对象)，所以重定向后的`Servlet`接收的就是新的默认`get`请求(即使第一次接收的是`post`请求，也与之没有关系)。多次请求就会产生多个`request`对象。  
+重定向使用代码示例：  
+>
+	//重定向值Heigou这个Servlet对象。后面使用的是绝对路径。
+	response.sendRedirect(request.getContextPath()+"/Heigou");
+
+
+那么什么时候该用请求转发什么时候该用重定向？  
+`Answer`：当我们需要传递数据的时候使用请求转发，当不需要的时候使用重定向。例如，当在密码输入错误的情况下，就要使用重定向。  
 
 
 纠正一个错误观点：`Enum`关键字与`Class`关键字并不是同级的，`Enum`包含了**`Class`与集合**的特征。`Enum`还表示一个集合，其是几个类对象的集合。 
-如，
+如，  
 	public Enum Seasons
 	{
 		Spring,
