@@ -75,7 +75,7 @@ a、ssh-keygen -t rsa -C "youremail@example.com"//为自己的github产生key
 在自己的.ssh目录的.pub文件中复制key，粘贴到github账号中。add key。
 
 b、在github网页中创建github上的仓库。这个仓库的地位和本地的git仓库地位是一样的。
-sfa
+
 c、将本地仓库与github上的仓库相连接：
 进入本仓库的bash中：
 git remote add origin git@github.com:trileverwt/java_test.git
