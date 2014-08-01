@@ -8816,9 +8816,47 @@ WebServer：就是用来运行WebApp应用程序的服务器。
 那么什么时候该用请求转发什么时候该用重定向？  
 `Answer`：当我们需要传递数据的时候使用请求转发，当不需要的时候使用重定向。例如，当在密码输入错误的情况下，就要使用重定向。  
 
+##Java Web中的中文乱码的问题
+什么时候会出现中文乱码？  
+`Answer`： 
+1. `Servlet`相关：`request.getParameter()`时与`print()`时。  
+2. `JSP`相关：`out.print()`时会出现。  
+
+出现中文乱码的原因:  
+中文浏览器使用`gbk`编码或者`GB-2312`编码，而`Tomcat`使用`ISO`编码，这样就会导致编码不一致的问题。所以要解决这个问题的手段就是统一所使用的编码。  
+常用的编码格式：`gbk(中文)`、`ISO(英文)`、`UTF-8(国际)`，所以如果我们编写面向国际的代码，那么就使用`UTF-8`的编码格式。  
+
+在代码层面上的解决之道：  
+由于Web应用程序是浏览器与服务器之间的`对话`。所以怎样在代码层面上解决就在于对话所使用的语言(编码格式）。  
+1. 服务器对浏览器的回复，向浏览器发送消息时解决中文乱码。  
+a.`Servlet`回复浏览器，设置`response`的格式：
+	response.setContentType("text/html,charset=gbk");//这样就将服务器端回复客户端的编码格式设置为gbk。
+b.`JSP`回复浏览器，注意：我们请求`JSP`页面的时候，实际上是将`JSP`页面转译成一个`Servlet`，我们实际上请求的是`Servlet`，是这个`Servlet`向我们进行回复，是这个`Servlet`向客户端打印出我们想要的内容，这个内容来自于`JSP`页面中的`HTML`部分。
+设置`JSP`回复的编码格式：
+	<%@ page language="java" import="java.util.*" pageEncoding="gbk"%>
+这样设置了JSP中的编码格式之后，在其转译的`Servlet`中编码格式同样会发生改变。  
+c.在`HTML`文档中的`meta`标记中进行设置，告诉浏览器使用什么编码集进行解读。  
+实际中，我们都只在`JSP`中去修改编码格式。其他两种方式都几乎不用。  
+
+2. 客户端向服务器发送消息解决中文乱码问题。
+a.`Servlet`接收客户端请求时进行设置。
+修改方法有：
+A.硬编码：在`request.getparameter()`获得请求的参数之后，将获得的结果进行硬编码成我们想看到的编码结果。
+>
+	String newStr = new String(request.getparameter("name").getbytes("ISO-8859-1"),"gbk");//这样就将服务器用ISO编码读得的字符串硬编码成gbk编码的newStr。也就是说Tomcat默认是用ISO编码读取的，但是浏览器是用gbk编码发送的，所以要通过硬编码的方式将Tomcat读取的内容还原成浏览器所发送的内容。
+这种硬编码的方式对`doGet()`与`doPost()`都有用。*繁琐但是完全有效*。  
+B.只对`doPost()`有效的方法：更方便。在`request.getparameter()`前设置`reques`的编码方式：  
+>
+	request.setChracterEncoder("gbk");//在getparameter()之前就设置编码方式，必须在其之前设置的。这个是用于客户端向服务器发送消息时用的。而不是response用的那个，那是服务器向客户端发送消息时用的。
+	request.getparameter("name");  
+	
+C.只对`doGet()`方法有效的方法。修改`Server.xml`文件	。
+b.`JSP`接收客户端请求时进行设置。其和`Servlet`中的方式一样。  
+c.浏览器发送请求时进行设置。
 
 纠正一个错误观点：`Enum`关键字与`Class`关键字并不是同级的，`Enum`包含了**`Class`与集合**的特征。`Enum`还表示一个集合，其是几个类对象的集合。 
-如，  
+如， 
+> 
 	public Enum Seasons
 	{
 		Spring,
@@ -8827,7 +8865,7 @@ WebServer：就是用来运行WebApp应用程序的服务器。
 		Winter();
 		Seasons()
 		{
-
+>	
 		}
 	}
 
