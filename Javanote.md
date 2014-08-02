@@ -8641,12 +8641,17 @@ f. 测试类：
 ##Servlet
 ###基础知识
 其本质就是一个特殊的`Java`类。
+`Servlet`类的继承结构如图`Servlet_Inherit_Structure.png`所示：  
 
 其实例的创建(`new`)、销毁都是由容器完成的，而不需要人工手动执行(一般的类都需要人工手动创建实例)。
-`Servlet`类与普通的区别见图：
+`Servlet`类与普通类的区别见图`Servlet_With_Ordinary_Class.png`所示：  
 ###Servlet生命周期
 所谓的`Servlet`类对象的生命周期：就是指一个`Servlet`类对象创建(由`Web`容器`Tomcat`完成)到消亡的整个过程。  
+`Servlet`类生命周期见图`Servlet_Life_Period1.png`、`Servlet_Life_Period2.png`所示：  
+
 由于我们自己创建的`Servlet`类继承自`HttpServlet`类，也就是说继承了`server(……)`方法、`init(……)`方法、`destory()`方法。  
+`HttpServlet`类的生命周期见图`HttpServlet_Life_Period.png`所示：  
+
 那么，当服务器第一次接收到调用这个`Servelet`的类对象请求的时候，就会由容器创建一个`Servlet`类实例对象，然后服务器中就会调用`init(……)`方法(一个生命周期中`init()`方法只调用一次)进行初始化然后调用`server(……)`(一个生命周期中`server()`方法要调用多次)方法，以后每次接收到新的服务请求的时候，都会调用`server()`方法。当关闭服务器或者关闭这个`Servlet`(在`Tomcat`控制台中停止一个`Web`应用就会关闭这个应用中所有的`Servlet`)的时候，就会调用`destory()`方法。  
 注意：当一个`Servlet`部署完成后，*启动`Web`服务器的时候*，就是一个`Web`应用程序(其中包含多个`Servlet`)启动的时候。即使此时并没有来自客户端的服务请求，但是此时的`Web`应用程序项目还是启动了。然后当接收到来自客户端的请求的时候，就会调用其中包含的各个`Servlet`的`init()`方法等。  
 
@@ -8664,7 +8669,7 @@ f. 测试类：
     </servlet-mapping>
 ###ServletConfig参数对象
 `init()`方法中的`ServletConfig`参数包含了这个`Servlet`对象的所有配置信息，这个配置信息从`web.xml`中读出来的。  
-关于`Servlet`参数，见图：
+关于`Servlet`参数，见图`ServletConfig_Parameter.png`：
 
 ###Servlet中的request参数对象
 在我们的`doPost()`或者`doGet()`方法中，会传递给它们一个`HttpServletRequest`参数对象，这个对象是`Web`服务器(也就是容器`Tomcat`)将*客户端发送的请求的所有信息进行包装*而获得。`HttpServletReqest`是一个接口，这里是面向接口编程，实际传递给方法的是它的实现类对象(具体实现是有容器帮我们进行的，因为对请求信息的包装是容器帮助我们进行的)。以后可以通过`request`对象的方法来获得其封装的内容。  
