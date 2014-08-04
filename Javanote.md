@@ -8994,12 +8994,123 @@ c.隐藏表单域的方式，不推荐使用。
 setAttribute(String key,String value):向Session中存储对象。使用该方法可以将用户登录账号、密码存储起来。  
 getAttribute(String key)：从Session中获取对应的对象。  
 removeAttribute(String key):从Session中删除对应的对象。  
+getAttributeName()：获得Session中存储的key值集合。
+invalidate()：强制使Session过期，用于安全退出，保证Session的安全。
+
+####Session的生命周期
+第一次请求时创建Session。  
+Session消亡：  
+1. 退出对话之后，过了生命周期即消亡。  
+2. 调用Session的invalidate()方法。  
+3. Web Server停止运行。  
+
 一个客户端的Session在这整个会话中有效。也就是说，在这个会话中的多次请求中是可以共享的，一次请求中存储在该Session中的信息是可以被这次会话中的其他请求使用。  
 例如，在一次会话中，第一次是请求一个Servlet，在这个请求中于Session中存储了客户端的账号、密码。然后，客户端在第二次请求一个JSP，那么就可以在这个JSP中获得那个Servlet请求中存储在Session中的账号、密码。  
 request的Attribute通过请求转发是在多个Servlet中共用(就是将本次请求的参数在各个Servlet间进行共用，多个Servlet进行回应。保存于request的Attribute中的参数的存活期仅在于本次请求，时间短)，而Session的Attribute是在多次请求(同一次会话)间共用(有多次请求，各个请求之间可以共用，不管各个请求各自请求Servlet还是JSP均可。保持与Session中的参数的存活期是很多次请求，时间长)。  
 
 请求转发与Session的不同点在于：存储共享数据的生命周期不同，共享对象不同。使用范围不同。请求转发是一次请求一个存储，Session是一次会话一个存储，一次会话包括了多个请求。如果能够用请求转发就能共享的数据，就使用请求转发即可，而用不着Session，为了节省内存空间。
-JSP中通过内置对象Session直接进行访问。
-###Cookie
+JSP中通过内置对象Session直接使用，是一个内置对象。
+Session使用实例：
+JSP中使用Session:  
 
+在Servlet中向Session中储存客户端数据：
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException 
+		{
+			//返回给客户端的Session
+			HttpSession s = request.getSession();
+			s.setAttribute("name", name);
+		}
+		
+在Servlet中取出Session中储存的客户端数据：
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException 
+		{
+			HttpSession s = request.getSession();
+			System.out.println(s.getAttribute("name"));
+		}
+
+在JSP中取出Session中储存的客户端数据：
+>
+	<body>
+		<%=session.getAttribute("name")%>
+	</body>
+	
+	
+####application对象
+其实际上是一个对象名。是ServletContext类的实例对象，但在JSP中是一个内置对象。  
+Session只能被同一个客户端使用。有限制。application对象可以被多个客户端共享。其范围最大。只要整个程序(包含多个Servlet)启动，即创建一个application，这是一个单态类。  
+在Servlet中通过方法获得application对象。  
+>
+	ServletContext application = super.getServletContext();//获得ServletContext对象application
+	或者
+	ServletContext application = super.getServletConfig().getServletContext();//也可以获得ServletConText对象application
+
+application使用实例：
+在JSP中：application用于在多个客户端之间共享参数"sum"
+>
+	<body>
+	    <% Object sums = application.getAttribute("sum");
+	    	int sum= 0;
+	    	if(sums==null)
+	    		sums="0";
+	    	sum=Integer.parseInt(sums.toString());
+	    	sum++;
+	    	application.setAttribute("sum", sum);
+	    %>
+	    sum:<%=sum %>
+	</body>
+
+在JSP中，application就是一个内置对象。可以拿来直接使用。
+
+####Request、Session、Application三者对比
+见图`Request_Session_Application_Contrast.PNG`所示：  
+上述三者均可用于Java Web中的数据存储共享，那么具体该存放在哪一个里面的原则是：  
+数据能储存在小范围内解决问题，就不要存放在大的范围内。
+###URL重写与Cookie
+####URL重写
+当客户端或者浏览器禁用Cookie的时候，那么我们的SessionID放在哪里？
+可以使用URL重写的方法来在禁用Cookie的时候共享Session。
+URL重写使用实例：
+注：当我们想从一个页面中跳转到另一个页面(或者回到现在的页面)的时候，可以在Servlet中使用重定向。
+####Cookie
+客户端信息可以储存在服务器开辟的空间Session中。  
+也可以储存在客户端开辟的空间Cookie中。  
+Cookie使用示例：  
+
+存储Cookie的Servlet示例：将客户请求中发送过来的信息存储到Cookie中。
+>
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException 
+		{
+			String nameInfo=request.getParameter("name");
+			System.out.println(nameInfo);
+			//创建Cookie，然后给其添加内容
+			Cookie c = new Cookie("nameinfo",nameInfo);
+			//设置Cookie的存活时间
+			c.setMaxAge(10000000);
+			//将我们创建好的Cookie发送给客户端
+			response.addCookie(c);
+>			
+			//重定向跳转到新的页面上
+			response.sendRedirect("MyJsp.jsp");
+		}
+
+从Cookie中取出存储内容的JSP示例：注意，当我们请求JSP的时候，JSP中同样会收到request对象。
+>
+	<body>
+	    <% 
+	    	//取出Cookie
+	    	Cookie[] co = request.getCookies();
+	    	//读取Cookie中的内容。
+	    	for(Cookie c:co)
+	    	{
+	    		System.out.println(c.getValue());
+	    	}
+	    %>
+	</body>
+	
+使用Session、Cookie存储用户信息的比较，见图`Session_Cookie_Contrast.PNG`：
 
