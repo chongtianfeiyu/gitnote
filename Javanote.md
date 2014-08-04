@@ -9114,3 +9114,50 @@ Cookie使用示例：
 	
 使用Session、Cookie存储用户信息的比较，见图`Session_Cookie_Contrast.PNG`：
 
+#Java Web中的JSP
+---
+JSP技术是建立于Servlet之上的。  
+JSP！=Java+DHTML  
+JSP页面=Java+DHTML  
+JSP实际上就是一个Servlet类。  
+JSP代码运行原理如图`JSP_Fundamental.PNG`所示：  
+第一次运行的时候：.jsp首先转译为.java(也就是Servlet代码)，再编译为.class代码。  
+第二次运行的时候：直接请求.class代码。
+
+##JSP组成
+JSP页面包括：  
+1. 注释：HTML注释、Java注释、JSP注释。  
+2. 模板：就是界面原型，界面显示的外形，美工关心的。就是HTML部分的内容。  
+3. 元素：脚本元素、指令元素、动作元素。  
+
+###脚本元素
+脚本元素示例：脚本元素有3种，声明部分，小脚本，表达式。
+>
+	<%!
+		//声明部分，声明变量与方法，使用！作为标识，表明该部分转换为Servlet后直接变为Java代码。此处声明的变量是全局的，放在Servlet类中。
+		int a = 1;
+		int sum(int a,int b)
+		{
+			return a+b;
+		}
+	%>	
+	<%
+		//小脚本，不用标识，在转换为Servlet之后直接变为Java代码。但是与声明部分不同的是：小脚本中声明的变量是局部的，放在某一个方法中。
+		int reuslt = sum(10,20)；
+	%>
+		//表达式，表达式部分使用=进行标识，表明该部分转换为Servlet之后放在out.write()之中，直接在HTML中显示。注：其后无分号。
+	<%=
+		result
+	%>
+	
+
+##JSP的隐藏对象
+在JSP的脚本元素中可以使用JSP的隐藏对象。 
+隐藏对象无需使用者声明、创建。由容器维护、管理。  
+例如，session、request、application对象就可以在JSP的脚本元素(除了声明之外)中使用。
+JSP的隐藏对象见图`JSP_Inner_Object.PNG`所示：  
+
+注：关于response对象的方法使用，我们很少再使用out.print()来向客户端发送内容。而是直接使用重定向的技术：response.sendRedirect();转发至我们想要发送的内容的那个页面即可。而不要直接输出。
+
+##JSP中异常处理
+若发生异常，可以跳转至异常显示页面。
