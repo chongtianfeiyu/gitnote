@@ -9127,14 +9127,14 @@ JSP代码运行原理如图`JSP_Fundamental.PNG`所示：
 ##JSP组成
 JSP页面包括：  
 1. 注释：HTML注释、Java注释、JSP注释。  
-2. 模板：就是界面原型，界面显示的外形，美工关心的。就是HTML部分的内容。  
+2. 模板：就是界面原型，界面显示的外形，美工关心的。就是`HTML`部分的内容。  
 3. 元素：脚本元素、指令元素、动作元素。  
 
 ###脚本元素
 脚本元素示例：脚本元素有3种，声明部分，小脚本，表达式。
 >
 	<%!
-		//声明部分，声明变量与方法，使用！作为标识，表明该部分转换为Servlet后直接变为Java代码。此处声明的变量是全局的，放在Servlet类中。
+		//声明部分，声明变量与方法，使用！作为标识，表明该部分转换为Servlet后直接变为Java代码。此处声明的变量是全局的，转换后放在Servlet类中。
 		int a = 1;
 		int sum(int a,int b)
 		{
@@ -9142,7 +9142,7 @@ JSP页面包括：
 		}
 	%>	
 	<%
-		//小脚本，不用标识，在转换为Servlet之后直接变为Java代码。但是与声明部分不同的是：小脚本中声明的变量是局部的，放在某一个方法中。
+		//小脚本，不用标识，在转换为Servlet之后直接变为Java代码。但是与声明部分不同的是：小脚本中声明的变量是局部的，转换后放在某一个方法中。
 		int reuslt = sum(10,20)；
 	%>
 		//表达式，表达式部分使用=进行标识，表明该部分转换为Servlet之后放在out.write()之中，直接在HTML中显示。注：其后无分号。
@@ -9151,6 +9151,30 @@ JSP页面包括：
 	%>
 	
 
+###指令元素
+以<%@ %>为标志。所谓的指令，就是告诉Web服务器，在编译本文件的时候需要哪些准备。有page指令、include指令、taglib指令，见图：
+####page指令
+在JSP的任何地方、以任何顺序，一个页面中可以包含任意数量的page指令。  
+除了import，任何的属性/值对只能出现一次。  
+page指令的属性有:language、import、contentType、errorPage、isErrorPage，见图:
+page指令示例：  
+>
+	<%@ page language="java" import="java.util.*" contentType="text/html; charset=gbk" errorPage="MyError.jsp"%>
+	
+####include指令
+当网站的多个页面中具有某些相同元素，例如各个页头是相同的，那么为了节省代码，可以使用HTML中的框架，将相同的那一部分拆开为一个单独的部分进行使用。  
+也可以使用JSP中的include指令，将各个页面中的相同部分写成一个页面，然后再各个页面中使用include指令将他们包含进来。  
+include指令用于在运行的时候将其他HTML文档或者JSP也没嵌入到本JSP页面。  
+include之类的属性有：file属性。  
+但是要注意页面中不要定义了相同变量，也就是被嵌入的页面与嵌入页面中不要有同名变量的定义。  
+include指令使用示例：  
+>
+	<%@ include file = "文件名" %>//将其他的一个文件放入本文件中。
+	
+###动作元素
+动作元素是鸡肋知识，没什么用了。主要为模型1服务，模型2基本不用。主要是方便在JSP页面中使用JavaBean。  
+以<jsp: >为标志。
+动作元素见图：
 ##JSP的隐藏对象
 在JSP的脚本元素中可以使用JSP的隐藏对象。 
 隐藏对象无需使用者声明、创建。由容器维护、管理。  
@@ -9161,3 +9185,99 @@ JSP的隐藏对象见图`JSP_Inner_Object.PNG`所示：
 
 ##JSP中异常处理
 若发生异常，可以跳转至异常显示页面。
+
+#Java Web中的过滤器
+----
+在Java Web中，除了JSP、Servlet可以接收客户端请求，处理客户端请求之外，过滤器也可由接收客户端请求。
+过滤器是向Web App响应前和过滤后添加新功能的组件。  
+我们的一个Web App中有多个Servlet，其中有些Servlet中的某些操作时相同的。那么我们可以将这些操作提取出来成为一个新的类，在客户请求到达后面的那些Servlet之前就将那些相同的操作通过新的类予以实现。这个新的类就发挥了过滤器的作用。也就是说在那些Servlet对客户请求做出响应之前就对之予以过滤。就是精简了Servlet的功能，减小代码冗余。过滤器作为一个预备处理功能。
+
+开发一个过滤器(Filter)需要实现一个接口(Filter)。
+在做项目时，最多的是使用前过滤，也就是在过滤器中的doFilter()之前，很少使用后过滤。
+
+过滤器使用步骤：
+1. 实现Filter接口。重写doFilter()方法。  
+2. 配置Web.xml文件，配置方法与Servlet类似。
+过滤器使用示例：  
+未使用过滤器的示例：  
+Servlet xizhao代码：
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException 
+	{
+		System.out.println("tuoyifu");
+		System.out.println("xizhao");
+		System.out.println("chuanyifu");
+	}
+	
+Servlet anmo代码：
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException 
+	{
+		System.out.println("tuoyifu");
+		System.out.println("anmo");
+		System.out.println("chuanyifu");
+	}
+	
+使用过滤器的示例：  
+Servlet xizhao代码：
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException 
+	{
+		System.out.println("xizhao");
+	}
+	
+Servlet anmo代码：
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException 
+	{
+		System.out.println("anmo");
+	}
+	
+过滤器代码：
+>
+	//过滤器抽取了前面两个Servlet中相同的操作
+	public class PreFilter implements Filter 
+	{
+		@Override
+		public void destroy() 
+		{
+		}
+		@Override
+		public void doFilter(ServletRequest request, ServletResponse response,
+				FilterChain filterchain) throws IOException, ServletException 
+		{
+			// TODO Auto-generated method stub
+			System.out.println("tuoyifu");
+			//doFilter()方法是一个分界线，之前的代码表示是之前过滤的，之后的代码表示是之后过滤的。该方法表示请求转向Servlet的doPost()或者doGet()方法进行执行。
+			//Servlet中德方法执行完成之后才继续执行本Filter中的方法。
+			filterchain.doFilter(request, response);
+			System.out.println("chuanyifu");
+		}
+		@Override
+		public void init(FilterConfig arg0) throws ServletException 
+		{
+		}
+	}
+	
+Web.xml配置：  
+>
+	<filter>
+		<filter-name>PreFilter</filter-name>
+		<filter-class>com.trilever.PreFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		//以下配置使得此Servlet对于两个Servlet都可自动调用。
+		<filter-name>PreFilter</filter-name>
+		<url-pattern>/xizhao</url-pattern>
+		<url-pattern>/anmo</url-pattern>
+	</filter-mapping>
+
+如此，即将两个Servlet中的相同部分抽取到过滤器中进行自动调用(因为已经在Web.xml文件中进行配置)。
+
+由前面可知，当我们的Servlet需要接收、处理客户端请求，就需要处理中文乱码的问题。对于很多Servlet都需要这一操作，那么就可以将中文乱码处理部分进行抽取，作为一个中文乱码处理过滤器。然后在Web.xml中配置对于所有的Servlet都适用。就可以解决所有的Servlet的中文乱码问题。  
+
+注意：在Filter中的init()方法的参数FilterConfig可以用于从Web.xml文件中读取我们预先设置的数据，这些数据可以是整个项目的配置信息，当需要修改的时候，可以很方便地在Web.xml中修改。在全局的Servlet都可以读取使用。见前面的ServletConfig部分的介绍。Filter中init()方法的参数FilterConfig见图`FilterConfig.PNG`所示：
