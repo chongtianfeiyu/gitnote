@@ -3,7 +3,7 @@
 1. `Java`源代码->`.class`文件（字节码）->机器码(二进制码)  
 源代码与`.class`文件(字节码)之间是`Java`编译器(`JDK`)，字节码与机器码之间是`JVM`(`Java`虚拟机)
 2. `Java`中，`applet`是用于在浏览器段运行的程序，`servlet`是用于在服务器端运行的程序。因此，`applet`相当于`javascript`运行在浏览器段。`servlet`相当于`PHP`运行在服务器端。`Java`对服务器端与浏览器端都进行了扩展。
-3. `Node.Js`就是在浏览器端运行的PHP代码。
+3. `Node.Js`就是在服务器端运行JS代码。
 4. 
 `Java se`:桌面应用
 
@@ -9323,7 +9323,9 @@ JSP的隐藏对象见图`JSP_Inner_Object.PNG`所示：
 ----
 在Java Web中，除了JSP、Servlet可以接收客户端请求，处理客户端请求之外，过滤器也可由接收客户端请求。
 过滤器是向Web App响应前和过滤后添加新功能的组件。  
-我们的一个Web App中有多个Servlet，其中有些Servlet中的某些操作时相同的。那么我们可以将这些操作提取出来成为一个新的类，在客户请求到达后面的那些Servlet之前就将那些相同的操作通过新的类予以实现。这个新的类就发挥了过滤器的作用。也就是说在那些Servlet对客户请求做出响应之前就对之予以过滤。就是精简了Servlet的功能，减小代码冗余。过滤器作为一个预备处理功能。
+我们的一个Web App中有多个Servlet或者JSP，其中有些Servlet中的某些操作时相同的。那么我们可以将这些操作提取出来成为一个新的类，在客户请求到达后面的那些Servlet之前就将那些相同的操作通过新的类予以实现。这个新的类就发挥了过滤器的作用。也就是说在那些Servlet对客户请求做出响应之前就对之予以过滤。就是精简了Servlet的功能，减小代码冗余。过滤器作为一个预备处理功能。  
+
+注意:过滤器不仅可用于Servlet还可以用于JSP。
 
 开发一个过滤器(Filter)需要实现一个接口(Filter)。
 在做项目时，最多的是使用前过滤，也就是在过滤器中的doFilter()之前，很少使用后过滤。
@@ -9414,3 +9416,183 @@ Web.xml配置：
 由前面可知，当我们的Servlet需要接收、处理客户端请求，就需要处理中文乱码的问题。对于很多Servlet都需要这一操作，那么就可以将中文乱码处理部分进行抽取，作为一个中文乱码处理过滤器。然后在Web.xml中配置对于所有的Servlet都适用。就可以解决所有的Servlet的中文乱码问题。  
 
 注意：在Filter中的init()方法的参数FilterConfig可以用于从Web.xml文件中读取我们预先设置的数据，这些数据可以是整个项目的配置信息，当需要修改的时候，可以很方便地在Web.xml中修改。在全局的Servlet都可以读取使用。见前面的ServletConfig部分的介绍。Filter中init()方法的参数FilterConfig见图`FilterConfig.PNG`所示：
+
+##Java Web中过滤器链
+所谓的过滤器链：就是存在多个过滤器，一起发挥作用。过滤器既可以过滤Servlet也可以过滤JSP。  
+那么各个过滤器执行流程是怎么样的？  
+Answer:前过滤器执行顺序(也就是doFilter()方法之前的代码)是依据Web.xml中的mapping顺序确定的。当其中一个过滤器中的前过滤器执行完之后，如果其后面还有过滤器那就先执行其后面的过滤器的前过滤器部分，如果后面没有过滤器，那就执行Servlet中的部分。执行完Servlet之后，再转向过滤器中的后过滤器部分，当然，各个后过滤器部分的执行顺序与前过滤器部分的顺序相反。执行流程见图`Filter_Chain_Process.PNG`所示：
+
+
+###在过滤器联众使用适配器模式
+在实际使用中，过滤器中的init()方法与destory()方法往往是没有用的，只需要进行空实现即可。但是当要大量使用过滤器的时候，太多的空实现就会导致代码冗余。此时就可以使用适配器模式予以解决。先创建过滤器适配器，对Filter类进行空实现。然后所有的过滤器都继承自这个适配器即可不必实现全部的方法。
+
+注意：字符串处理方法split()，如果是用"."进行分割，必须写成"\\."才可以。
+前面我们做了一个用于处理中文乱码的过滤器，现在创建一个客户端地址过滤器，就是限制某些地址访问我们的Servlet。  
+地址过滤器使用示例：  
+>
+	public class RemoteAddressFilter extends FilterAdapter 
+	{
+		@Override
+		public void doFilter(ServletRequest request, ServletResponse response,
+				FilterChain chain) throws IOException, ServletException
+		{
+			String addr = request.getRemoteAddr();
+			String[] strArray = addr.split("\\.");
+			int lastindex = Integer.parseInt(strArray[3]);
+			if(lastindex>10&&lastindex<50)
+				response.getWriter().println("you are not authorized to this page");
+		}
+	}
+
+还有客户端登陆账号过滤器示例：  
+
+网站log修改过滤器示例：  
+
+
+##AOP-面向方面编程
+什么叫做方面：例如我们的代码需要解决中文乱码的问题。那么这个问题就是一个方面。  
+我们将处理中文乱码的那部分代码提取出来，构成一个过滤器，这就是面向方面编程，称为`AOP`。也叫面向切面编程。就好像过滤器一样，每一个过滤器都像在请求传递到`Servlet/JSP`之前的路上的切面，将必要的东西予以过滤、切除。称之为面向切面编程。  
+过滤器、拦截器(后面Structs2再讲)的作用就是：让后面的`Servlet/JSP`负责他们自己的工作，只做他们自己的工作即可。其他的工作由过滤器、拦截器这些东西完成。
+
+#Java Web中的EL
+Expression Language:表达式语言。在JSP页面中使用。   
+以前是JSTL(JSP标准标签库)的一部分。  
+现在JSF也将其纳入。  
+EL的作用:主要是用于输出显示值(见下面的例子)。与JSTL组合代替JSP页面中的脚本元素与动作元素。  
+语法:${EL语言}  
+
+##EL的隐式对象
+param:作用相当于request.getParameters(),如、获得form中的textArea返回的值，textArea只返回一个单值。  
+paramValues:作用相当于request.getParameterValues(),如、获得form中的checkBox返回的值，checkBox返可以回多个值。  
+以上，param、paramValues与request的区别在于，如果获得的是null，那么param会显示出空白，而request会显示出null。
+注意：这两个隐式对象只在模型1中才使用。在模型2中没有使用。此二者无需研究。
+示例：  
+>
+	${param.name}//返回form中的textArea中的name值。
+	${param.pwd}//返回form中的textArea中的pwd值。
+	
+${pageScope.username}:取出page范围内的username变量。  
+${requestScope.username}:取出requestScope范围内的username变量。  
+${sessionScope.username}:取出sessionScope范围内的username变量。  
+${applicationScope.username}:取出applicationScope范围内的username变量。  
+
+原来设置page、request、session、application范围内的某个变量值：
+>
+	pageContext.setAttribute("pagename","pagevalue")；
+	request.setAttribute("requestname","requestvalue");
+	session.setAttribute("sessionname","sessionvalue");
+	application.setAttribute("applicationname","applicationvalue");
+
+获取page、request、session、application范围内的某个变量值：
+>
+	pageContext.getAttribute("pagename")；
+	request.getAttribute("requestname");
+	session.getAttribute("sessionname");
+	application.getAttribute("applicationname");
+	
+以上使用get方法从变量中取值，相当于以下使用EL中的Scope隐式变量：  
+>
+	${pageScope.pagename}//取出page范围内的pagename变量。  
+	${requestScope.requestname}//取出requestScope范围内的requestname变量。  
+	${sessionScope.sessionname}//取出sessionScope范围内的sessionname变量。  
+	${applicationScope.applicationname}//取出applicationScope范围内的applicationname变量。
+
+使用EL的优点时可以节省代码。  
+注意：当我们在创建一个实体类的时候，前3个字母都不要大写，否则在Structs里面会出现问题。
+
+对于一个实体类而言(如，Student类)，EL的用法还包括：  
+>
+	${requestScope.mStudent.name}//取出requestScope范围内的mStudent变量的Student对象的name成员变量值。  
+
+甚至当Student类中包括了birth类成员变量，birth类包括year、month、day成员变量，还可以使用：  
+>
+	${requestScope.mStudent.birth.year}//取出requestScope范围内的mStudent变量的Student对象的birth成员变量的year成员变量值。  
+	
+甚至还有用法如下：  
+>
+	${mStudent.birth.year}//取出requestScope范围内的mStudent变量的Student对象的birth成员变量的year成员变量值。这里我们没有指定requesScope这个范围，会自动从pageScope向applicationScope范围进行对这个对象的查找。也就是说，如果在pageScope范围内就有mStudent这个变量，那么在pageScope中查找到即停止查找，不再向下继续查找。  
+以上这种用法这就是EL的功能强大之处，实际上调用的都是get方法。
+
+
+关于4个Scope隐式对象的，如图`Points_Scope_Objects.PNG`所示：
+
+EL中还有一个隐式对象pageContext。其包含本页面的所有信息，如、request对象、Session对象。通过其拥有的request对象就可以获得ServletPath变量值等。
+
+EL中的重点就是这个4个Scope隐式对象、1个pageContext隐式对象与param与paramValues隐式对象。后二者是为模型1服务的，所以使用少。重点是前面四个Scope。
+
+##EL中的运算符
+与Java中的运算符没有什么区别。差不多的。
+
+##EL在实际中的应用
+以后再实际中就不要使用request.getParameter()这样的代码了，可以全部使用EL代码予以代替。
+
+
+#Java Web中的JSTL
+JSTL的重要作用就是完成流程控制。与EL配合代替JSP中的脚本元素与动作元素。  
+
+JSTL:JavaSever Pages Standard Tag Library  
+JSP标准标签函数库。  
+包括：
+核心标签库、I18N格式标签库、SQL标签库、XML标签库、函数标签库。  
+重点掌握的是核心标签库。其他的都几乎不用。  
+JSTL与EL一样，都是用在JSP页面中。  
+JSP中的指令元素(见图`Instruction_Elements.PNG`所示)中有一个taglib元素，示例:  
+
+JSTL中的**重点**是：各种流程控制语句如foreach、if、while等。语法见电子书。  
+
+实际上，无论是EL还是JSTL，其实际上都是JSP的一种子语言而已，目的是为了满足一定的任务与作用，例如，EL的作用就是为了显示、输出变量的值，而JSTL是为了提供流程控制语句。其作用也和Java中相应部分的作用是一样的。都是JSP中的一部分。就好比JSP也是一种语言一样。  
+EL与JSTL的作用就是代替JSP中的脚本元素与动作元素。所以，我们应该将JSP文件中的所有的脚本元素与动作元素(当然指令元素师不能换的)换成EL、JSTL语句才好。JSP中的这两种元素都可以使用EL与JSTL予以代替。
+
+
+注意：不要误以为Session、request这些里面只能放少量的数据，其可以放任何的数据，而且可以传递。例如，就可以再request里面放一个map或者list，再请求转发出去，在另外一个页面中进行使用。都是可以的。
+
+#Java Web中的自定义标记
+标记示例：  
+>
+	<jsp:include page="index.jsp">  
+		<jsp:param value="zhangshan" name="name"/>
+	</jsp:include>
+	
+jsp：include，此称为标记，jsp是标记的前缀，include是标记的后缀。中间一冒号分割。  
+page:标记的属性，index.jsp是属性值。  
+<jsp:param>称为<jsp:include>的子标记。  
+
+##自定义标记
+开发自定义标记的目的：借助自定义标记对应的java类(标记处理器)完成某些功能，完成jsp页面的开发。  
+其优点是：有助于模块化编程，提高程序的可复用性等。  
+自定义标记的组成：
+1. 自定义标记。例：<wt:hello></wt:hello>  
+2. 标记处理器。就是一个java类，当容器解析运行标记<wt:hello></wt:hello>时，会自动调用java类的相关方法，完成某项功能。  
+3. 标记描述符。是一个后缀为tld但文档内容格式为xml的文件，它完成一个自定义标记到标记处理器java类的绑定过程。
+
+##标签处理器
+标签处理器：就是创建一个类，其继承自BodyTageSupport或者TagSupport。  
+其实现了两个方法，doStartTag()、doEndTag()。当容器遇到开始标记<wt:hello>时，就会执行doStartTag()方法，当容器遇到结束标记</wt:hello>时，就会执行doEndTag()方法。
+
+##标记描述符
+创建一个tld文件。其实际上是一个xml文件，其内部将我们的自定义标记的名称与我们创建的标签处理器对应起来。以后当我们直接使用自定义标记的名称的时候，会通过这个tld文件找到对应的标签处理器，运行其里面的doStartTag()方法与doEndTag()方法。  
+注：这个文件必须放在Web-inf目录或其子目录之下。  
+##在JSP中使用自定义标记
+在jsp中使用时，要先导入标签库。使用taglib动作  
+>	
+	<%@ taglib prefix="wt" uri="http://trilever.com" %>
+	
+使用时，再jsp文件中写了这个标签就会自动调用标签处理器中的方法。
+
+注：自定义标记的作用：就相当于一个宏一样，通过一个标记来调用与之对应的两个方法。这样就可以实现模块化编程。将JSP中的代码抽取出来，放入在模块(标记处理器中的两个方法)之中。  
+所谓的JSTL就是Sun公司给我们开发供我们使用的标签库。我们不用对里面的标签进行自定义，而是可以直接使用。Sun公司已经将这个标签库(核心标签库)里面的标签所对应的标签处理器都写好了(放在JSTL的jar包里面)。我们直接使用JSTL标签即可。这就是为什么我们要使用JSTL时必须要倒入JSTL的jar包，因为这个jar包里包含了这个标签库里的标签所对应的tld文件，该文件里面的就是JSTL标签所对应的标签处理器。
+
+
+#Java Web中的监听器
+所谓的监听器就是：当我们想在application、session、request这三个对象创建、消亡或者向其中添加、删除、修改Attribute的时候执行某些代码，就使用监听器来完成。这就是监听器的作用，监听这三个对象的变化。  
+##监听器的分类
+1. ServletContextAttributeListener:监听对application的Attribute的操作，如、增加、删除、修改等操作。  
+2. ServletContextListener:监听application对象的创建与消亡。  
+3. 
+
+
+##使用监听器步骤
+1. 实现以上的那些监听器接口。实现里面的方法  
+对于监听创建与消亡的监听器，需要实现init()与的destory()方法。  
+对于监听Attribute的监听器，需要实现attributeAdded()、attributeRemoved()、attributeReplaced()方法。  
+2. 在Web.xml中对这个监听器进行相应的注册配置。  
