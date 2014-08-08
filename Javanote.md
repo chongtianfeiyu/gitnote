@@ -8457,8 +8457,8 @@ f. 测试类：
 1. 键值对形式，`name："li"`  
 2. `XML`描述  
 3. 数据库，可以存储数据和操作数据  
-数据量比较大的时候，使用数据库。
-扩展性(`Extended`)标识语言，用于标识描述数据信息。其是`SGML`标识语言的简化。  
+数据量比较大的时候，使用数据库。  
+`XML`:扩展性(`Extended`)标识语言，用于标识描述数据信息。其是`SGML`标识语言的简化。  
 再，由于`HTML`语言的语法不够严谨，所以在`HTML`4.0.1版本之后，将其过渡至`XHTML`(扩展性`Extended`）语言,`XHTML`更加严谨、规范。`XHTML`可以理解为是`HTML`向`XML`语言过渡的中间产物。  
 
 `HTML`与`XML`之间的区别在于：  
@@ -8511,22 +8511,22 @@ f. 测试类：
 -----
 ##JavaScript基础知识
 基于对象，并未完全满足面向对象三个特征。但是有类与对象的概念。  
-是一种弱语言：可以不声明变量类型。声明变量用`var`修饰符。区分大小写。解释执行。  
-脚本语言。  
-作用：用于客户端编程。用于在浏览器中执行。最多的用于在客户端验证、各种特效、为`Ajax`提高支持。  
+是一种弱语言：可以不声明变量类型。声明变量用`var`修饰符。区分大小写。解释执行的脚本语言。  
 
-`Java`、`JSP Servelet`、`PHP`代码都在服务器端运行，他们都在`Tomcat`等这些服务器容器中被编译运行后产生了`HTML`、`JS`、`CSS`代码，然后发送给客户端浏览器进行执行。  
+作用：用于客户端编程。用于在浏览器中执行。最多的用于在客户端验证、各种特效、为`Ajax`提供支持。  
+
+`Java`、`JSP Servlet`、`PHP`代码都在服务器端运行，他们都在`Tomcat`等这些服务器容器中被编译运行后产生出`HTML`、`JS`、`CSS`代码，然后发送给客户端浏览器进行解析、执行。  
 `SQL`脚本在数据库中被执行。  
 `JS`代码放在在`HTML`中哪儿都可以，如果是前台，最好放`HTML`最后面。如果是是后台，随便放哪里都可以。最好放在`head`标签中。  
-`JS`代码在客户端完全是可以被抓取到的，因为要被服务器端完全的发送给浏览器，由浏览器对这些`JS`代码进行解释执行。只要你写出来就可以被人看到。
+`JS`代码在客户端完全是可以被抓取到的，因为要被服务器端完全的发送给浏览器，由浏览器对这些`JS`代码进行解释执行。只要你写出来就可以被人看到。  
 `JS`代码中带有`HTML`代码也可以被解析。声明变量全部使用`var`，可以将`var`理解为`object`。  
 
-内置对象：`document`代表整个网页，`alert`等。  
+内置对象：`document`代表整个网页，`window`代表整个浏览器界面等。  
 `parseInt()`方法：将字符串转换为数字。  
 
 
 ##JavaScript中的Function
-方法都是通过事件进行调用的，当事件发生之后，就会调用方法。如，`onload`事件、`onclick`事件。都可以用于激发事件。  
+`JS`中的方法都是通过事件进行调用的，当事件发生之后，就会调用方法。如，`onload`事件、`onclick`事件。都可以用于激发事件。  
 方法同样可以`return`数据，方法的返回值可以用于显示、初始化其他变量等等。但是不同的是，方法的声明中无需写返回值类型。  
 方法的参数列表中也无需写数据类型。只需参数名称。  
 
@@ -8550,24 +8550,24 @@ f. 测试类：
 		}
 		function test1()
 		{
-			return "thank you ";
+			return "thank you";
 		}
 		function test2(a)
 		{
 			var str = test1();
 			alert(str);
 			alert(a);
+			return a;
 		}
 	</script>
 	</head>
 	<body onload="test()">
-	<input type="button" onclick="test2('good')" />
+		<input type="button" onclick="test2('good')" />
 	</body>
 	</html>
 
-注意理解`JS`中的对象模型：  
-以下为示例：
-`document`代表整个网页，那么`document.Cal`就表示这个网页中的Form这个表单对象。`document.Cal.document.Cal.Num1`代表这个表单中的`Text`框对象本身。`document.Cal.document.Cal.Num1.value`代表`Text`框对象中的值。我们可以在`Script`中的方法中修改对象中的值。`Form`对象的`name`就相当于`Java`中对象实例的名字一样，`Form`对象中包含的`Text`框对象的名字相当与`Java`中的类的内部类对象的名字一样的。
+注意理解`HTML`中的对象模型：  
+以下为示例：  
 >	
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml">
@@ -8651,113 +8651,147 @@ f. 测试类：
 >
 	<body>
 		<form name="Cal"/>
-	    Num1:<input type="text" name="Num1"/><br/>
-	    Num2:<input type="text" name="Num2"/><br/>
-	    Result:<input type="text" value="" name="rst"/><br />
-	    <input type="button" name="jia" value="+" onclick= "f('+')"/>
-	    <input type="button" name="jian" value="-" onclick= "f('-')"/>
-	    <input type="button" name="cheng" value="*" onclick= "f('*')"/>
-	    <input type="button" name="chu" value="/" onclick= "f('/')"/>
-	    <input type="button" name="yu" value="%" onclick= "f('%')"/>
+		    Num1:<input type="text" name="Num1"/><br/>
+		    Num2:<input type="text" name="Num2"/><br/>
+		    Result:<input type="text" value="" name="rst"/><br />
+		    <input type="button" name="jia" value="+" onclick= "f('+')"/>
+		    <input type="button" name="jian" value="-" onclick= "f('-')"/>
+		    <input type="button" name="cheng" value="*" onclick= "f('*')"/>
+		    <input type="button" name="chu" value="/" onclick= "f('/')"/>
+		    <input type="button" name="yu" value="%" onclick= "f('%')"/>
 	    </form>
 	</body>
 	</html>
+	
+
+`document`代表整个网页  
+`document.Cal`就表示这个网页中的这个表单对象。  
+`document.Cal.document.Cal.Num1`代表这个表单中的`Text`框对象本身。  
+`document.Cal.document.Cal.Num1.value`代表`Text`框对象中的值。 
+我们可以直接在`Script`中的方法中修改对象中的值。`form`对象的`name`就相当于`Java`中对象实例的名字一样，`form`对象中包含的`Text`框对象的名字相当与`Java`中的类的内部类对象的名字一样的。  
+
+
 ##JavaScript中的常用对象
 ###String对象
-####String对象的方法
-`charAt();`
-`indexOf();`…… 等与Java中的String类对象的方法差不多。
+`String`对象的方法：`charAt()``indexOf()`等与`Java`中的`String`类对象的方法差不多。
 ###Date对象
 `Date`对象表示一个日期对象。  
+>
 	var date = new Date();
-
-####Date对象的方法
-	getsecond();
+`Date`对象的方法：`getsecond()`等。
 
 ###数组
 创建数组：  
-	var arr = new Array(3);或者
+>
+	var arr = new Array(3);
 	var arr = new Array("aa","bb","cc");
-###数组常用方法
+####数组常用方法
 	join():将数组中的内容联接成字符串。  
 	reverse()：将数组中的内容反转。  
-	sort()：对数组宏的内容进行排序。  
+	sort()：对数组中的内容进行排序。  
 
 思考一个问题？  
 `Java`中，类的成员变量到底代表了什么？只是表示这个类的某些属性用于描述这个类(由这个类产生的类对象)的性质？类的方法到底是做什么用的？是不是只是为了对这个类的属性进行操作从而使整个类(对象)体现出不同的属性。  
-`Java`中的类的内部类到底是代表了什么？是不是代表了这个类内部所拥有的细分的零件部分。这个内部类与外部类的方法之间的关系是什么样的？是不是外部类的方法可以修改内部类创建的对象的属性。也就是说，人体这个外部类可以修改手这个内部类对象的属性？
+`Java`中的类的内部类到底是代表了什么？是不是代表了这个类内部所拥有的细分的零件部分。这个内部类与外部类的方法之间的关系是什么样的？是不是外部类的方法可以修改内部类创建的对象的属性。也就是说，人体这个外部类可以修改手这个内部类对象的属性？  
+在`Java`中的内部类的实际对应就是：内部类是外部类的一个部分，是组件，就好比**手**这个类是**人体**这个类的一个内部类一样。类的成员变量表示的是类的一个特征与属性，如：**人体的身高**这个属性、特征，是**人体**这个类的一个成员变量。所以来说，类的成员变量与类的内部类是两种不同的现实对照体。  
+同样，在`HTML`中，一个`form`就相当于一个外部类，这个`form`对象自己所包含的性质写在其自己的括号里面，如`form`的位置就是这个对象自己的属性。但是其里面包含了一个`Text`对象，这个对象就是它里面的一部分，就相当于`Java`中的内部类。  
 
 ##JS中的内置对象 
-`JavaScript`中区分大小写。
+`JavaScript`中区分大小写。  
 所谓的内置对象，就是不需要声明不需要创建，可以直接使用。内置对象全部为`JS`关键字。
 ###window对象  
-其代表了整个窗体，其包含了`HTML`部分(`Document`对象)。所谓的`HTML`部分就是用`Document`对象表示。  
+其代表了整个窗体，其包含了`HTML`部分(就是`Document`对象)。所谓的`HTML`部分就是用`Document`对象表示。  
 `window`对象如图`window_Structure.png`所示：  
 
 如，`alert()方法`、`isNanN()方法`、`confirm()`都是该对象的方法，可以不使用对象而是直接使用这些方法。
 以下都是`window`对象所具有的方法与内部对象：
-
 `confirm()`：显示一个对话框。  
-
 `open("url","name")`:打开一个新页面、窗体。  
-
 `showModalDialog()`:显示模式窗口。所谓的模式窗口就是让这个窗口永远获得焦点，在其被关闭之前。  
-
 `close()`：关闭当前窗体。  
-
 `window.screen`对象：是`window`的内置对象。表示客户端屏幕以及显示性能。  
-
 `window.status`对象：也是`window`的内置对象。表示浏览器状态栏中显示的内容。  
-
-`window.history`对象：表示客户访问果的`url`信息。该对象有3个方法：`back()`、`forward()`、`go(var indiex)`  
-
-`window.location`对象：表示当前的`url`信息。该对象的一个内部对象`window.location.href`表示一个新的页面。例：`window.location.href = "目标url";`实现跳转到目标`url`。  
+`window.history`对象：表示客户访问过的`url`信息。该对象有3个方法：`back()`、`forward()`、`go(var indiex)`  
+`window.location`对象：表示当前的`url`信息。该对象的一个内部对象`window.location.href`表示一个新的页面。例：可以使用`window.location.href = "目标url";`实现跳转到目标`url`。  
 
 `window.document`对象：实际上表示浏览器窗口`window`对象中包含的`HTML`文档部分。该对象所拥有的方法如下：  
 `write()`：向浏览器页面的`body`部分写入内容。  
-`getElementById()`:获得`HTML`文档中的某一对象，如一个`Button`、一个`Div`亦可。这个方法及其有用，因为获得这个文档中的对象之后，就可以调用这个对象的方法，获得对象的属性还可以修改对象的属性，全都可以。
-`getElementByName()`：通过文档中对象名字获得对象本身。和上面的一样。
+`getElementById()`:获得`HTML`文档中的某一对象，如一个`Button`、一个`Div`亦可。这个方法极其有用，因为获得这个文档中的对象之后，就可以调用这个对象的方法，获得对象的属性还可以修改对象的属性，全都可以。  
+`getElementByName()`：通过文档中对象名字获得对象本身。和上面的一样。  
 `getElementsByName()`：获得多个对象。  
 `getElementByTagName()`；通过对象的标签类型获得对象。  
-`createElement("element name")`:创建一个新的节点对象。 
+`createElement("element name")`:创建一个新的节点对象。  
 
 ##JS中的DOM编程
 `DOM:Docuement Object Model`,文档对象模型。就是说，可以将整个`HTML`文档视为一棵`DOM`树。
 `DOM`树见图`DOM_Structure.png`所示：  
 
-`DOM`编程就是为了动态地(在代码运行之后)给文档(**DOM树**)添加或删除一些节点，或者得到、修改节点的属性值。  
+`DOM`编程就是为了可以动态地(在代码运行之后)给文档(**DOM树**)添加或删除一些节点，或者得到、修改节点的属性值。  
 `DOM`编程的优点就是：可以动态地改变`HTML`文档中原有的内容。这样就可以与`JS`进行结合通过一些动作动态修改文档中的内容。修改显示的对象页面。`DOM`是`JS`可变的基础。  
 
 注意：一个标记就是一个节点。  
-我们可以将`DOM`中的每一个节点理解为一个类对象。但一般只考虑类对象的属性。他们有一个共同的父类`Node`。如`img`、`button`标签都共同继承自`Node`类。类似于`Java`中每一个类都继承自`Object`类。  
+我们可以将`DOM`中的每一个节点理解为一个类对象。但一般只考虑类对象的属性(而不管类对象的方法)。他们有一个共同的父类`Node`。如`img`、`button`标签都共同继承自`Node`类。类似于`Java`中每一个类都继承自`Object`类。  
 
 由于子类拥有父类的属性与方法，只要知道`Node`类的属性与方法，那么就可以调用所有`HTML`节点的属性与方法。`HTML`文档中各个节点对象都具有属性与方法。  
 例如：对于一个`button`节点而言，其自`Node`节点继承了`firstchild`属性，那么通过`button`的`firstchild`属性返回了该`button`的第一个子节点。
 
 `event`对象：是事件对象。其也是内置对象。表示发生的某个事件。其具有两个属性：`keyCode`属性表示当前的按键编码。`srcElement`表示在哪一个控件中产生的该事件。`this`表示本控件。  
 
-添加链接节点的时候，需要用一个文本将整个链接显示出来。这时就需要添加一个文本节点，添加一个链接节点，然后将文本节点加到链接节点对象中，再将链接节点对象添加到别的节点对象中。
+添加链接节点的时候，需要用一个文本将整个链接显示出来。这时就需要添加一个文本节点，添加一个链接节点，然后将文本节点加到链接节点对象中，再将链接节点对象添加到别的节点对象中。  
+`DOM`编程代码示例：  
+>
+	<!doctype html>
+	<html>
+	<head>
+	<meta charset="utf-8">
+	<title>无标题文档</title>
+	<script type="text/javascript">
+		function addImg()
+		{
+			var Img = document.createElement("img");
+			Img.src="./pig.gif";
+			var MyDiv = document.getElementById("MyDiv");
+			MyDiv.appendChild(Img);
+		}
+		function delImg()
+		{
+			var MyDiv = document.getElementById("MyDiv");
+			MyDiv.removeChild(MyDiv.lastChild);
+		}
+	</script>
+	</head>
+	<body>
+	<div id="MyDiv">
+		<input type="button" onClick="addImg()" value="add">
+	    <input type="button" onClick="delImg()" value="delete">
+	</div>
+	</body>
+	</html>
+
 #Java Web
 -----
-所谓的`Java Web`  就是用`Java`做网站。  
+##基础知识
+所谓的`Java Web`,就是用`Java`做网站。  
 动态网站：能与数据库进行交换的网站。  
 `WebServer`：就是用来运行`WebApp`应用程序的服务器。
 技术流派如下：  
 1. `JSP`网站空间贵，`ASP`技术已经淘汰，但是空间便宜。  
 2. `PHP`语法借鉴了`C`、`Java`等语言，装在`Apache`服务器上，语言简单，开发简单。功能没有`Java`、`.Net`强大。做超大型项目还是不行。依赖于`Apache`服务器。
-注意：`Apache`服务器是一种服务器，`TomCat`服务器也是一种服务器，二者平级。但是两种服务器可以进行整合，是的`TomCat`服务器可以使用`Apache`服务器的功能。
+注意：`Apache`服务器是一种服务器，`TomCat`服务器也是一种服务器，二者平级。但是两种服务器可以进行整合，使得`TomCat`服务器可以使用`Apache`服务器的功能。
 3. `JSP/Servelet`:学习`Java`语言做`B/S`的技术。学习`Java`做`C/S`的技术就是`AWT/Swing`。  
-4. `ASP.NET`:就是`ASP`的升级版，这就是学习`C#`语言做`B/S`的技术，学习`C#`做`C/S`的技术就是`winforms`。微软的技术特点就是什么事都帮你做好，具体内部实行的细节保密不会告诉你。`Java`的技术特点就是告诉你方向，细节部分都得自己去做细节部分可以暴露出来，所以`Java`内部的东西都是可控的，任何东西都是自己明白的。`ASP.net`必须运行在`IIS`服务器上，但`IIS`依赖于服务器。
-不要去那种小做网站的公司工作。  
+4. `ASP.NET`:就是`ASP`的升级版，这就是学习`C#`语言做`B/S`的技术，学习`C#`做`C/S`的技术就是`winforms`。微软的技术特点就是什么事都帮你做好，具体内部实行的细节保密不会告诉你。`Java`的技术特点就是告诉你方向，细节部分都得自己去做细节部分可以暴露出来，所以`Java`内部的东西都是可控的，任何东西都是自己明白的。`ASP.net`必须运行在`IIS`服务器上，但`IIS`依赖于`Windows`服务器。
+
+
+不要去那种做网站的小公司工作。  
 
 #JSP/Servlet
 ----
 ##基础知识
 `JSP/Servlet`是`SUN`制定的用`Java`开发`Web`应用程序的规范。  
 `JSP`规范是建立在`Servelet`规范之上的。先有`Servelet`,后有`JSP`。  
-`Servlet`：是一个可以部署到`WebServer`服务器上的可以供客户端访问、处理客户端请求的`Java`类。  
+`Servlet`：是一个可以部署到`WebServer`服务器上的可以供客户端访问、处理客户端请求的`Java`类。其作用是接受客户端的请求负责某一方面的工作。  
 `JSP`：文件后缀`jsp`，`JSP`页面=`DHTML(HTML+CSS+JS)+Java`。该页面转译后就是一个`Servlet`。  
-我们要做的事：依据`JSP/Servlet`这个规范开发出应用组件(就是`Web`应用程序)，然后将这组件放在容器中(`Tomcat`)，让其运行。供客户端访问调用我们写的程序。
+我们要做的事：依据`JSP/Servlet`这个规范开发出应用组件(就是`Web`应用程序)，然后将这组件放在容器中(`Tomcat`)，让其运行。供客户端访问调用我们写的程序。对客户的请求作出回应。  
 
 ##`TomCat`的配置
 `config`目录下的`Server.XML`文件用于配置`TomCat`端口号。  
@@ -8767,34 +8801,38 @@ f. 测试类：
 	<role rolename="manager-gui"/>
     <user password="123" roles="manager-gui" username="trilever"/>
 
-使用`MyElipse`插件进行`Web`应用开发，其是`Eclipse`的插件。
-一个`Web`服务器中可以放有多个应用程序项目。一个应用程序项目中可以有多个`Servelet`，各个`Servelet`负责不同的任务。
+使用`MyElipse`插件进行`Web`应用开发，其是`Eclipse`的插件。  
+一个`Web`服务器中可以放有多个应用程序项目。一个应用程序项目中可以有多个`Servelet`，各个`Servelet`负责不同的任务。  
 要学会`TomCat`的自动部署和手动部署。  
 手动部署：就是将你自己创建的`Web`项目中的`WebRoot`目录下的文件全部复制到`TomCat`的`WebApps`目录下与项目同名的文件夹中(要在`WebApps`目录下先建立一个与项目同名的文件夹才可以，然后将那些文件复制进去)。
 自动部署：`IDE`会自动将手动部署的复制这些步骤全部自动完成。
 我们自己写代码都是写在我们项目的文件夹中，而不是在`TomCat`的目录中。但是如果是放在项目的`WebRoot`目录下，就会自动被同步到`TomCat`的`WebApps`目录下面。
 
-注：`JSP`页面就是`HTML+Java`。其页面中包含这两种代码。在运行的时候，会自动将`JSP`代码转化为`Servlet`进行运行。  
+注：`JSP`页面就是`DHTML+Java`。其页面中包含这两种代码。在运行的时候，会自动将`JSP`代码转化为`Servlet`进行运行。  
 
-##Servlet
-###基础知识
+#Java Web中的Servlet
+##基础知识
 其本质就是一个特殊的`Java`类。
 `Servlet`类的继承结构如图`Servlet_Inherit_Structure.png`所示：  
 
-其实例的创建(`new`)、销毁都是由容器完成的，而不需要人工手动执行(一般的类都需要人工手动创建实例)。
+`Servlet`实例的创建(`new`)、销毁都是由容器完成的，而不需要人工手动执行(一般的类都需要人工手动创建实例)。  
 `Servlet`类与普通类的区别见图`Servlet_With_Ordinary_Class.png`所示：  
-###Servlet生命周期
+
+##Servlet的生命周期
 所谓的`Servlet`类对象的生命周期：就是指一个`Servlet`类对象创建(由`Web`容器`Tomcat`完成)到消亡的整个过程。  
 `Servlet`类生命周期见图`Servlet_Life_Period1.png`、`Servlet_Life_Period2.png`所示：  
 
-由于我们自己创建的`Servlet`类继承自`HttpServlet`类，也就是说继承了`server(……)`方法、`init(……)`方法、`destory()`方法。  
+由于我们自己创建的`Servlet`类继承自`HttpServlet`类，也就是说继承了`server()`方法、`init()`方法、`destory()`方法。在`HttpServlet`类中，`server()`方法中实际上就是`doPost()`、`doGet()`方法。该对象会依据接收的是`post`请求还是`get`请求而决定在`server()`方法中实际上是调用`doPost()`还是`doGet()`方法。  
 `HttpServlet`类的生命周期见图`HttpServlet_Life_Period.png`所示：  
 
-那么，当服务器第一次接收到调用这个`Servelet`的类对象请求的时候，就会由容器创建一个`Servlet`类实例对象，然后服务器中就会调用`init(……)`方法(一个生命周期中`init()`方法只调用一次)进行初始化然后调用`server(……)`(一个生命周期中`server()`方法要调用多次)方法，以后每次接收到新的服务请求的时候，都会调用`server()`方法。当关闭服务器或者关闭这个`Servlet`(在`Tomcat`控制台中停止一个`Web`应用就会关闭这个应用中所有的`Servlet`)的时候，就会调用`destory()`方法。  
+那么，当服务器第一次接收到调用这个`HttpServelet`的类对象请求的时候，就会由容器创建一个`HttpServlet`类实例对象。  
+然后服务器中就会调用`init()`方法(一个生命周期中`init()`方法只调用一次)进行初始化。  
+然后调用`server()`(一个生命周期中`server()`方法要调用多次)方法，以后每次接收到新的服务请求的时候，都会调用`server()`方法。  
+当关闭服务器或者关闭这个`HttpServlet`(在`Tomcat`控制台中停止一个`Web`应用就会关闭这个应用中所有的`Servlet`)的时候，就会调用`destory()`方法。  
 注意：当一个`Servlet`部署完成后，*启动`Web`服务器的时候*，就是一个`Web`应用程序(其中包含多个`Servlet`)启动的时候。即使此时并没有来自客户端的服务请求，但是此时的`Web`应用程序项目还是启动了。然后当接收到来自客户端的请求的时候，就会调用其中包含的各个`Servlet`的`init()`方法等。  
 
 怎样修改一个`Web`应用程序(包含多个`Servlet`)启动的时候的行为？例如，在`Web`应用程序启动(也就是启动`Web`服务器的时候或者在`Tomcat`控制台中启动一个`Web`应用项目(一个`Web`应用项目中包含多个`Servlet`))，就调用`init()`方法而不是等到接收到客户端请求的时候才调用该方法。  
-`Answer`：配置修改`web.xml`文件。  
+`Answer`：修改`web.xml`配置文件。  
 >	
 	<servlet>
       <servlet-name>doctor</servlet-name>
@@ -8805,12 +8843,49 @@ f. 测试类：
       <servlet-name>doctor</servlet-name>
       <url-pattern>/doctors</url-pattern>
     </servlet-mapping>
-###ServletConfig参数对象
-`init()`方法中的`ServletConfig`参数包含了这个`Servlet`对象的所有配置信息，这个配置信息从`web.xml`中读出来的。  
-关于`Servlet`参数，见图`ServletConfig_Parameter.png`：
+###init()方法中的ServletConfig参数对象
+`init()`方法中的`ServletConfig`参数包含了这个`Servlet`对象的所有`init-param`配置信息，这个`init-param`配置信息从`web.xml`中读出来的。  
+所谓的`init-param`配置参数就是在写这个`HttpServlet`时就设置好的参数，不是从客户端获得的，而是程序员在写代码的时候就预先进行配置好的参数。  
+关于`Servlet`参数，见图`ServletConfig_Parameter.png`：  
 
-###Servlet中的request参数对象
-在我们的`doPost()`或者`doGet()`方法中，会传递给它们一个`HttpServletRequest`参数对象，这个对象是`Web`服务器(也就是容器`Tomcat`)将*客户端发送的请求的所有信息进行包装*而获得。`HttpServletReqest`是一个接口，这里是面向接口编程，实际传递给方法的是它的实现类对象(具体实现是有容器帮我们进行的，因为对请求信息的包装是容器帮助我们进行的)。以后可以通过`request`对象的方法来获得其封装的内容。  
+`Web.xml`中配置`Servlet`中的`init-param`参数示例：  
+>
+	<servlet>
+	        <servlet-name>zhangshan</servlet-name>
+	        <servlet-class>com.trilever.zhangsan</servlet-class>
+	        <init-param>
+	          <param-name>age</param-name>
+	          <param-value>10</param-value>
+	        </init-param>
+	        <init-param>
+	          <param-name>gen</param-name>
+	          <param-value>true</param-value>
+	        </init-param>
+	        <load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	
+在`init()`方法中通过`config`参数获得`Servlet`的`init-param`配置参数代码示例：  
+>
+	String age;
+	@Override
+	public void init(ServletConfig config) throws ServletException 
+	{
+		super.init(config);
+		this.age=config.getInitParameter("age");
+		//通过config获得存储空间application对象，跨Web app的数据存储空间。
+		ServletContext application = config.getServletContext();
+		Enumeration<String> e = config.getInitParameterNames();
+		while(e.hasMoreElements())
+		{
+			System.out.println(e.nextElement());
+		}
+	}
+	
+###HttpServlet里doPost()、doGet()方法中的request参数对象
+在我们的`doPost()`或者`doGet()`方法中，会传递给它们一个`HttpServletRequest`参数对象。  
+这个对象是`Web`服务器(也就是容器`Tomcat`)将*客户端发送的请求的所有信息进行包装*而获得。  
+`HttpServletReqest`是一个接口，这里是面向接口编程，实际传递给方法的是它的实现类对象(具体实现是有容器帮我们进行的，因为对请求信息的包装是容器帮助我们进行的)。以后可以通过`request`对象的方法来获得其封装的内容。  
 `request`对象的方法：
 1. `getparameter(name)`：获得文本框、单选框等`HTML`中`Form`元素提交的内容。`name`是这些元素的名字。  
 2. `getparametervalues(name)`:获得多选框中提交的内容，`name`是多选框的名字。  
@@ -8822,45 +8897,52 @@ f. 测试类：
 8. `getScheme()`:获得使用的协议。  
 9. `getRemoteAddr()`:获得客户端的`IP`地址。
 
+`request`参数使用示例：  
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException 
+		{
+			response.setContentType("text/html");
+			PrintWriter out = response.getWriter();
+			out.println(this.age);
+			out.println(request.getContextPath());
+			out.println(request.getServletPath());
+			out.println(request.getRequestURL());
+			out.println(request.getScheme());
+			out.println(request.getRemoteAddr());
+			out.flush();
+			out.close();
+		}
 
-因此我们可以在`Servlet`中通过这一个参数获得所接收请求的内容数据，如，获得一个`Form`中提交的各种数据，然后针对这些请求的内容予以回应并发送给客户端。这就是交互式网页的思维方式。因此，我们可以知道**一个`Servlet`的作用功能就是针对客户端`HTML`文档中的某一个表单或者一个超链接所提交的内容的一个回应。**
+因此我们可以在`Servlet`中通过这一个参数获得所接收请求的内容数据，如，获得一个`Form`中提交的各种数据，然后针对这些请求的内容予以回应并发送给客户端。这就是交互式网页的思维方式。因此，我们可以知道**一个`Servlet`的作用功能就是针对客户端`HTML`文档中的某一个表单或者一个超链接所提交的内容的一个回应。**  
+我们所言的框架，其底层就是对这些`Servlet`的包装、组合。  
 
-我们所言的框架，其底层就是对这些`Servlet`的包装、组合。
-###Servlet方法重写
+###Servlet中的方法重写
 我们自己写的`Servlet`中需要重写`doPost()`方法与`doGet()`方法的意义何在？  
 `Answer`：因为我们自己写的`Servlet`类中继承了`HttpServlet`中的`server()`方法，而这个`server()`方法中会依据客户端发送的请求是`post`还是`get`类型去选择调用`Servlet`类中的`doPost()`方法或者`doGet()`方法，所以我们自己重写了`doPost()`方法与`doGet()`方法就相当于重写了`server()`方法。  
 所以当服务器接收到客户端的一个请求之后，就会自己调用该`Servlet`的`server()`方法，然后这个`server()`方法会依据接收到的请求类型确定应该调用`doPost()`还是`doGet()`方法去处理这个请求。  
-
 
 在一个网页中发出请求访问`Servlet`的方法？
 1. 通过网页中的超链接进行`Servlet`的请求访问。链接目的地址使用`Servlet`的`url`进行访问请求的发送。但是用这种方法的请求方式只有`get`方法。
 2. 通过`Form`表单的提交进行`Servlet`的请求访问。在`action`属性中用`Servlet`的`url`以进行访问请求的发送。这种方式的请求可以是`get`也可以是`post`方法。
 3. 直接在地址栏中填写`Servlet`的`url`地址进行请求访问。
+
+
 ###建立一个`Servelet`的操作步骤：
 1. 创建一个类，继承自`HttpServelet`。  
 2. `OverRide`两个方法，`doGet()`与`doPost()`。  
 3. 去`web.XML`配置文件中进行注册配置`servlet`。此步很重要。  
-使用示例如下：  
-创建类的代码：  
+
+创建`Servlet`的示例代码：  
 >
 	package com.trilever;
-	import java.io.IOException;
-	import java.io.PrintWriter;
-	import javax.servlet.ServletException;
-	import javax.servlet.http.HttpServlet;
-	import javax.servlet.http.HttpServletRequest;
-	import javax.servlet.http.HttpServletResponse;
 	public class Doc extends HttpServlet
 	{
-		/* (non-Javadoc)
-		 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-		 */
 		@Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 				throws ServletException, IOException
 		{
-			// TODO Auto-generated method stub
-	//		super.doGet(req, resp);
+			super.doGet(req, resp);
 			//使用System.out是在服务器段进行打印，而不是在客户端。
 			System.out.println("mark");
 			//使用PrintWriter类是在客户端打印，也就是想客户端输出
@@ -8879,15 +8961,11 @@ f. 测试类：
 			out.write("</html>");
 		}
 >	
-		/* (non-Javadoc)
-		 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-		 */
 		@Override
 		protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 				throws ServletException, IOException
 		{
-			// TODO Auto-generated method stub
-	//		super.doPost(req, resp);
+			super.doPost(req, resp);
 			resp.setContentType("text/html");
 			PrintWriter out = resp.getWriter(); 
 			out.write("<html>");
@@ -8903,6 +8981,7 @@ f. 测试类：
 			out.write("</html>");
 		}
 	}
+	
 >
 `Web.XML`文件配置：  
 >
@@ -8914,14 +8993,15 @@ f. 测试类：
       <servlet-name>doctor</servlet-name>
       <url-pattern>/doctors</url-pattern>
     </servlet-mapping>
->
+
+
 在浏览器中输入：http://localhost:8080/Hos/doctors 即可在服务器中调用`doGet()`方法，其向客户端发送我们想要的内容。该文件中的`url-pattern`就是向客户端暴露的用于访问该`Servlet`的地址路径。
 
 
 ###访问调用一个`Servlet`时的工作原理  
 1. `Ip+Port`：调用服务器的服务。  
 2. 加上项目名：调用这个项目。找到这个应用程序所在的项目。一个项目中可以有多个`Servlet`类。  
-3. 通过`Web.XML`文件中的配置信息，找到我们想要的类(`Servlet`)。查找步骤是:通过配置文件中的`url-parttern`找到`servlet-name`，通过`servlet-name`找到`servlet-class`，这个就是我们想要找到的类。然后，这个类(就是前面我们自己创建的继承了`HttpServelet`类的那个类)就会自动调用`doGet()`或者`doPost()`(具体调用哪一个是依据我们`request`的模式进行选择)对我们的请求进行回应。这两个方法的回应返回给我们的浏览器，然后在浏览器中就可以接收到这两个方法中发出的内容，并进行解析从而获得页面。
+3. 通过`Web.XML`文件中的配置信息，找到我们想要的类(`Servlet`)。查找步骤是:通过配置文件中的`url-parttern`找到`servlet-name`，通过`servlet-name`找到`servlet-class`，这个就是我们想要找到的类。然后，这个类(就是前面我们自己创建的继承了`HttpServelet`类的那个类)就会自动调用`doGet()`或者`doPost()`(具体调用哪一个是依据我们`request`的模式进行选择)对我们的请求进行回应。这两个方法的回应返回给我们的浏览器，然后在浏览器中就可以接收到这两个方法中发出的`DHTML`，并进行解析从而获得页面。
 
 
 ##`WebApp`的请求应答模式：  
@@ -8931,7 +9011,6 @@ f. 测试类：
 4. 浏览器与服务器之间的通信使用`HTTP`协议进行通信。
 
 所谓的`Web`服务器就是`Tomcat`这样的服务器。是一个容器，也是`Servlet`引擎，也称之为容器。
-见截图所示：
 
 所谓的集群服务器，就是使用多个服务器。  
 1. 防止其中一台当机之后，可以使用其他的机器接替他的工作。  
@@ -8939,25 +9018,28 @@ f. 测试类：
 
 
 ##请求转发与重定向
-`Servlet`的作用是处理客户端的请求，那么各个`Servlet`之间是怎样进行通信的？就好比，科室(`Web`应用程序)中的各个医生(`Servlet`)在其中一个不能诊断的时候怎样将病人交给另一个病人。  
+在`Java Web`中，`Servlet`与`JSP`的功能是一样的，都是用于处理客户请求的，无论客户是请求`Servlet`还是请求`JSP`，都是让这两种组件处理问题的。他们是同级的关系。  
+`Servlet`或者`JSP`的作用是处理客户端的请求，那么各个`Servlet`/`JSP`之间是怎样进行通信的？就好比，科室(`Web`应用程序)中的各个医生(`Servlet`/`JSP`)在其中一个不能诊断的时候怎样将病人交给另一个病人。  
 `Answer`:通过请求转发与重定向。  
-也就是说一个客户端请求可以调用多个不同的`Servlet`。
+也就是说一个客户端请求可以调用多个不同的`Servlet`/`JSP`。
 
-**请求转发**：由前可知，一个客户端发送给服务器的请求信息被包装成一个`request`对象发送给目的`Servlet`。一个`request`对象中包含两部分的内容：`parameter`和`attribute`。其中的`parameter`部分包含的信息对于接收的`Servlet`而言是可以查看但不能修改的，如客户端的`IP`地址、`URL`等。而`attribute`部分的内容对于接收的`Servlet`而言是可以修改的，每一个`Servlet`对这个`request`对象的修改都反映在`attribute`中而不是在`parameter`部分。而且多个`Servlet`都可以接收这个`request`并且对这个`request`的`attribute`部分进行修改，这个`request`在各个`Servlet`之间进行传递就是请求转发（请求转发是通过一个对象进行的)。`parameter`是只读的，而`attribute`是可读写的。  
-就好比，当看一个医生A的时候，病历就相当于`request`，其中的病人名字、年龄等内容就是在`parameter`部分，是不能被医生修改的，医生诊断结果就写在`attribute`部分，当一个医生无法确定的时候就会让护士将这个病人交给医生B，医生B就可以修改A医生在病历上所作的诊断结果(`attribute`部分)。将病人交给医生B的过程就是请求转发，其中的护士就是负责进行请求转发的对象。
-在请求转发中使用的对象就是`RequestDispatcher`类对象。
+**请求转发**：由前可知，一个客户端发送给服务器的请求信息被包装成一个`request`对象发送给目的`Servlet`/`JSP`。  
+一个`request`对象中包含两部分的内容：`parameter`和`attribute`。  
+其中的`parameter`部分包含的信息对于接收的`Servlet`而言是可以查看但不能修改的，如客户端的`IP`地址、`URL`等。  
+而`attribute`部分的内容对于接收的`Servlet`/`JSP`而言是可以修改的，每一个`Servlet`/`JSP`对这个`request`对象的修改都反映在`attribute`中而不是在`parameter`部分。  
+而且多个`Servlet`/`JSP`都可以接收这个`request`并且对这个`request`的`attribute`部分进行修改，这个`request`在各个`Servlet`/`JSP`之间进行传递就是请求转发（请求转发是通过一个对象进行的)。`parameter`是只读的，而`attribute`是可读写的。  
+就好比，当看一个医生A的时候，病历就相当于`request`，其中的病人名字、年龄等内容就是在`parameter`部分，是不能被医生修改的，医生诊断结果就写在`attribute`部分，当一个医生无法确定的时候就会让护士将这个病人交给医生B，医生B就可以修改A医生在病历上所作的诊断结果(`attribute`部分)。将病人交给医生B的过程就是请求转发，其中的护士就是负责进行请求转发的对象。  
+在请求转发中使用的对象就是`RequestDispatcher`类对象。  
 注：`request`可以看作是封装了`map`，里面都是键值对，如、`parameter`中就是一个个的键值对在里面，`attribute`中也是键值对在里面。
-请求转发使用示例：
-
+请求转发使用代码示例：  
 `Servlet1`中的`doGet()`方法重写：
 >
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 				throws ServletException, IOException
 		{
-			System.out.println("hello");
 			//Servlet对象Bailang对request对象的修改体现在其中的Attribute上。
 			request.setAttribute("zhanghao", "123");
-			//通过RequestDispatcher对象对request进行转发重定向。转发给Servlet对象Heigou 
+			//通过RequestDispatcher对象对request进行转发。转发给Servlet对象Heigou 
 			RequestDispatcher rd = request.getRequestDispatcher("/Heigou");
 			rd.forward(request, response);
 		}
@@ -8988,15 +9070,21 @@ f. 测试类：
 		}
 
 **重定向**：  
-1. 在请求转发中，`request`在几个`Servlet`间传递的时候，`request`中的参数是会被传递的。而在`response`的重定向中，`request`中的参数是不会被传递的，而是生成新的`request`值。这就是二者的区别所在。  
-2. 在请求转发中，`URL`地址不发生改变，即使发生了转发依旧不发生改变。但是在重定向中`URL`地址会发生变化。所以，请求转发会导致一个问题，对于客户端的表单提交，当发生刷新的时候，就会发生重复提交，因为`URL`地址是不变的。此时可以使用重定向防止表单重复提交。  
-3. 请求转发中不用加`WebApp`项目名称，而重定向中，要么加`WebApp`项目名称要么使用去掉"/"的重定向后`Servlet`名称。  
-4. 请求转发只能在同一个`WebApp`中的各个`Servlet`之间进行转发，而重定向则可以定向到不同的`WebApp`中的`Servlet`中，因为重定向不涉及参数的传递(因为参数传递会发生丢失)。但是，如果在使用重定向的时候确实想传递`request`参数，也是有办法的，那就是在`response`的重定向中加上要传递的那些参数即可。  
-5. 在请求转发中，第一个`Servlet`接收到`post`请求，那么请求转发后接收到的`Servlet`全部都接收到`post`请求。反之亦然。但是，如果是重定向，即使第一个`Servlet`接收到的是`post`请求，那么重定向后接收到的`Servlet`依旧都是`get`请求。因为任何一次转发默认的是`get`请求。对于请求转发而言，即使多次转发，依旧是只算一次请求在各个`Servlet`之间传递(只有一个`request`对象)。而对于重定向而言，每重定向一次，就是产生了一次新的请求(产生新的`request`对象)，所以重定向后的`Servlet`接收的就是新的默认`get`请求(即使第一次接收的是`post`请求，也与之没有关系)。多次请求就会产生多个`request`对象。  
+1. 在请求转发中，`request`在几个`Servlet`/`JSP`间传递的时候，`request`中的参数是会被传递的。而在`response`的重定向中，`request`中的参数是不会被传递的，而是由客户端向重定向目的地发送一模一样的`request`值。这就是二者的区别所在。  
+2. 在请求转发中，客户端的`URL`地址不发生改变，因为在请求转发中，客户端只向第一个`Servlet`/`JSP`发送了请求，后面的转发与其无关。但是在重定向中`URL`地址会发生变化，因为重定向中，客户端还得向每一个重定向目的`Servlet`/`JSP`发送一模一样的请求。所以，请求转发会导致一个问题，对于客户端的表单提交，当发生刷新的时候，就会发生重复提交，因为`URL`地址是不变的。此时可以使用重定向防止表单重复提交。  
+3. 请求转发中不用加`WebApp`项目名称，而重定向中，要么加`WebApp`项目名称要么使用去掉"/"的重定向后`Servlet`/`JSP`名称。  
+4. 请求转发只能在同一个`WebApp`中的各个`Servlet`/`JSP`之间进行转发，而重定向则可以定向到不同的`WebApp`中的`Servlet`/`JSP`中，因为重定向不涉及参数的传递(因为参数传递会发生丢失)。但是，如果在使用重定向的时候确实想传递`request`参数，也是有办法的，那就是在`response`的重定向中加上要传递的那些参数即可。  
+5. 在请求转发中，第一个`Servlet`/`JSP`接收到`post`请求，那么请求转发后接收到的`Servlet`/`JSP`全部都接收到`post`请求。反之亦然。但是，如果是重定向，即使第一个`Servlet`/`JSP`接收到的是`post`请求，那么重定向后接收到的`Servlet`/`JSP`依旧都是`get`请求。因为任何一次转发默认的是`get`请求。对于请求转发而言，即使多次转发，依旧是只算一次请求在各个`Servlet`/`JSP`之间传递(只有一个`request`对象)。而对于重定向而言，每重定向一次，就是产生了一次新的请求(产生新的`request`对象)，所以重定向后的`Servlet`/`JSP`接收的就是新的默认`get`请求(即使第一次接收的是`post`请求，也与之没有关系)。多次请求就会产生多个`request`对象。  
 重定向使用代码示例：  
 >
-	//重定向值Heigou这个Servlet对象。后面使用的是绝对路径。
+	//重定向到Heigou这个Servlet对象。后面使用的是绝对路径。
 	response.sendRedirect(request.getContextPath()+"/Heigou");
+
+请求转发与重定向区别：  
+在请求转发中，在第一个`Servlet`/`JSP`中，`request`被转发之前，第一个`Servlet`/`JSP`是不会向客户端作出回应的。只有当`request`/`JSP`转发到转发目的地后，目的地的代码执行完成，才会将二者的执行结果一起返回给客户端。  
+在重定向中，在第一个`Servlet`/`JSP`中，`response`在重定向之前，`response`就会将结果返回给客户端，到了重定向的时候，就会告诉客户端，让客户端重新向重定向的目的地发送一个同样的`request`对象，参数和第一次发的一样。  
+
+注意：不仅`Servlet`可以请求转发、重定向至`Servlet`，而且`Servlet`还可以请求转发、重定向至`JSP`，二者之间是可以互相请求转发、重定向的。  
 
 
 那么什么时候该用请求转发什么时候该用重定向？  
