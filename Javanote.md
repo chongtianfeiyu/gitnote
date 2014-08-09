@@ -8451,59 +8451,6 @@ f. 测试类：
 		background-color: #099;
 	}
 
-#Java中的XML
---------------
-数据存储的几种方式：  
-1. 键值对形式，`name："li"`  
-2. `XML`描述  
-3. 数据库，可以存储数据和操作数据  
-数据量比较大的时候，使用数据库。  
-`XML`:扩展性(`Extended`)标识语言，用于标识描述数据信息。其是`SGML`标识语言的简化。  
-再，由于`HTML`语言的语法不够严谨，所以在`HTML`4.0.1版本之后，将其过渡至`XHTML`(扩展性`Extended`）语言,`XHTML`更加严谨、规范。`XHTML`可以理解为是`HTML`向`XML`语言过渡的中间产物。  
-
-`HTML`与`XML`之间的区别在于：  
-1. `HTML`是固定标识，只能写它能识别的标识。`XML`中的标签可以自由定义。  
-2. `HTML`较为随意，`XML`很严谨。  
-3. `HTML`将数据和其显示结合在一起，不方便对数据进行操作。`XML`将数据与其显示分开，纯粹对数据进行描述。数据描述是数据描述，显示是显示。
-
-`XML`的好处：  
-1. 结构严谨，规范。  
-2. 是标准的数据交换文件，已用于通用的配置信息文件。  
-3. 结构简单，便于书写，增强阅读性。  
-4. 将数据进行结构化，是数据之间具有明确的层次关系。
-
-`XML`文档示例：  
->
-	<?xml version="1.0"?>
-	<students>
-		<student>
-			<name>zhangsan</name>
-			<age>20</age>
-		</student>
->		
-		<student>
-			<name>lisi</name>
-			<age>22</age>
-		</student>
->		
-		<student>
-			<name>wangwu</name>
-			<age>21</age>
-		</student>
->		
-		<student>
-			<name>zhaoliu</name>
-			<age>23</age>
-		</student>
-	</students>
- 
-`XML`文档中**只能有一个顶层元素**。如上面的`<students>`这个元素，也叫根元素。也就是最外层的标签，只能有一个。
-
-`CDATA`区：当我们的文档中，某一段数据不想被解析，只希望作为单纯的字符而已。那么，可以将这段字符放在`CDATA`区，放在`<![CDATA[ *数据* ]]>`标签里面。这样，里面的数据就能够不解析，而是作为单纯的字符。  
-
-`XML`中所有标记的属性值必须用""或者''括起来。  
-
-`XML`中名字可以使用字母、数字、中文（需要在`XML`声明的时候知道`encoding`属性)
 
 
 
@@ -9715,18 +9662,189 @@ Ajax：Asysnomous+JavaScript++XML
 
 
 ##Ajax工作原理
-在AJax技术中，客户端浏览器与服务器之间不是直接发送请求的，而是通过中间的一个控件。  
-Ajax代码实际上就是JS代码，都是写在JSP文件中的JS代码。
-我们要使用Ajax，步骤如下：  
-1. 就需要创建一个XMLHttpRequest对象。根据不同的浏览器核心，使用不同的代码创建该对象。如图所示：  
+在`AJax`技术中，客户端浏览器与服务器之间不是直接发送请求的，而是通过中间的一个控件。  
+`Ajax`代码实际上就是`JS`代码，都是写在`JSP`文件中的`JS`代码。
+我们要使用`Ajax`，步骤如下：  
+1. 需要创建一个`XMLHttpRequest`对象。根据不同的浏览器核心，使用不同的代码创建该对象。如图所示：  
 2. 设置回调函数。什么叫回调函数？当服务器端返回了结果之后，需要告诉客户端返回结果已经到达，这就是回调函数的作用，服务器通知客户端返回结果已经到达。  
-3. 初始化xmlHttpRequest组件。设置url、请求方式、是否异步这些属性。  
+3. 初始化`XMLHttpRequest`组件。设置`url`、请求方式、是否异步这些属性。  
 4. 发送请求。
 
-这个组件的作用是负责与服务器的交互。  
-该组件的状态也就是：XMLHttpRequest.readyState。有下面几个值：0(未初始化)、1(初始化)、2(发送请求)、3(开始接受结果，也就是开始接受服务器返回结果，返回结果就是一个字符串，就是HTML文档)、4(接受结果完毕)。  
-XMLHttpRequest状态发生一次改变，就调用一次回调函数。
+这个`XMLHttpRequest`对象组件的作用是负责与服务器的交互。  
+该组件的状态也就是：`XMLHttpRequest.readyState`。有下面几个值：0(未初始化)、1(初始化)、2(发送请求)、3(开始接受结果，也就是开始接受服务器返回结果，返回结果就是一个字符串，就是`HTML`文档)、4(接受结果完毕)。  
+`XMLHttpRequest`状态发生一次改变，就调用一次回调函数。
+
+`Ajax`使用代码示例：  
+>	
+	<script type="text/javascript">
+	    var xmlHttpRequest;
+	    //创建xmlHttpRequest对象的方法
+	    function createXMLHttpRequest()
+	    {
+	    	if(window.ActiveXObject)
+		    {
+		    	try
+		    	{
+		    		xmlHttpRequest=new ActiveXObject("Microsoft.XMLHTTP");
+		    	}
+		    	catch(e)
+		    	{
+		    		xmlHttpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+		    	}
+		    	return xmlHttpRequest;
+		    }
+		    else if(window.XMLHttpRequest)
+		    {
+		    	return new XMLHttpRequest();
+		    }
+	    }
+>	    
+	    function getServletDate()
+	    {
+	    	//1.创建xmlHttpRequest对象这个对象是客户端与服务器端之间的中介，也是缓冲区域。
+	    	xmlHttpRequest = createXMLHttpRequest();
+	    	//2.设置回调函数，这个函数就是当服务器端作出回应之后，调用的方法，在该方法中取出服务器端返回给xmlHttpRequest的回应，然后将这个回应返回给客户端
+	    	xmlHttpRequest.onreadystatechange = haolejiaowo;
+	    	var url = "${pageContext.request.contextPath}/RandomNumberServlet";
+	    	//3.初始化.此处就是将请求通过这个xmlHttpRequest组件发送至一个Servlet。xmlHttpRequest只是一个中介。客户端请求不是直接发送到服务器端的Servlet中，而是先发送到xmlHttpRequest中的。再由xmlHttpRequest将这个Request发送到服务器端。
+	    	xmlHttpRequest.open("get",url,true);
+	    	//4.客户端通过这个xmlHttpRequest组件发送请求至服务器端的Servlet。
+	    	xmlHttpRequest.send(null);
+	    }
+>	    
+	    function haolejiaowo()
+	    {
+	    	//假如这个被请求的Servlet作出回应
+	    	if(xmlHttpRequest.readyState==4&&xmlHttpRequest.status==200)
+	    	{
+	    		//将服务器端Servlet的回应取回来，取到xmlHttpRequest对象中。再将回应发送给客户端。也就是说，Servlet中的回应不是直接发送到客户端的，而是发送到xmlHttpRequest中的，然后再在回调方法中，取出Servlet的回应发送给客户端。
+	    		var responseText = xmlHttpRequest.responseText;
+	    		document.getElementById("testDate").innerHTML=responseText;
+	    	}
+	    }
+    </script>
+    <body>
+    	<div id="testDate"></div>
+    	//客户端的请求不是直接发送到Servlet中的，而是要发送到xmlHttpRequest对象中。再有其发送到Servlet。
+    	<input type="button" name="bt1" onclick="getServletDate()">
+	</body>
+
+##Ajax的缓存(Cookie)问题
+各个浏览器为了提供更好的用户体验，会在浏览器中缓存已经访问过的页面信息，当再次向同一个`url`中发送请求的时候，就不会再次提交请求而是使用浏览器中的缓存。  
+这个特性就会对`Ajax`产生问题，由于`Ajax`是局部刷新的，中间的`xmlHttpRequest`组件不停地向服务器发送请求，一刻不停的从服务器端接收数据。而且是向同一个`url`，这样就导致发送请求之后，就是即使在服务器端返回的局部数据已经发生了变化，但是由于浏览器的这种缓存机制，导致显示在页面上的依旧是以前缓存的数据内容(存储于浏览器中的`Cookie`里面)，`Ajax`的局部刷新特性完全体现不出来。导致了问题。  
+
+这个问题的解决方法：  
+1. 禁用`Cookie`，但是会导致浏览器变慢。而且客户并不知道去禁用`Cookie`。  
+2. 只发送`post`请求，因为浏览器缓存(`Cookie`)只对`get`请求有效。  
+3. 每次新的请求都在`url`中假如不同的无意义参数，让浏览器认为是不同的`url`，从而不进行缓存。url=目标地址+请求参数。每次新的请求都在请求参数部分添加无意义的参数。即可。例如，每次都在请求参数中加入当前请求的时间，就会使`url`每次都不一样。  
+>
+	var url = "${pageContext.request.contextPath}/RandomNumberServlet? a=" + new Date().valueOf();
+4. 在服务器端响应的`Servlet/JSP`中添加回应头内容，指明不使用缓存。  
+>
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException 
+		{
+			response.addHeader("pragma", "no-cache");
+			response.addHeader("cache-control", "no-cache");
+			response.addHeader("expires", "0");
+			response.setContentType("text/html");
+			PrintWriter out = response.getWriter();
+			out.println(new Date().getSeconds());
+			out.flush();
+			out.close();
+		}
+5. 在`Ajax`发送请求前加上一句。
+>
+	xmlHttpRequest.setRequestHeader("if-Modified-Since","0");
+
+什么叫做局部刷新？  
+Answer：就是说，当客户端发出一次请求，会将请求发送给中间的`xmlHttpRequest`组件，然后由这个组件代理一切与服务器之间的交流。这个组件会一刻不停地进行刷新(实际上就是一刻不停地向客户端发送请求)，探测到客户端发出的任何请求之后就会将这个请求发送给服务器端(无论请求是否不同，都要发送给服务器)，同时也会一刻不停的探测服务器端返回的任何回应(一刻不停地接收服务器端的回应)，无论是探测到请求还是回应，都会*立刻*将此端探测到的东西发送给另一端。对于服务器返回的内容，哪部分发生了改变就立刻发送那部分(如果没有发生改变就不需要发送)，这就是局部刷新的原理，这个中间组件一刻不停地探测，一刻不停的发送刷新(发送请求)。这也就是Ajax的工作原理。  
+什么是异步传输(I/O)?  
+Answer:就是说，中间的那个组件一刻不停地探测两端的请求与回应，任何一方有动静，就立刻告诉另一方，而不必按照传统的方式必须等待一方的请求或者回应完成才传输另一方的请求或者回应，而是`即有即传`。传输请求与传输回应是动态的，没有一定的规则要求。都不必等待对方完成才继续自己的传输。这就是异步传输。  
 
 
 ##Ajax技术与一般技术的比较
 见图所示：
+
+
+#Java中的XML
+--------------
+##基础知识
+数据存储的几种方式：  
+1. 键值对形式，`name："li"`  
+2. `XML`描述  
+3. 数据库，可以存储数据和操作数据  
+数据量比较大的时候，使用数据库。  
+`XML`:扩展性(`Extended`)标识语言，用于标识描述数据信息。其是`SGML`标识语言的简化。  
+再，由于`HTML`语言的语法不够严谨，所以在`HTML`4.0.1版本之后，将其过渡至`XHTML`(扩展性`Extended`）语言,`XHTML`更加严谨、规范。`XHTML`可以理解为是`HTML`向`XML`语言过渡的中间产物。  
+
+其作用就是：方便应用程序获得想要的信息。  
+
+`HTML`与`XML`之间的区别在于：  
+1. `HTML`是固定标识，只能写它能识别的标识。`XML`中的标签可以自由定义。  
+2. `HTML`较为随意，`XML`很严谨。  
+3. `HTML`将数据和其显示结合在一起，不方便对数据进行操作。`XML`将数据与其显示分开，纯粹对数据进行描述。数据描述是数据描述，显示是显示。
+
+`XML`的好处：  
+1. 结构严谨，规范。  
+2. 是标准的数据交换文件，已用于通用的配置信息文件。  
+3. 结构简单，便于书写，增强阅读性。  
+4. 将数据进行结构化，是数据之间具有明确的层次关系。
+
+`XML`是被设计用于描述数据的，重点是：什么是数据，如何存放数据。描述相关。  
+`HTML`是被设计用来显示数据的，重点是：显示数据以及如何更好的显示数据。显示相关。  
+
+`XML`文档同样可以引用`CSS`样式表。  
+`XML`文档还可以引用`XSL`样式表。  
+`XML`都是表示显示的内容的，而样式表是为了控制显示样式的。
+
+
+`XML`文档中**只能有一个顶层元素**。如上面的`<students>`这个元素，也叫*根元素*。也就是最外层的标签，只能有一个。
+
+`CDATA`区：当我们的文档中，某一段数据不想被解析，只希望作为单纯的字符而已。那么，可以将这段字符放在`CDATA`区，放在`<![CDATA[ *数据* ]]>`标签里面。这样，里面的数据就能够不解析，而是作为单纯的字符。  
+`XML`中所有标记的属性值必须用""或者''括起来。  
+`XML`中名字可以使用字母、数字、中文（需要在`XML`声明的时候知道`encoding`属性)。  
+`XML`主要的作用就是做配置文件，偶尔会有一点数据的交换。`XML`语法了解即可。不必深究、记住。  
+`XML`应用：  
+1. 在`AJAX`中使用`XML`回传数据。  
+2. 使用`XML`存储少量数据。  
+3. 使用`XML`作为表现层。用的很少。  
+4. 使用`XML`作为作为数据传输的中间格式。  
+5. 作配置文件。
+
+##XML语法
+`XML`文档示例：  
+>
+	<?xml version="1.0" encoding="UTF-8" ?>
+	<?xml:stylesheet type="text/css" href="student.css" ?>
+	<students>
+		<student num="001">
+			<name>zhangsan</name>
+			<age>20</age>
+		</student>
+>		
+		<student num="002">
+			<name>lisi</name>
+			<age>22</age>
+		</student>
+>		
+		<student num="003">
+			<name>wangwu</name>
+			<age>21</age>
+		</student>
+>		
+		<student num="004">
+			<name>zhaoliu</name>
+			<age>23</age>
+		</student>
+	</students>
+	
+第二行是样式表处理指令。使用CSS或者XSL样式表。
+ 
+ 
+ 
+ 
+ 
+#Structs1
+-----
+一般已经很少使用Structs1进行新项目了，一般都是老项目才用的。重点是Structs2,。但二者是完全不同的东西，没有联系。
