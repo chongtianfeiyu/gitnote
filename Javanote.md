@@ -1,3 +1,10 @@
+#数据结构基础
+数据结构一般有以下几种：  
+1. 线性表：包括数组与链表。  
+2. 栈、队列、串。  
+3. 树、二叉树等。  
+4. 图  
+5. 隐射表：Map
 #Java基础知识
 ---
 1. `Java`源代码->`.class`文件（字节码）->机器码(二进制码)  
@@ -8422,37 +8429,64 @@ f. 测试类：
 依据`CSS`的命名可以分为：  
 1. 类选择器样式：通过元素对象的`class`属性来进行使用。`CSS`样式的名字前面有"."。  
 2. 上下文样式：如果使用类选择器，当`HTML`中要使用某一个样式的元素对象过多，那么都使用`class`属性就过于麻烦。这时就需要使用上下文样式。其通过与某一个元素对象进行挂钩，每次创建一个该元素对象的时候，就会自动使用该上下文样式。该`CSS`样式的名字前面没有".",名称个数有限，与标签样式相同。不用通过`class`属性来加载、使用样式。  
-3. 链接样式：超链接有4种状态,未访问、已访问、鼠标放上去、鼠标按上去。当我们希望对于一个链接的不同状态体现出样式的时候，就可以使用链接样式。对于不同状态链接都设置器不同的显示样式。  
+3. 链接样式：超链接有4种状态,未访问、已访问、鼠标放上去、鼠标按上去。当我们希望对于一个链接的不同状态体现出样式的时候，就可以使用链接样式。对于不同状态链接都设置成不同的显示样式。  
 4. ID选择器：针对某一个`ID`的元素对象使用，通过元素对象的`ID`属性进行使用。名字前面有"#",`ID`属性主要用于后期的客户端编程而设置的(`JS`)，主要用于`DIV`层。尽量少用。  
 
 `CSS`样式表示例：
+>
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>无标题文档</title>
+		<style type="text/css">
+		body,td,th {
+			color: #D6D6D6;
+			background-color: #0F0;
+		}
+		body {
+			background-color: #C00;
+		}
+		//用于元素class为mudiv
+		.mudiv {
+			background-color:#000;
+		}
+		//用于元素id为apDiv1
+		/#apDiv1 {
+			position: absolute;
+			width: 200px;
+			height: 115px;
+			z-index: 1;
+			left: 147px;
+			top: 293px;
+			background-color: #0FF;
+		}
+		.table {
+			background-color: #099;
+		}
+		</style>
+	</head>
+	
+	<body>
+		<table height="145" border="1">
+			<caption>biaoge</caption>
+			<tr>
+		    	<th width="78">Name</th>
+		        <th width="73">Age</th>
+		    </tr>
+			<tr>
+		    	<td width="78">1</td>
+		        <td width="73">2</td>
+		    </tr>
+		    <tr>
+		    	<td>3</td>
+		        <td>4</td>
+		    </tr>
+		</table>
 >	
-	<style type="text/css">
-	body,td,th {
-		color: #D6D6D6;
-		background-color: #0F0;
-	}
-	body {
-		background-color: #C00;
-	}
-	.mudiv {
-		background-color:#000;
-	}
-	\#apDiv1 {
-		position: absolute;
-		width: 200px;
-		height: 115px;
-		z-index: 1;
-		left: 147px;
-		top: 293px;
-		background-color: #0FF;
-	}
-	.table {
-		background-color: #099;
-	}
-
-
-
+		<div id="apDiv1" ></div>
+		<p class="mudiv">&nbsp;</p>
+	</body>
+	</html>
 
 #JavaScript
 -----
@@ -8842,7 +8876,7 @@ f. 测试类：
 6. `getRequestURI()`:获得`Servlet`的相对路径。  
 7. `getRequestURL()`:获得`Servlet`的绝对路径，包括`IP`、端口号等等。  
 8. `getScheme()`:获得使用的协议。  
-9. `getRemoteAddr()`:获得客户端的`IP`地址。
+9. `getRemoteAddr()`:获得客户端的`IP`地址。  
 
 `request`参数使用示例：  
 >
@@ -8953,7 +8987,7 @@ f. 测试类：
 
 ##`WebApp`的请求应答模式：  
 1. 用户输入地址或者填写表单上的数据提交之后，这些数据会被送到服务器上，定位服务器上的资源文件的地址就是`URL`。客户端就是依据`URL`去找到服务器上的资源的。  
-2. 当服务器收到用户请求之后，就会调用相应的程序进行回应，这些结果就是一些`HTML`文档被这些相应的方法返回给客户端。例如、`Servelet`中的`doGet()、doPost()`方法。这两种方法中就是向客户端返回`HTML`文档内容。  
+2. 当服务器收到用户请求之后，就会调用相应的程序进行回应，这样结果就是一些`HTML`文档被这些相应的方法返回给客户端。例如、`Servelet`中的`doGet()、doPost()`方法。这两种方法中就是向客户端返回`HTML`文档内容。  
 3. 当客户端浏览器接收到那些方法中返回的`HTML`文本后，就会进行解析，向用户呈现出网页。  
 4. 浏览器与服务器之间的通信使用`HTTP`协议进行通信。
 
@@ -8968,13 +9002,13 @@ f. 测试类：
 在`Java Web`中，`Servlet`与`JSP`的功能是一样的，都是用于处理客户请求的，无论客户是请求`Servlet`还是请求`JSP`，都是让这两种组件处理问题的。他们是同级的关系。  
 `Servlet`或者`JSP`的作用是处理客户端的请求，那么各个`Servlet`/`JSP`之间是怎样进行通信的？就好比，科室(`Web`应用程序)中的各个医生(`Servlet`/`JSP`)在其中一个不能诊断的时候怎样将病人交给另一个病人。  
 `Answer`:通过请求转发与重定向。  
-也就是说一个客户端请求可以调用多个不同的`Servlet`/`JSP`。
+也就是说一个客户端请求可以顺次调用多个不同的`Servlet`/`JSP`。
 
 **请求转发**：由前可知，一个客户端发送给服务器的请求信息被包装成一个`request`对象发送给目的`Servlet`/`JSP`。  
 一个`request`对象中包含两部分的内容：`parameter`和`attribute`。  
 其中的`parameter`部分包含的信息对于接收的`Servlet`而言是可以查看但不能修改的，如客户端的`IP`地址、`URL`等。  
 而`attribute`部分的内容对于接收的`Servlet`/`JSP`而言是可以修改的，每一个`Servlet`/`JSP`对这个`request`对象的修改都反映在`attribute`中而不是在`parameter`部分。  
-而且多个`Servlet`/`JSP`都可以接收这个`request`并且对这个`request`的`attribute`部分进行修改，这个`request`在各个`Servlet`/`JSP`之间进行传递就是请求转发（请求转发是通过一个对象进行的)。`parameter`是只读的，而`attribute`是可读写的。  
+而且多个`Servlet`/`JSP`都可以顺次接收这个`request`并且对这个`request`的`attribute`部分进行修改，这个`request`在各个`Servlet`/`JSP`之间进行传递就是请求转发（请求转发是通过一个对象进行的)。`parameter`是只读的，而`attribute`是可读写的。  
 就好比，当看一个医生A的时候，病历就相当于`request`，其中的病人名字、年龄等内容就是在`parameter`部分，是不能被医生修改的，医生诊断结果就写在`attribute`部分，当一个医生无法确定的时候就会让护士将这个病人交给医生B，医生B就可以修改A医生在病历上所作的诊断结果(`attribute`部分)。将病人交给医生B的过程就是请求转发，其中的护士就是负责进行请求转发的对象。  
 在请求转发中使用的对象就是`RequestDispatcher`类对象。  
 注：`request`可以看作是封装了`map`，里面都是键值对，如、`parameter`中就是一个个的键值对在里面，`attribute`中也是键值对在里面。
@@ -9016,16 +9050,19 @@ f. 测试类：
 			request.setAttribute("zhanghao","456");
 		}
 
+`Attribute`用于在本`Web App`之中的各个`Servlet`与`JSP`之间保存储存数据对象。  
+当，后端某个`Servlet`不能完全处理问题，就会将这个问题转发给另一个后端的`Servlet`，让它去解决问题。当一串`Servlet`将问题解决之后，就会将结果存于`Attribute`中，转发给前端的`JSP`，让`JSP`对结果进行向客户端显示(实际上`JSP`也是按照确定规则转换为`Servlet`，该`Servet`的作用就是将`JSP`中要显示的内容以`DHTML`的形式发送出去。)  
+
 **重定向**：  
-1. 在请求转发中，`request`在几个`Servlet`/`JSP`间传递的时候，`request`中的参数是会被传递的。而在`response`的重定向中，`request`中的参数是不会被传递的，而是由客户端向重定向目的地发送一模一样的`request`值。这就是二者的区别所在。  
+1. 在请求转发中，`request`在几个`Servlet`/`JSP`间传递的时候，`request`中的参数是会被传递的。而在`response`的重定向中，`request`中的参数是不会被传递的，而是由客户端向重定向目的地发送一模一样的`request`值,重定向目的地也拥有了与第一个`Servlet/JSP`一样的`request`。而不受第一个`Servlet/JSP`对`request`的修改的影响这就是二者的区别所在。  
 2. 在请求转发中，客户端的`URL`地址不发生改变，因为在请求转发中，客户端只向第一个`Servlet`/`JSP`发送了请求，后面的转发与其无关。但是在重定向中`URL`地址会发生变化，因为重定向中，客户端还得向每一个重定向目的`Servlet`/`JSP`发送一模一样的请求。所以，请求转发会导致一个问题，对于客户端的表单提交，当发生刷新的时候，就会发生重复提交，因为`URL`地址是不变的。此时可以使用重定向防止表单重复提交。  
-3. 请求转发中不用加`WebApp`项目名称，而重定向中，要么加`WebApp`项目名称要么使用去掉"/"的重定向后`Servlet`/`JSP`名称。  
+3. 请求转发中不用加`WebApp`项目名称，而重定向中，要么加`WebApp`项目名称要么使用去掉"/"的重定向后`Servlet`/`JSP`名称。无论是请求转发还是重定向，我们统一使用的是目标`Servlet`或者`JSP`的名字即可。  
 4. 请求转发只能在同一个`WebApp`中的各个`Servlet`/`JSP`之间进行转发，而重定向则可以定向到不同的`WebApp`中的`Servlet`/`JSP`中，因为重定向不涉及参数的传递(因为参数传递会发生丢失)。但是，如果在使用重定向的时候确实想传递`request`参数，也是有办法的，那就是在`response`的重定向中加上要传递的那些参数即可。  
 5. 在请求转发中，第一个`Servlet`/`JSP`接收到`post`请求，那么请求转发后接收到的`Servlet`/`JSP`全部都接收到`post`请求。反之亦然。但是，如果是重定向，即使第一个`Servlet`/`JSP`接收到的是`post`请求，那么重定向后接收到的`Servlet`/`JSP`依旧都是`get`请求。因为任何一次转发默认的是`get`请求。对于请求转发而言，即使多次转发，依旧是只算一次请求在各个`Servlet`/`JSP`之间传递(只有一个`request`对象)。而对于重定向而言，每重定向一次，就是产生了一次新的请求(产生新的`request`对象)，所以重定向后的`Servlet`/`JSP`接收的就是新的默认`get`请求(即使第一次接收的是`post`请求，也与之没有关系)。多次请求就会产生多个`request`对象。  
 重定向使用代码示例：  
 >
-	//重定向到Heigou这个Servlet对象。后面使用的是绝对路径。
-	response.sendRedirect(request.getContextPath()+"/Heigou");
+	//重定向到Heigou这个Servlet对象。后面使用的是Servlet名字。
+	response.sendRedirect("Heigou");
 
 请求转发与重定向区别：  
 在请求转发中，在第一个`Servlet`/`JSP`中，`request`被转发之前，第一个`Servlet`/`JSP`是不会向客户端作出回应的。只有当`request`/`JSP`转发到转发目的地后，目的地的代码执行完成，才会将二者的执行结果一起返回给客户端。  
@@ -9044,10 +9081,12 @@ f. 测试类：
 2. `JSP`相关：`out.print()`时会出现。  
 
 ###出现中文乱码的原因 
-中文浏览器使用`gbk`编码或者`GB-2312`编码，而`Tomcat`使用`ISO`编码，这样就会导致编码不一致的问题。  
+中文浏览器使用`gbk`编码或者`GB-2312`编码，而`Tomcat`使用`ISO-8859-1`编码，这样就会导致编码不一致的问题。  
 所以要解决这个问题的手段就是统一所使用的编码。  
 常用的编码格式：`gbk(中文)`、`ISO(英文)`、`UTF-8(国际)`，所以如果我们编写面向国际的代码，那么就使用`UTF-8`的编码格式。  
 
+
+无论我们在服务器端的JSP或者Servlet设置的页面字符集是什么字符集，浏览器发送给服务器的数据都是ISO编码。
 ###在代码层面上的解决之道
 由于`Web`应用程序是浏览器与服务器之间的`对话`。所以在代码层面上解决就在于对话所使用的语言(编码格式）。  
 #####服务器对浏览器的回复，向浏览器发送消息时解决中文乱码。  
@@ -9085,7 +9124,7 @@ C.只对`doGet()`方法有效的方法。修改`Server.xml`文件	。
 b.`JSP`接收客户端请求时进行设置。其和`Servlet`中的方式一样。  
 c.浏览器发送请求时进行设置。
 
-纠正一个错误观点：`Enum`关键字与`Class`关键字并不是同级的，`Enum`包含了**`Class`与集合**的特征。`Enum`还表示一个集合，其是几个类对象的集合。 
+纠正一个错误观点：`Enum`关键字与`Class`关键字并不是同级的，`Enum`包含了**Class与集合**的特征。`Enum`还表示一个集合，其是几个类对象的集合。 
 如， 
 > 
 	public Enum Seasons
@@ -9106,31 +9145,27 @@ c.浏览器发送请求时进行设置。
 在`Java Web`项目中有两种架构，**模型1**与**模型2**。  
 模型2就是使用了`MVC`架构。`MVC>=模型2`。  
 模型1的架构见图`Java_Web_Model1.png`：  
+模型1中，客户向服务器中的`JSP`发送请求，服务器内`JSP`向`JavaBean`发出请求，`JavaBean`向数据库发出请求，数据库将内容返回至`JSP`，`JSP`返回至客户端进行显示。`JavaBean`的作用就是持久化层，实际作用就是`DAO`层  
 
 模型2的架构见图`Java_Web_Model2.png`：  
+模型2中，客户服务器中`JSP`发送请求，仅仅是请求出一个初始页面用于显示表现层，模型2中的`JSP`的作用就是*表现层*。`JSP`中不涉及实际业务的处理，只是一个显示作用。然后，通过`JSP`的页面显示，客户直接向`Servlet`发出请求(如、通过`JSP`显示页面中的一个提交按钮进行发送请求)，`Servlet`的作用就是负责流程逻辑控制，实际上就是*业务层*。`Servlet`再向`JavaBean`进行请求，`JavaBean`就是`DAO`层。`DAO`层向数据库发送请求，数据库作出回应，发送到`Servlet`中。`Servlet`再请求`JSP`，`JSP`对`Servlet`中的结果予以显示。  
 
 但是模型1已经在现实中被淘汰了。其采用了所谓的`JavaBean`，实际上就是一个`Java`类。  
 实际中都是使用模型2做`Java Web`程序。  
-`Java Web`中使用`MVC`协作如图`MVC_Model`、`MVC_Coperation`所示：  
-
-
-`MVC`是软件结构中用于`表示层`中的架构。作用是：**用于数据的显示**.  
-比如、在我们的`TMS`程序中，为了显示查询的数据集合结果，我们使用了`MVC`模型。  
+`Java Web`中使用`MVC`协作，如图`MVC_Model`、`MVC_Coperation`所示：  
 
 软件结构中有3层：表示层、业务层、持久化层。是一种设计思想，不是设计模式。  
 ##MVC框架中的构件
 `MVC`架构中的组件，见图`MVC_Component.png`：  
-
 `Model`：核心部分，存储封装数据。  
 `View`：外观，与用户交互。  
-`Controller`：枢纽，响应请求，处理跳转，使模型与视图保存一致。  
-`Controller`的功能就是将前二者连接起来。一个构件模块只做一件事。
+`Controller`：枢纽，响应请求，处理跳转，使模型与视图保存一致。`Controller`的功能就是将前二者连接起来。一个构件模块只做一件事。
 
 我们自己写的`MVC`框架会有一些缺点。  
 例如，`TMS`系统中为了显示数据集合我们自己写了一个`Model`，使用了`MVC`的思想，但是是有缺点的。  
 所以实际应用中我们要大量使用别人写的`MVC`框架。如`Structs1`、`Spring MVC`等  
 
-##Java Web中表现层所用的框架
+##Java Web中所用的框架
 表现层所用的框架有`MVC`框架还有`JSF`框架，见图`Presentation_Layer_Frame.png`：  
 
 注意：`JSF`框架不是`MVC`框架，它是基于事件处理的框架，就好像我们在`AWT/Swing`中使用的事件监听，就是基于事件处理的框架。
@@ -9140,48 +9175,53 @@ c.浏览器发送请求时进行设置。
 ##基础知识
 会话：我们将每一个网站视为一个`Web`应用程序。那么我们从登陆这个网站到离开这个网站关闭其所有的页面的过程称为与此网站的一次会话。  
 
-Http协议创建的连接不是长久保持的连接，不像C/S架构的软件那样，客户端与数据库之间的连接时可以长久保持的。而Http协议建立的B/S连接是不会在客户端与服务器之间长久保持的。  
-同时Http协议创建的连接时*无状态*的。所谓的无状态就是：这个连接不能存储下其所连接的客户端的私有信息。也就是说，每次客户端与服务器通过Http协议进行连接、断开之后，这个连接并不能保存下这个客户端的私有信息。这就称为*无状态*，而*有状态*就是可以存储客户端的私有信息。  
+`Http`协议创建的连接不是长久保持的连接，不像`C/S`架构的软件那样，客户端与数据库之间的连接是可以长久保持的。而`Http`协议建立的`B/S`连接是不会在客户端与服务器之间长久保持的。  
+同时`Http`协议创建的连接时*无状态*的。所谓的无状态就是：这个连接不能存储下其所连接的客户端的私有信息。也就是说，每次客户端与服务器通过`Http`协议进行连接、断开之后，这个连接并不能保存下这个客户端的私有信息。这就称为*无状态*，而*有状态*就是可以存储客户端的私有信息。  
 
-当我们登陆一个网站(Web app)以完成我们的任务时，在同一次会话中发生多次请求。我们需要对这个Web App发出多次的请求才能完成任务。例如，当我们登陆一个网站购买东西的时候，就需要多次点击多次向网站App发送请求，而由于Http请求的特征，每次发送请求都是一次新的连接，由于Http协议的会话不能存储每次连接的客户端信息，那么同一个用户的多次请求怎样才能被分辨而不至于与其他用户的相同时间段的请求发生混淆。那么就必须使用会话跟踪技术，使得每个客户端的信息能够被记住，这样无论其请求多少次，都不至于与其他用户的请求发生混淆。
+当我们登陆一个网站(`Web app`)以完成我们的任务时，在同一次会话中发生多次请求。我们需要对这个`Web App`发出多次的请求才能完成任务。  
+例如，当我们登陆一个网站购买东西的时候，就需要多次点击多次向网站`App`发送请求，而由于`Http`请求的特征，每次操作点击都是发送新的请求，发送新请求都是一次新的连接，由于`Http`协议的会话不能存储每次连接的客户端信息，那么每一次的新的连接的账号密码是从哪里来的？要知道我们并没有每一个操作要求输入账号密码。也就是说，一次登录之后，后续的所有操作都能归于这个已登录的账号，而不至于归于其他账户，这是怎么在数据库账号不断重连、断开的情况下，储存第一次登录的账号、密码而在后续阶段用这个账号密码进行重新自动连接登录的？后续的每一次操作实际上在数据库端都是进行了重新连接，这个重新连接的账号密码我们并未重新输入，那么是从哪里来的？  
+`Answer`：就必须使用会话跟踪技术，使得每个客户端的信息能够被记住，这样无论其请求多少次，每次新的请求时都可以利用被记住的客户端信息进行重新连接。
 
-##会话跟踪
-那么怎样保存客户端与服务器连接过程中的客户端私有信息？就是使用会话跟踪技术。其用于保存同意时刻不同客户端会话的私有信息以使得可以将各个客户端分别开来。  
+##会话跟踪技术
+那么怎样保存客户端与服务器连接过程中的客户端私有信息？就是使用会话跟踪技术。其用于保存同一时刻不同客户端会话的私有信息以使得可以将各个客户端分别开来。并将这个客户端的信息储存起来以用于以后的每次请求时的重新连接中。  
 实现会话跟踪技术有两种：  
 ###Session
-这是重点。所谓的Session就是：由服务器分配给客户端的用于保存客户端私有信息的**内存空间**。这个Session的编号就是SessionID，SessionID实际上就是这块内存空间的首地址。Session是由Web Server进行分配。当一个客户端第一次与这个服务器相连接也就是第一次会话时，就会给其分配一个Session，当第二次进行会话的时候，该客户端就可以通过SessionID继续使用以前分配给它的Session进行私有信息的存储。同时为了提高服务区端内存空间的利用率，就会为Session设置过期时间，Tomcat设置为30min，过时之后，就会进行回收。  
-Session是面向无状态连接的Http协议会话的有状态的有益补充。  
+这是重点。所谓的`Session`就是：由服务器分配给客户端的用于保存客户端私有信息的**内存空间**。这个`Session`的编号就是`SessionID`，`SessionID`实际上就是这块内存空间的首地址。`Session`是由`Web Server`进行分配。当一个客户端第一次与这个服务器相连接也就是第一次会话时，就会给其分配一个`Session`，当第二次进行会话的时候，该客户端就可以通过`SessionID`继续使用以前分配给它的`Session`进行私有信息的存储。同时为了提高服务区端内存空间的利用率，就会为`Session`设置过期时间，`Tomcat`设置为30min，过时之后，就会进行回收。  
+`Session`的作用是：储存客户端第一次登录输入的账号、密码等信息，以用于在此次会话中接下来的操作里的请求所需要的重新连接数据库。  
+`Session`存储是面向无状态连接的`Http`协议会话的有状态的有益补充。  
+当然`Session`是处于服务器中的一块内存空间，但是`SessionID`是储存于浏览器中，客户端可以通过浏览器中存储的`SessionID`来获得储存于服务器端的`Session`。  
+
 ####客户端怎样保存SessionID
-a.Cookie的方式：是Servlet API规范要求我们使用的方式。其运行机制对于我们而言是透明的，服务器怎样向客户端发送了Cookie我们不用管，Cookie中怎样保存了SessionID我们也不用管。下一次请求的时候，客户端怎样从Cookie中取出SessionID发送给服务器端我们也不用管。我们可以显式设置Cookie。当客户端禁用了Cookie的时候，关于Cookie的操作就不能用了。  
-b.url重写的方式，当禁用了Cookie的时候，就可以使用url重写来保存Session  。
+a.`Cookie`的方式：这是`Servlet API`规范要求我们使用的方式。其运行机制对于我们而言是透明的，服务器怎样向客户端发送了`Cookie`我们不用管，`Cookie`中怎样保存了`SessionID`我们也不用管，下一次请求的时候，客户端怎样从`Cookie`中取出`SessionID`发送给服务器端我们也不用管。我们可以显式设置`Cookie`。当客户端禁用了`Cookie`的时候，关于`Cookie`的操作就不能用了。  
+b.`url`重写的方式，当禁用了`Cookie`的时候，就可以使用`url`重写来保存`Session`。  
 c.隐藏表单域的方式，不推荐使用。
-####服务器中的Servlet怎样向客户端返回Session
-实际上返回给客户端的是Session的句柄，通过方法request.getSession()即可为该客户端返回一个Session对象。
-####服务器中的JSP怎样向客户端返回Session
-####Session常用方法
-setAttribute(String key,String value):向Session中存储对象。使用该方法可以将用户登录账号、密码存储起来。  
-getAttribute(String key)：从Session中获取对应的对象。  
-removeAttribute(String key):从Session中删除对应的对象。  
-getAttributeName()：获得Session中存储的key值集合。
-invalidate()：强制使Session过期，用于安全退出，保证Session的安全。
+####服务器中的Servlet中怎样获得服务器为该客户端所开辟创建的Session
+在客户端第一次与服务器进行连接的时候，就为该客户端开辟了一个`Session`，返回给客户端进行储存的是`Session`的句柄`SessionID`，具体怎样开辟、储存我们都不用管。我们只需要在服务器端获得这个`Session`，并使用这个`Session`中所存储的客户端信息(例如账号密码)等信息即可。通过方法`request.getSession()`即可在`Servlet`或者`JSP`中获得为该客户端所开辟构建的`Session`对象。
+####服务器中的JSP中怎样获得服务器为该客户端所开辟创建的Session
+`JSP`中通过内置对象直接使用`session`，`session`是`JSP`中的一个内置对象。  
+还可以通过`request.getSession()`获得`Session`对象。  
+####Session对象常用方法
+`setAttribute(String key,String value)`:向`Session`中存储对象。使用该方法可以将用户登录账号、密码存储起来。  
+`getAttribute(String key)`：从`Session`中获取对应的对象。  
+`removeAttribute(String key)`:从`Session`中删除对应的对象。  
+`getAttributeName()`：获得`Session`中存储的`key`值集合。  
+`invalidate()`：强制使`Session`过期，用于安全退出，保证`Session`的安全。
 
 ####Session的生命周期
-第一次请求时创建Session。  
-Session消亡：  
+第一次请求时创建`Session`。  
+`Session`消亡：  
 1. 退出对话之后，过了生命周期即消亡。  
-2. 调用Session的invalidate()方法。  
-3. Web Server停止运行。  
+2. 调用`Session`的`invalidate()`方法。  
+3. `Web Server`停止运行。  
 
-一个客户端的Session在这整个会话中有效。也就是说，在这个会话中的多次请求中是可以共享的，一次请求中存储在该Session中的信息是可以被这次会话中的其他请求使用。  
-例如，在一次会话中，第一次是请求一个Servlet，在这个请求中于Session中存储了客户端的账号、密码。然后，客户端在第二次请求一个JSP，那么就可以在这个JSP中获得那个Servlet请求中存储在Session中的账号、密码。  
-request的Attribute通过请求转发是在多个Servlet中共用(就是将本次请求的参数在各个Servlet间进行共用，多个Servlet进行回应。保存于request的Attribute中的参数的存活期仅在于本次请求，时间短)，而Session的Attribute是在多次请求(同一次会话)间共用(有多次请求，各个请求之间可以共用，不管各个请求各自请求Servlet还是JSP均可。保持与Session中的参数的存活期是很多次请求，时间长)。  
+一个客户端的`Session`在这整个会话中对于这个客户端的所有请求都有效。也就是说，`Session`在这个会话中的多次请求中是可以共享的，第一次请求中存储在该`Session`中的信息是可以被这次会话中的其他请求使用。  
+例如，在一次会话中，第一次请求一个`Servlet`，服务器端为这个客户端创建了`Session`，并且在这个请求中，于`Session`中存储了客户端的账号、密码。然后，客户端在第二次请求一个`JSP`，那么就可以在这个`JSP`中获得第一次请求中存储在`Session`中的账号、密码。  
 
-请求转发与Session的不同点在于：存储共享数据的生命周期不同，共享对象不同。使用范围不同。请求转发是一次请求一个存储，Session是一次会话一个存储，一次会话包括了多个请求。如果能够用请求转发就能共享的数据，就使用请求转发即可，而用不着Session，为了节省内存空间。
-JSP中通过内置对象Session直接使用，是一个内置对象。
-Session使用实例：
-JSP中使用Session:  
+注：`request`的`Attribute`通过请求转发是在一次请求中多个`Servlet`中共用(就是将本次请求的参数在各个`Servlet`间进行共用，多个`Servlet`进行回应。保存于`request`中的`Attribute`中的参数的存活期仅在于本次请求，时间短)，而`Session`的A`ttribute`是在多次请求(同一次会话)间共用(有多次请求，各个请求之间可以共用，不管各个请求各自请求`Servlet`还是`JSP`均可。保持于`Session`中的参数的存活期是很多次请求，时间长)。  
 
-在Servlet中向Session中储存客户端数据：
+请求转发中的`request`与`Session`的不同点在于：存储共享数据的生命周期不同，共享对象不同。使用范围不同。请求转发是一次请求一个存储，`Session`是一次会话一个存储，一次会话包括了多个请求。如果能够用请求转发就能共享的数据，就使用请求转发即可，而用不着`Session`，为了节省内存空间。  
+`Session`使用代码实例：  
+在`Servlet`中向`Session`中储存客户端数据：
 >
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException 
@@ -9191,7 +9231,7 @@ JSP中使用Session:
 			s.setAttribute("name", name);
 		}
 		
-在Servlet中取出Session中储存的客户端数据：
+在其它`Servlet`中取出`Session`中储存的客户端数据：
 >
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 				throws ServletException, IOException 
@@ -9200,27 +9240,29 @@ JSP中使用Session:
 			System.out.println(s.getAttribute("name"));
 		}
 
-在JSP中取出Session中储存的客户端数据：
+在`JSP`中取出`Session`对象(内置对象为`session`)中储存的客户端数据：
 >
 	<body>
 		<%=session.getAttribute("name")%>
 	</body>
 	
-	
 ####application对象
-其实际上是一个对象名。是ServletContext类的实例对象，但在JSP中是一个内置对象。  
-Session只能被同一个客户端使用。有限制。application对象可以被多个客户端共享。其范围最大。只要整个程序(包含多个Servlet)启动，即创建一个application，这是一个单态类。  
-在Servlet中通过方法获得application对象。  
+其实际上是一个对象名。是`ServletContext`类的实例对象，但在`JSP`中也是是一个内置对象(与`session`一样)。  
+`Session`对象只能被同一个客户端使用。有限制。`application`对象可以被多个客户端共享。其范围最大。只要整个程序(包含多个`Servlet`)启动，即创建一个`application`，这是一个单态类，为整个程序而创建的。  
+
+`application`使用代码实例：  
+在`Servlet`中通过以下方法获得`application`对象。  
 >
 	ServletContext application = super.getServletContext();//获得ServletContext对象application
 	或者
 	ServletContext application = super.getServletConfig().getServletContext();//也可以获得ServletConText对象application
+	ServletContext application = request.getServletContext();//也可以获得ServletConText对象application
 
-application使用实例：
-在JSP中：application用于在多个客户端之间共享参数"sum"
+在`JSP`中：`application`用于在*多个客户端之间*共享参数`sum`,这个`application`存储空间是属于整个`Web App`的。
 >
 	<body>
-	    <% Object sums = application.getAttribute("sum");
+	    <% 
+	    	Object sums = application.getAttribute("sum");
 	    	int sum= 0;
 	    	if(sums==null)
 	    		sums="0";
@@ -9231,30 +9273,29 @@ application使用实例：
 	    sum:<%=sum %>
 	</body>
 
-在JSP中，application就是一个内置对象。可以拿来直接使用。
+在`JSP`中，`application`就是一个内置对象。可以拿来直接使用。
 
 ####Request、Session、Application三者对比
 见图`Request_Session_Application_Contrast.PNG`所示：  
-上述三者均可用于Java Web中的数据存储共享，那么具体该存放在哪一个里面的原则是：  
-数据能储存在小范围内解决问题，就不要存放在大的范围内。
+上述三者均可用于`Java Web`中的数据存储共享，那么具体该存放在哪一个里面的原则是：数据能储存在小范围内解决问题，就不要存放在大的范围内。  
+
 ###URL重写与Cookie
 ####URL重写
-当客户端或者浏览器禁用Cookie的时候，那么我们的SessionID放在哪里？
-可以使用URL重写的方法来在禁用Cookie的时候共享Session。
-URL重写使用实例：
-注：当我们想从一个页面中跳转到另一个页面(或者回到现在的页面)的时候，可以在Servlet中使用重定向。
-####Cookie
-客户端信息可以储存在服务器开辟的空间Session中。  
-也可以储存在客户端开辟的空间Cookie中。  
-Cookie使用示例：  
+当客户端或者浏览器禁用`Cookie`的时候，那么我们的`SessionID`放在哪里？  
+可以使用`URL`重写的方法来在禁用`Cookie`的时候使用`Session`。
+`URL`重写使用实例：  
 
-存储Cookie的Servlet示例：将客户请求中发送过来的信息存储到Cookie中。
+注：当我们想从一个页面中跳转到另一个页面(或者回到现在的页面)的时候，可以在`Servlet`中使用重定向。
+####Cookie
+客户端信息可以储存在服务器开辟的空间`Session`中。  
+也可以储存在客户端开辟的空间`Cookie`中。  
+`Cookie`使用代码示例：  
+在`Servlet`中使用`Cookie`的示例，将客户请求中发送过来的信息存储到`Cookie`中：  
 >
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException 
 		{
 			String nameInfo=request.getParameter("name");
-			System.out.println(nameInfo);
 			//创建Cookie，然后给其添加内容
 			Cookie c = new Cookie("nameinfo",nameInfo);
 			//设置Cookie的存活时间
@@ -9266,7 +9307,7 @@ Cookie使用示例：
 			response.sendRedirect("MyJsp.jsp");
 		}
 
-从Cookie中取出存储内容的JSP示例：注意，当我们请求JSP的时候，JSP中同样会收到request对象。
+`JSP`中从`Cookie`中取出存储内容的示例，注意，当我们重定向至`JSP`的时候，`JSP`中同样会收到`request`对象，这里的这个`request`对象中包含了`Cookie`对象，也即是说，客户端发送请求的时候，会将`Cookie`一起发送给服务器：  
 >
 	<body>
 	    <% 
@@ -9280,7 +9321,7 @@ Cookie使用示例：
 	    %>
 	</body>
 	
-使用Session、Cookie存储用户信息的比较，见图`Session_Cookie_Contrast.PNG`：
+使用`Session`、`Cookie`存储用户信息的比较，见图`Session_Cookie_Contrast.PNG`：
 
 #Java Web中的JSP
 ---
