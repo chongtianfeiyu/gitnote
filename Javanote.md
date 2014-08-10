@@ -9054,7 +9054,7 @@ f. 测试类：
 a.`Servlet`回复浏览器的情况。  
 设置`response`的格式：  
 >
-	response.setContentType("text/html,charset=gbk");//这样就将服务器端回复客户端的编码格式设置为gbk。
+	response.setContentType("text/html;charset=gbk");//这样就将服务器端回复客户端的编码格式设置为gbk。
 	
 b.`JSP`回复浏览器的情况。  
 注意：我们请求`JSP`页面的时候，实际上是将`JSP`页面转译成一个`Servlet`，我们实际上请求的是`Servlet`，是这个`Servlet`向我们进行回复，这个`Servlet`向客户端打印出我们想要的内容，这个内容来自于`JSP`页面中的`HTML`部分。  
@@ -9764,9 +9764,158 @@ Answer:就是说，中间的那个组件一刻不停地探测两端的请求与�
 
 
 ##Ajax技术与一般技术的比较
-见图所示：
+见图所示：  
+Ajax技术的最大优点就是：实现了*即时操作即时显示结果*，而无关于网速限制的数据传输。这就提高了用户体验。
 
+##Ajax制作省市联动效果
+代码示例：  
+JavaScript部分：  
+>
+	<script type="text/javascript">
+	    var xmlHttpRequest;
+	    //创建xmlHttpRequest对象的方法
+	    function createXMLHttpRequest()
+	    {
+	    	if(window.ActiveXObject)
+		    {
+		    	try
+		    	{
+		    		xmlHttpRequest=new ActiveXObject("Microsoft.XMLHTTP");
+		    	}
+		    	catch(e)
+		    	{
+		    		xmlHttpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+		    	}
+		    	return xmlHttpRequest;
+		    }
+		    else if(window.XMLHttpRequest)
+		    {
+		    	return new XMLHttpRequest();
+		    }
+	    }
+	    function haolejiaowo()
+	    {
+	    	//假如这个被请求的Servlet作出回应
+	    	if(xmlHttpRequest.readyState==4&&xmlHttpRequest.status==200)
+	    	{
+	    		//将服务器端Servlet的回应取回来，取到xmlHttpRequest对象中。再将回应发送给客户端。也就是说，Servlet中的回应不是直接发送到客户端的，而是发送到xmlHttpRequest中的，然后再在回调方法中，取出Servlet的回应发送给客户端。
+	    		var responseText = xmlHttpRequest.responseText;
+	    		clear();
+	    		if(responseText.length!=2)
+	    		{
+		    		var shinames=responseText.split(",");
+		    		for(var i=0;i<shinames.length;i++)
+		    		{
+		    			var op = document.createElement("option");
+		    			op.text=shinames[i];
+		    			document.getElementById("shi").appendChild(op);
+		    		}
+	    		}
+	    	}
+	    	endLoadimage();
+	    }
+	    function clear()
+	    {
+	    	var shi = document.getElementById("shi"); 
+	    	shi.options.length=0;
+	    	shi.options[0]=new Option("==请选择==",0);
+	    }
+	   	function xianshishi()
+	   	{
+	   		var sheng=document.getElementById("sheng");
+	   		xmlHttpRequest = createXMLHttpRequest();
+	    	//2.设置回调函数，这个函数就是当服务器端作出回应之后，调用的方法，在该方法中取出服务器端返回给xmlHttpRequest的回应，然后将这个回应返回给客户端
+	    	xmlHttpRequest.onreadystatechange = haolejiaowo;
+	    	var url = "${pageContext.request.contextPath}/liandong?shengname=" +sheng.value;
+	    	xmlHttpRequest.open("get",url,true);
+	    	//4.客户端通过这个xmlHttpRequest组件发送请求至服务器端的Servlet。
+	    	xmlHttpRequest.send(null);
+	    	loadimage();
+	   	}
+	   	var image=null;
+	   	function loadimage()
+	   	{
+		   	if(image==null)
+		   	{
+		   		image=document.createElement("img");
+		   	}
+	   	
+	   		image.src="loading.gif";
+	   		image.setAttribute("width", "20");
+	   		image.setAttribute("height", "20");
+	   		document.getElementById("shi").parentNode.insertBefore(image, document.getElementById("shi"));
+	   		image.style.display="inline";
+	   	}
+	   	function endLoadimage()
+	   	{
+	   		image.style.display="none";
+	   	}
+	</script>
 
+`HTML`部分：  
+>
+	<div>
+		省：<select id="sheng" onchange="xianshishi()">
+				<option value="qingxuanzhe">==请选择==</option>
+				<option value="hubei">湖北</option>
+				<option value="hunan">湖南</option>
+				<option value="sichuan">四川</option>
+		</select>
+		市：<select id="shi" >
+		</select>
+	</div>
+	
+`Servlet`部分：  
+	public class liandong extends HttpServlet 
+	{
+		List<String> listsheng;
+		Map<String, List> shenshimap=new HashMap<>();
+		@Override
+		public void init(ServletConfig config) throws ServletException 
+		{
+			super.init(config);
+			listsheng=new ArrayList<>();
+			listsheng.add("武汉");
+			listsheng.add("黄冈");
+			shenshimap.put("hubei",listsheng);
+>			
+			listsheng=new ArrayList<>();
+			listsheng.add("长沙");
+			listsheng.add("涟源");
+			shenshimap.put("hunan",listsheng);
+>			
+			listsheng=new ArrayList<>();
+			listsheng.add("成都");
+			listsheng.add("江由");
+			shenshimap.put("sichuan",listsheng);
+		}
+		public void doGet(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException 
+		{
+			response.setContentType("text/html ;charset=gbk");
+			PrintWriter out = response.getWriter();
+			String shengname = request.getParameter("shengname");
+			if(!shengname.equals("qingxuanzhe"))
+			{
+				List<String> ls = shenshimap.get(shengname);
+				StringBuilder sb = new StringBuilder();
+				for(String str:ls)
+				{
+					sb.append(str);
+					sb.append(",");
+				}
+				System.out.println(sb);
+				sb.deleteCharAt(sb.length()-1);
+				out.println(sb.toString());
+				out.flush();
+				out.close();
+			}
+			else
+			{
+				out.println("");
+			}
+		}
+	}
 #Java中的XML
 --------------
 ##基础知识
