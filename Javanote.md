@@ -4,7 +4,7 @@
 2. 栈、队列、串。  
 3. 树、二叉树等。  
 4. 图  
-5. 隐射表：Map
+5. 映射表：Map
 #Java基础知识
 ---
 1. `Java`源代码->`.class`文件（字节码）->机器码(二进制码)  
@@ -9289,6 +9289,8 @@ c.隐藏表单域的方式，不推荐使用。
 ####Cookie
 客户端信息可以储存在服务器开辟的空间`Session`中。  
 也可以储存在客户端开辟的空间`Cookie`中。  
+要注意：无论是在`Servlet`还是`JSP`中，第二次使用`Cookie`都需要从`request`中获得，因为第一次是创建`Cookie`，创建`Cookie`后再将其发送至客户端，下一次使用`Cookie`的时候就需要客户端将`Cookie`与`request`一起发送给`Servlet`或者`JSP`。  
+
 `Cookie`使用代码示例：  
 在`Servlet`中使用`Cookie`的示例，将客户请求中发送过来的信息存储到`Cookie`中：  
 >
@@ -9325,25 +9327,27 @@ c.隐藏表单域的方式，不推荐使用。
 
 #Java Web中的JSP
 ---
-JSP技术是建立于Servlet之上的。  
-JSP！=Java+DHTML  
-JSP页面=Java+DHTML  
-JSP实际上就是一个Servlet类。  
-JSP代码运行原理如图`JSP_Fundamental.PNG`所示：  
-第一次运行的时候：.jsp首先转译为.java(也就是Servlet代码)，再编译为.class代码。  
-第二次运行的时候：直接请求.class代码。
+`JSP`技术是建立于`Servlet`之上的。  
+`JSP！=Java+DHTML`  
+`JSP页面=Java+DHTML`  
+`JSP`实际上就是一个`Servlet`类。  
+`JSP`代码运行原理如图`JSP_Fundamental.PNG`所示：  
+第一次运行的时候：`.jsp`首先转译为`.java`(也就是`Servlet`代码)，再编译为`.class`代码。  
+第二次运行的时候：直接请求`.class`代码。  
+
 
 ##JSP组成
-JSP页面包括：  
-1. 注释：HTML注释、Java注释、JSP注释。  
+`JSP`页面包括：  
+1. 注释：`HTML`注释、`Java`注释、`JSP`注释。  
 2. 模板：就是界面原型，界面显示的外形，美工关心的。就是`HTML`部分的内容。  
 3. 元素：脚本元素、指令元素、动作元素。  
 
+一个`JSP`页面，无论其开始时怎么写的，在运行之后都会被转换为一个Servlet类。JSP页面中的各种内容会被转化为这个类中的各个部分，如，类中成员变量、类方法中的变量。
 ###脚本元素
-脚本元素示例：脚本元素有3种，声明部分，小脚本，表达式。
+脚本元素有3种：声明部分，小脚本，表达式。  
 >
 	<%!
-		//声明部分，声明变量与方法，使用！作为标识，表明该部分转换为Servlet后直接变为Java代码。此处声明的变量是全局的，转换后放在Servlet类中。
+		//声明部分，声明变量与方法，使用！作为标识，表明该部分转换为Servlet后直接变为Java代码。此处声明的变量是全局的，转换后作为类中的成员变量。
 		int a = 1;
 		int sum(int a,int b)
 		{
@@ -9354,64 +9358,127 @@ JSP页面包括：
 		//小脚本，不用标识，在转换为Servlet之后直接变为Java代码。但是与声明部分不同的是：小脚本中声明的变量是局部的，转换后放在某一个方法中。
 		int reuslt = sum(10,20)；
 	%>
-		//表达式，表达式部分使用=进行标识，表明该部分转换为Servlet之后放在out.write()之中，直接在HTML中显示。注：其后无分号。
+		//表达式，表达式部分使用=进行标识，表明该部分转换为Servlet之后放在out.write()之中，直接在HTML中显示。将JSP中的变量(无论是类成员变量还是方法的局部变量)内容在print里面显示出来。注：其后无分号。
 	<%=
 		result
 	%>
 	
+`JSP`转换代码示例：  
+`JSP`代码中脚本元素：  
+>
+	<%!
+		String path1 = "hi";
+		String basePath1 = "hello";
+		int sum(int a,int b)
+		{
+			return a+b;
+		}
+	%>
+>									
+	<%
+		String path = request.getContextPath();
+		String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+		int sum = sum(1,2);
+	%>
+>
+	<%=path1 %>
+	
+转换为`Servlet`之后的类代码：  
+>		
+	public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
+	    implements org.apache.jasper.runtime.JspSourceDependent 
+		{	
+			//此三部分来至于JSP中的声明部分
+			String path1 = "hi";
+			String basePath1 = "hello";
+			int sum(int a,int b)
+			{
+				return a+b;
+			}
+			public void _jspService(final javax.servlet.http.HttpServletRequest request, final javax.servlet.http.HttpServletResponse response)
+	        throws java.io.IOException, javax.servlet.ServletException 
+			{
+				//此三部分来自于JSP的小脚本部分
+				String path = request.getContextPath();
+				String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+				int sum = sum(1,2);
+				//此部分来自于表达式部分，将JSP中的变量(无论是类成员变量还是方法的局部变量)内容在print里面显示出来。
+				out.print(path1 );
+			}
+		}
 
 ###指令元素
-以<%@ %>为标志。所谓的指令，就是告诉Web服务器，在编译本文件的时候需要哪些准备。有page指令、include指令、taglib指令，见图：
+以`<%@ %>`为标志。所谓的指令元素的作用，就是告诉`Web`服务器，在编译本`JSP`文件为`.class`文件的时候需要哪些准备。有`page`指令、`include`指令、`taglib`指令，见图`Commander_Elements.PNG`所示：  
+
 ####page指令
-在JSP的任何地方、以任何顺序，一个页面中可以包含任意数量的page指令。  
-除了import，任何的属性/值对只能出现一次。  
-page指令的属性有:language、import、contentType、errorPage、isErrorPage，见图:
-page指令示例：  
+在`JSP`的任何地方、以任何顺序，一个页面中可以包含任意数量的`page`指令。`page`指令的作用：设置本`JSP`页面的属性状况。如、文本字符集、编译导入包等。  
+除了`import`，任何的属性/值对只能出现一次。  
+`page`指令的属性有:`language、import、contentType、errorPage、isErrorPage`，见图`Page_Attributes.PNG`所示:  
+`errorpage`属性用于设置`404`或者`500`错误时跳转处理页面。  
+
+`page`指令使用代码示例：  
 >
 	<%@ page language="java" import="java.util.*" contentType="text/html; charset=gbk" errorPage="MyError.jsp"%>
 	
 ####include指令
-当网站的多个页面中具有某些相同元素，例如各个页头是相同的，那么为了节省代码，可以使用HTML中的框架，将相同的那一部分拆开为一个单独的部分进行使用。  
-也可以使用JSP中的include指令，将各个页面中的相同部分写成一个页面，然后再各个页面中使用include指令将他们包含进来。  
-include指令用于在运行的时候将其他HTML文档或者JSP也没嵌入到本JSP页面。  
-include之类的属性有：file属性。  
+当网站的多个页面中具有某些相同元素，例如各个页头是相同的，那么为了节省代码，可以使用`HTML`中的框架，将相同的那一部分拆开为一个单独的部分进行使用。  
+也可以使用`JSP`中的`include`指令，将各个页面中的相同部分写成一个页面，然后再各个页面中使用`include`指令将他们包含进来。  
+`include`指令用于在运行的时候将其他`HTML`文档或者`JSP`页面嵌入到本`JSP`页面。  
+`include`之类的属性有：`file`属性。  
 但是要注意页面中不要定义了相同变量，也就是被嵌入的页面与嵌入页面中不要有同名变量的定义。  
-include指令使用示例：  
+`include`指令使用代码示例：  
 >
 	<%@ include file = "文件名" %>//将其他的一个文件放入本文件中。
-	
-###动作元素
-动作元素是鸡肋知识，没什么用了。主要为模型1服务，模型2基本不用。主要是方便在JSP页面中使用JavaBean。  
-以<jsp: >为标志。
-动作元素见图：
-##JSP的隐藏对象
-在JSP的脚本元素中可以使用JSP的隐藏对象。 
-隐藏对象无需使用者声明、创建。由容器维护、管理。  
-例如，session、request、application对象就可以在JSP的脚本元素(除了声明之外)中使用。
-JSP的隐藏对象见图`JSP_Inner_Object.PNG`所示：  
 
-注：关于response对象的方法使用，我们很少再使用out.print()来向客户端发送内容。而是直接使用重定向的技术：response.sendRedirect();转发至我们想要发送的内容的那个页面即可。而不要直接输出。
+####taglib指令
+
+###动作元素
+动作元素是鸡肋知识，没什么用了。主要为模型1服务，模型2基本不用。主要是方便在`JSP`页面中使用`JavaBean`。  
+以`<jsp: >`为标志。  
+动作元素见图`Action_Elements.PNG`所示：  
+
+##JSP的隐藏对象
+**隐藏对象与脚本元素中的小脚本合用，威力无穷。**  
+在`JSP`的*脚本元素*中可以直接使用`JSP`的隐藏对象。  
+这样就可以在`JSP`中与`Servlet`一样使用`request`、`response`这些元素对象，进而可以使用`Session、Cookie、application`这样的用于会话跟踪技术，还有请求转发、重定向这些技术了。使得二者功能上的共通。  
+隐藏对象无需使用者声明、创建。由容器维护、管理。  
+例如，`session`、`request`、`application`对象就可以在`JSP`的脚本元素(*除了声明之外*)中使用。  
+为什么不能在`JSP`的声明中使用？  
+`Answer`：因为声明部分转译为`Servlet`类中的成员变量部分。而使用`JSP`隐藏对象就是为了使用这些隐藏对象的各种方法，但是在类的成员变量声明部分是不允许出现方法调用的，例如，在类的成员变量声明部分不能出现`int a= sum(1,3)；`这样的语句，这样的语句只能出现在类方法中，也就是对应的`JSP`的小脚本部分。  
+所以，这些隐藏对象只能出现在`JSP`的小脚本部分。这是有转译后的`Servlet`类中的内容决定的。  
+`JSP`的隐藏对象见图`JSP_Inner_Object.PNG`所示：  
+使用代码示例：  
+	<%
+		//在小脚本中使用隐藏对象，使request对象发挥与在Servlet中相同的效果
+		String strName = request.getparameter("name");
+	%>
+	<%=
+		//显示变量
+		strName
+	%>	
+
+注：关于`response`对象的方法使用，我们很少再使用`out.print()`来向客户端发送内容。而是直接使用重定向的技术：`response.sendRedirect();`转发至我们想要发送的内容的那个页面即可。而不要直接输出。
 
 ##JSP中异常处理
-若发生异常，可以跳转至异常显示页面。
+若发生异常，可以跳转至异常显示页面。这里就可以使用指令元素中的`page`指令，使用其`errorpage`属性。以处理`404`或者`500`错误。
 
 #Java Web中的过滤器
 ----
-在Java Web中，除了JSP、Servlet可以接收客户端请求，处理客户端请求之外，过滤器也可由接收客户端请求。
-过滤器是向Web App响应前和过滤后添加新功能的组件。  
-我们的一个Web App中有多个Servlet或者JSP，其中有些Servlet中的某些操作时相同的。那么我们可以将这些操作提取出来成为一个新的类，在客户请求到达后面的那些Servlet之前就将那些相同的操作通过新的类予以实现。这个新的类就发挥了过滤器的作用。也就是说在那些Servlet对客户请求做出响应之前就对之予以过滤。就是精简了Servlet的功能，减小代码冗余。过滤器作为一个预备处理功能。  
+在`Java Web`中，除了`JSP`、`Servlet`可以接收客户端请求，处理客户端请求之外，过滤器也可接收客户端请求。  
+过滤器是在`Servlet`、`JSP`响应前、后进行动作、添加新功能的组件。  
+我们的一个`Web App`中有多个`Servlet`或者`JSP`，其中有些`Servlet`中的某些操作是相同的。那么我们可以将这些操作提取出来成为一个新的类，在客户请求到达后面的那些`Servlet/JSP`之前就将那些相同的操作通过新的类予以实现。这个新的类就发挥了过滤器的作用。也就是说在那些`Servlet/JSP`对客户请求做出响应之前就对之予以过滤。就是精简了`Servlet/JSP`的功能，减小代码冗余。过滤器作为一个预备处理功能。  
+注意:过滤器不仅可用于`Servlet`还可以用于`JSP`。
 
-注意:过滤器不仅可用于Servlet还可以用于JSP。
-
-开发一个过滤器(Filter)需要实现一个接口(Filter)。
-在做项目时，最多的是使用前过滤，也就是在过滤器中的doFilter()之前，很少使用后过滤。
+开发一个过滤器需要实现一个接口(`Filter`接口)。  
+在做项目时，最多的是使用前过滤，也就是在过滤器中的`doFilter()`之前完成想要的过滤功能(操作)，很少使用后过滤。  
 
 过滤器使用步骤：
-1. 实现Filter接口。重写doFilter()方法。  
-2. 配置Web.xml文件，配置方法与Servlet类似。
+1. 实现`Filter`接口。重写`doFilter()`方法。  
+2. 配置`Web.xml`文件，配置方法与`Servlet`类似。因为过滤器就是一个类，和`Servlet`一样都是一个类，所以必须去`Web.xml`文件中进行注册，这样才可以如`Servlet`一样被使用(接受客户端请求)。  
+
 过滤器使用示例：  
 未使用过滤器的示例：  
-Servlet xizhao代码：
+`Servlet` `xizhao`代码：  
 >
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException 
@@ -9421,7 +9488,7 @@ Servlet xizhao代码：
 		System.out.println("chuanyifu");
 	}
 	
-Servlet anmo代码：
+`Servlet` `anmo`代码：
 >
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException 
@@ -9430,9 +9497,11 @@ Servlet anmo代码：
 		System.out.println("anmo");
 		System.out.println("chuanyifu");
 	}
-	
+
+在这两个`Servlet`的操作中，有一些操作是一样的，也就是有代码冗余。  
+
 使用过滤器的示例：  
-Servlet xizhao代码：
+`Servlet` `xizhao`代码：  
 >
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException 
@@ -9440,7 +9509,7 @@ Servlet xizhao代码：
 		System.out.println("xizhao");
 	}
 	
-Servlet anmo代码：
+`Servlet` `anmo`代码：  
 >
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException 
@@ -9448,58 +9517,78 @@ Servlet anmo代码：
 		System.out.println("anmo");
 	}
 	
-过滤器代码：
+过滤器`PreFilter`的代码：
 >
 	//过滤器抽取了前面两个Servlet中相同的操作
 	public class PreFilter implements Filter 
 	{
 		@Override
-		public void destroy() 
+		public void init(FilterConfig arg0) throws ServletException 
 		{
 		}
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
 				FilterChain filterchain) throws IOException, ServletException 
 		{
-			// TODO Auto-generated method stub
+			//此句就是将在Servlet中的冗余代码提取出来，也就是前过滤，在Servlet操作执行之前即执行的那些代码
 			System.out.println("tuoyifu");
 			//doFilter()方法是一个分界线，之前的代码表示是之前过滤的，之后的代码表示是之后过滤的。该方法表示请求转向Servlet的doPost()或者doGet()方法进行执行。
-			//Servlet中德方法执行完成之后才继续执行本Filter中的方法。
 			filterchain.doFilter(request, response);
+			//此句就是Servlet中的方法执行完成之后才继续执行本Filter中的方法。
 			System.out.println("chuanyifu");
 		}
 		@Override
-		public void init(FilterConfig arg0) throws ServletException 
+		public void destroy() 
 		{
-		}
+		}		
 	}
 	
-Web.xml配置：  
+`Web.xml`配置：作用是如`Servlet`一样进行注册，以使得我们可以使用这个`Filter`  
 >
 	<filter>
 		<filter-name>PreFilter</filter-name>
 		<filter-class>com.trilever.PreFilter</filter-class>
 	</filter>
 	<filter-mapping>
-		//以下配置使得此Servlet对于两个Servlet都可自动调用。
+		//以下配置使得此Filter对于两个Servlet都可自动调用。
 		<filter-name>PreFilter</filter-name>
 		<url-pattern>/xizhao</url-pattern>
 		<url-pattern>/anmo</url-pattern>
 	</filter-mapping>
+	
+使用过滤器的代码示例：  
+>
+	<body>
+		//这样直接调用xizhao这个url之后，就会使用这个Filter。当然也执行了xizhao这个Servlet中的操作内容。
+		<form action="xizhao" name="form1">
+			<input type="text" name="mingzhi">
+			<input type="submit">
+		</form>
+		//这样直接调用anmo这个url之后，就会使用这个Filter。当然也执行了anmo这个Servlet中的操作内容。
+		<form action="anmo" name="form2">
+			<input type="text" name="mingzhi2">
+			<input type="submit">
+		</form>
+	</body>
+注：在`Web.xml`对这个`Filter`进行注册之后，在使用注册`url-pattern`进行调用的时候，不再是直接去调用`Servlet`了，而是直接调用注册的`Filter`，然后在这个`Filter`中调用`Servlet`中的操作方法。  
+如此，即将两个`Servlet`中的相同部分抽取到过滤器中进行自动调用(因为已经在`Web.xml`文件中进行配置)。
 
-如此，即将两个Servlet中的相同部分抽取到过滤器中进行自动调用(因为已经在Web.xml文件中进行配置)。
+由前面可知，当我们的`Servlet`需要接收、处理客户端请求，就需要处理中文乱码的问题。对于很多`Servlet`都需要这一操作，那么就可以将中文乱码处理部分进行抽取，作为一个中文乱码处理过滤器。然后在`Web.xml`中配置对于所有的`Servlet`都适用。就可以解决所有的`Servlet`的中文乱码问题。  
 
-由前面可知，当我们的Servlet需要接收、处理客户端请求，就需要处理中文乱码的问题。对于很多Servlet都需要这一操作，那么就可以将中文乱码处理部分进行抽取，作为一个中文乱码处理过滤器。然后在Web.xml中配置对于所有的Servlet都适用。就可以解决所有的Servlet的中文乱码问题。  
+注意：在`Filter`中的`init()`方法的参数`FilterConfig`可以用于从`Web.xml`文件中读取我们预先设置的数据，就好比在`Servlet`中，`init()`方法中的`ServletConfig`参数也可以从`Web.xml`文件中读取预先配置好的数据，见前面的`ServletConfig`部分的介绍。这些数据可以是整个项目的配置信息，当需要修改的时候，可以很方便地在`Web.xml`中修改。在全局的`Servlet`都可以读取使用。`Filter`中`init()`方法的参数`FilterConfig`的常用方法见图`FilterConfig.PNG`所示：  
 
-注意：在Filter中的init()方法的参数FilterConfig可以用于从Web.xml文件中读取我们预先设置的数据，这些数据可以是整个项目的配置信息，当需要修改的时候，可以很方便地在Web.xml中修改。在全局的Servlet都可以读取使用。见前面的ServletConfig部分的介绍。Filter中init()方法的参数FilterConfig见图`FilterConfig.PNG`所示：
+##Filter的生命周期
+`Filter`的生命周期见图`Filter.PNG`所示：  
 
 ##Java Web中过滤器链
-所谓的过滤器链：就是存在多个过滤器，一起发挥作用。过滤器既可以过滤Servlet也可以过滤JSP。  
+所谓的过滤器链：就是存在多个过滤器，一起发挥作用。当然过滤器既可以过滤`Servlet`也可以过滤`JSP`。  
 那么各个过滤器执行流程是怎么样的？  
-Answer:前过滤器执行顺序(也就是doFilter()方法之前的代码)是依据Web.xml中的mapping顺序确定的。当其中一个过滤器中的前过滤器执行完之后，如果其后面还有过滤器那就先执行其后面的过滤器的前过滤器部分，如果后面没有过滤器，那就执行Servlet中的部分。执行完Servlet之后，再转向过滤器中的后过滤器部分，当然，各个后过滤器部分的执行顺序与前过滤器部分的顺序相反。执行流程见图`Filter_Chain_Process.PNG`所示：
+`Answer`:前过滤器执行顺序(也就是`filterchain.doFilter(request, response);`方法之前的代码)是依据`Web.xml`中的`mapping`顺序确定的。当其中一个过滤器中的前过滤器执行完之后，如果其后面还有过滤器那就先执行其后面的过滤器的前过滤器部分，如果后面没有了过滤器，那就执行`Servlet`中的部分。执行完`Servlet`之后，再转向过滤器中的后过滤器部分，当然，各个后过滤器部分的执行顺序与前过滤器部分的顺序相反。执行流程见图`Filter_Chain_Process.PNG`所示：
 
+在过滤链的使用过程中，怎样实现`Filter`之间的链式调用？  
+`Answer`:依靠在`Web.xml`文件中对各个`Filter`的注册，要实现链式调用，就需要一环套一环的`Filter`的`url-pattern`配置。牵一发而动全身。  
 
-###在过滤器联众使用适配器模式
+###在过滤器联中使用适配器模式
 在实际使用中，过滤器中的init()方法与destory()方法往往是没有用的，只需要进行空实现即可。但是当要大量使用过滤器的时候，太多的空实现就会导致代码冗余。此时就可以使用适配器模式予以解决。先创建过滤器适配器，对Filter类进行空实现。然后所有的过滤器都继承自这个适配器即可不必实现全部的方法。
 
 注意：字符串处理方法split()，如果是用"."进行分割，必须写成"\\."才可以。
