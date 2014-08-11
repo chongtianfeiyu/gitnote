@@ -9589,11 +9589,11 @@ c.隐藏表单域的方式，不推荐使用。
 `Answer`:依靠在`Web.xml`文件中对各个`Filter`的注册，要实现链式调用，就需要一环套一环的`Filter`的`url-pattern`配置。牵一发而动全身。  
 
 ###在过滤器联中使用适配器模式
-在实际使用中，过滤器中的init()方法与destory()方法往往是没有用的，只需要进行空实现即可。但是当要大量使用过滤器的时候，太多的空实现就会导致代码冗余。此时就可以使用适配器模式予以解决。先创建过滤器适配器，对Filter类进行空实现。然后所有的过滤器都继承自这个适配器即可不必实现全部的方法。
+在实际使用中，过滤器中的`init()`方法与`destory()`方法往往是没有用的，只需要进行空实现即可。但是当要大量使用过滤器的时候，太多的空实现就会导致代码冗余。此时就可以使用适配器模式予以解决。先创建过滤器适配器，对`Filter`类进行空实现。然后所有的过滤器都继承自这个适配器即可不必实现全部的方法。  
 
-注意：字符串处理方法split()，如果是用"."进行分割，必须写成"\\."才可以。
-前面我们做了一个用于处理中文乱码的过滤器，现在创建一个客户端地址过滤器，就是限制某些地址访问我们的Servlet。  
-地址过滤器使用示例：  
+注意：字符串处理方法`split()`，如果是用"."进行分割，必须写成"\\."才可以。  
+前面我们做了一个用于处理中文乱码的过滤器，现在创建一个客户端地址过滤器，就是限制某些地址访问我们的`Servlet`。  
+地址过滤器代码示例：  
 >
 	public class RemoteAddressFilter extends FilterAdapter 
 	{
@@ -9606,56 +9606,72 @@ c.隐藏表单域的方式，不推荐使用。
 			int lastindex = Integer.parseInt(strArray[3]);
 			if(lastindex>10&&lastindex<50)
 				response.getWriter().println("you are not authorized to this page");
+			else
+				chain.doFilter(request, response);			
 		}
 	}
 
 还有客户端登陆账号过滤器示例：  
 
-网站log修改过滤器示例：  
+网站`log`修改过滤器示例：  
 
 
 ##AOP-面向方面编程
 什么叫做方面：例如我们的代码需要解决中文乱码的问题。那么这个问题就是一个方面。  
-我们将处理中文乱码的那部分代码提取出来，构成一个过滤器，这就是面向方面编程，称为`AOP`。也叫面向切面编程。就好像过滤器一样，每一个过滤器都像在请求传递到`Servlet/JSP`之前的路上的切面，将必要的东西予以过滤、切除。称之为面向切面编程。  
-过滤器、拦截器(后面Structs2再讲)的作用就是：让后面的`Servlet/JSP`负责他们自己的工作，只做他们自己的工作即可。其他的工作由过滤器、拦截器这些东西完成。
+我们将处理中文乱码的那部分代码提取出来，构成一个过滤器，这就是面向方面编程，称为`AOP`。也叫面向切面编程。  
+就好像过滤器一样，每一个过滤器都像在请求传递到`Servlet/JSP`之前的路上的切面，将必要的东西予以过滤、切除。称之为面向切面编程。  
+过滤器、拦截器(后面`Structs2`再讲)的作用就是：让后面的`Servlet/JSP`负责他们自己的工作，只做他们自己的工作即可。其他的工作由过滤器、拦截器这些东西完成。  
 
 #Java Web中的EL
-Expression Language:表达式语言。在JSP页面中使用。   
-以前是JSTL(JSP标准标签库)的一部分。  
-现在JSF也将其纳入。  
-EL的作用:主要是用于输出显示值(见下面的例子)。与JSTL组合代替JSP页面中的脚本元素与动作元素。  
+`Expression Language`:表达式语言。在`JSP`页面中使用。   
+以前是`JSTL`(`JSP`标准标签库)的一部分。现在`JSF`也将其纳入。  
+
+`EL`的作用:主要是用于输出、显示变量的值(见下面的例子)，与`JSTL`组合代替`JSP`页面中的脚本元素与动作元素。  
+主要是使用`EL`中的隐式对象来取出我们储存在`page`、`session`、`application`、`request`这些空间中的变量值。以前都是在`JSP`的小脚本中使用`request`、`session`、`application`等这些隐藏对象来获得其储存的变量的值，如:  
+>	
+	<% String name = request.getAttribute("name");
+	   String age = session.getAttribute("age");
+	%>  
+以前都是使用小脚本来取得存储的客户端数据。现在可以使用`EL`的隐式对象来获得这些客户端数据了：  
+>	
+	${requestScope.name}//取出request中存储的name变量。  
+	${sessionScope.gen}//取出session中储存的gen变量。  
+	${applicationScope.age}//取出application中存储的age变量。  
+	
 语法:${EL语言}  
 
 ##EL的隐式对象
-param:作用相当于request.getParameters(),如、获得form中的textArea返回的值，textArea只返回一个单值。  
-paramValues:作用相当于request.getParameterValues(),如、获得form中的checkBox返回的值，checkBox返可以回多个值。  
+见图`EL_Hidden_Object.PNG`所示：  
+隐式对象如下：  
+`param`对象:作用相当于`request.getParameter()`,如、获得`form`中某个元素提交返回的值，但只返回一个单值。  
+`paramValues`对象:作用相当于`request.getParameterValues()`,如、获得`form`中的`checkBox`返回的值，`checkBox`返可以回多个值。  
 以上，param、paramValues与request的区别在于，如果获得的是null，那么param会显示出空白，而request会显示出null。
 注意：这两个隐式对象只在模型1中才使用。在模型2中没有使用。此二者无需研究。
 示例：  
 >
-	${param.name}//返回form中的textArea中的name值。
-	${param.pwd}//返回form中的textArea中的pwd值。
-	
-${pageScope.username}:取出page范围内的username变量。  
-${requestScope.username}:取出requestScope范围内的username变量。  
-${sessionScope.username}:取出sessionScope范围内的username变量。  
-${applicationScope.username}:取出applicationScope范围内的username变量。  
+	${param.name}//返回form中某个元素对象的值。
+	${param.pwd}
+>	
+	${pageScope.username}:取出本page范围内的username变量。  
+	${requestScope.username}:取出request中存储的username变量。  
+	${sessionScope.username}:取出session中存储的username变量。  
+	${applicationScope.username}:取出application中存储的username变量。  
 
-原来设置page、request、session、application范围内的某个变量值：
+原来设置`page、request、session、application`范围内的某个变量值：
 >
 	pageContext.setAttribute("pagename","pagevalue")；
 	request.setAttribute("requestname","requestvalue");
 	session.setAttribute("sessionname","sessionvalue");
 	application.setAttribute("applicationname","applicationvalue");
 
-获取page、request、session、application范围内的某个变量值：
+获取`page、request、session、application`范围内存储的某个变量值：
 >
-	pageContext.getAttribute("pagename")；
+	page.getAttribute("pagename")；
 	request.getAttribute("requestname");
 	session.getAttribute("sessionname");
 	application.getAttribute("applicationname");
 	
-以上使用get方法从变量中取值，相当于以下使用EL中的Scope隐式变量：  
+以上使用`get`方法从变量中取值，相当于以下使用`EL`中的`Scope`隐式变量：  
 >
 	${pageScope.pagename}//取出page范围内的pagename变量。  
 	${requestScope.requestname}//取出requestScope范围内的requestname变量。  
@@ -9663,30 +9679,39 @@ ${applicationScope.username}:取出applicationScope范围内的username变量。
 	${applicationScope.applicationname}//取出applicationScope范围内的applicationname变量。
 
 使用EL的优点时可以节省代码。  
-注意：当我们在创建一个实体类的时候，前3个字母都不要大写，否则在Structs里面会出现问题。
 
-对于一个实体类而言(如，Student类)，EL的用法还包括：  
+注意：当我们在创建一个实体类的时候，前3个字母都不要大写，否则在`Structs`里面会出现问题。
+
+对于一个实体类对象而言(如，`Student`类的对象`mStudent`)，`EL`的用法还包括：  
 >
-	${requestScope.mStudent.name}//取出requestScope范围内的mStudent变量的Student对象的name成员变量值。  
+	${requestScope.mStudent.name}//取出request中存储的mStudent变量的name成员变量值。  
 
-甚至当Student类中包括了birth类成员变量，birth类包括year、month、day成员变量，还可以使用：  
+甚至当`Student`类中包括了`birth`类成员变量，`birth`类包括`year、month、day`成员变量，还可以使用：  
 >
 	${requestScope.mStudent.birth.year}//取出requestScope范围内的mStudent变量的Student对象的birth成员变量的year成员变量值。  
 	
 甚至还有用法如下：  
 >
 	${mStudent.birth.year}//取出requestScope范围内的mStudent变量的Student对象的birth成员变量的year成员变量值。这里我们没有指定requesScope这个范围，会自动从pageScope向applicationScope范围进行对这个对象的查找。也就是说，如果在pageScope范围内就有mStudent这个变量，那么在pageScope中查找到即停止查找，不再向下继续查找。  
-以上这种用法这就是EL的功能强大之处，实际上调用的都是get方法。
+以上这种用法这就是`EL`的功能强大之处，实际上调用的都是`getAttribute()`方法。  
 
-
-关于4个Scope隐式对象的，如图`Points_Scope_Objects.PNG`所示：
-
-EL中还有一个隐式对象pageContext。其包含本页面的所有信息，如、request对象、Session对象。通过其拥有的request对象就可以获得ServletPath变量值等。
-
-EL中的重点就是这个4个Scope隐式对象、1个pageContext隐式对象与param与paramValues隐式对象。后二者是为模型1服务的，所以使用少。重点是前面四个Scope。
+关于4个`Scope`隐式对象的，如图`Scope_Objects.PNG`所示：  
+`EL`中还有一个隐式对象`pageContext`。其包含本页面的所有信息，如、`request`对象、`Session`对象。通过其拥有的`request`对象就可以获得`ServletPath`变量值等。  
+`EL`中的重点就是这4个`Scope`隐式对象、1个`pageContext`隐式对象与`param、paramValues`隐式对象。后二者是为模型1服务的，所以使用少。重点是前面四个`Scope`。  
+注意一个问题：  
+在`JSP`中，有9个隐式对象：  
+`request,response,page,pageContext,config,aplication,out,session,exception`。  
+其中，`pageContext`不仅自己可以存储数据，而且，其还封装了其他的8个对象。也就是说，`pageContext`对象可以设置、获取、存储自己的变量值，而且其还可以获得其他的八个隐式对象，进而通过这些获得的对象去修改、获取、设置、存储这些变量中存储的变量值。  
+>	
+	PageContext.APPLICATION_SCOPE//获得application对象
+	PageContext.SESSION_SCOPE//获得session对象
+	PageContext.REQUEST_SCOPE//获得request对象
+	PageContext.PAGE_SCOPE //获得page对象
+	
+总之，`PageContext`具有最大的域范围，包含了其他的八个域。  
 
 ##EL中的运算符
-与Java中的运算符没有什么区别。差不多的。
+与`Java`中的运算符没有什么区别。差不多的。
 
 ##EL在实际中的应用
 以后再实际中就不要使用request.getParameter()这样的代码了，可以全部使用EL代码予以代替。
