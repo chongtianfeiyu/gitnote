@@ -9304,12 +9304,15 @@ c.隐藏表单域的方式，不推荐使用。
 			throws ServletException, IOException 
 		{
 			String nameInfo=request.getParameter("name");
-			//创建Cookie，然后给其添加内容
+			//创建Cookie，然后给其添加内容，注意，存储几个数据，就要创建几个Cookie
 			Cookie c = new Cookie("nameinfo",nameInfo);
+			Cookie d = new Cookie("ageinfo","15");
 			//设置Cookie的存活时间
 			c.setMaxAge(10000000);
-			//将我们创建好的Cookie发送给客户端
+			d.setMaxAge(10000000);
+			//将我们创建好的所有Cookie都发送给客户端
 			response.addCookie(c);
+			response.addCookie(d);
 >			
 			//重定向跳转到新的页面上
 			response.sendRedirect("MyJsp.jsp");
@@ -9328,7 +9331,11 @@ c.隐藏表单域的方式，不推荐使用。
 	    	}
 	    %>
 	</body>
-	
+
+
+关于Cookie，与Session、application这些不同的是，Session、application都只有一个，无论存几个数据，都只有一个
+但是对于Cookie，存几个数据，就要new几个，而且每一个都要使用response进行发送。  
+
 使用`Session`、`Cookie`存储用户信息的比较，见图`Session_Cookie_Contrast.PNG`：
 
 #Java Web中的JSP
@@ -9706,8 +9713,18 @@ c.隐藏表单域的方式，不推荐使用。
 `EL`中的重点就是这4个`Scope`隐式对象、1个`pageContext`隐式对象与`param、paramValues`隐式对象。后二者是为模型1服务的，所以使用少。重点是前面四个`Scope`。  
 注意一个问题：  
 在`JSP`中，有9个隐式对象：  
-`request,response,page,pageContext,config,aplication,out,session,exception`。  
+`request`:取得客户端提交的数据与系统的信息。  
+`response`:响应给客户端信息。  
+`application`：记录与处理所有上网者共享的数据。  
+`session`：记录与处理上网者个人的数据。  
+`page`：代表目前这个`JSP`网页对象。  
+`pageContext`：访问与处理系统执行时期的各项信息。  
+`config`：取得`JSP`编译之后`Servlet`的信息。  ‘
+`out`：控制数据输出的操作。  
+`exception`:异常处理机制。  
 其中，`pageContext`不仅自己可以存储数据，而且，其还封装了其他的8个对象。也就是说，`pageContext`对象可以设置、获取、存储自己的变量值，而且其还可以获得其他的八个隐式对象，进而通过这些获得的对象去修改、获取、设置、存储这些变量中存储的变量值。  
+`page`、`pageContext`、`config`这三个对象可以用于访问网页执行期间的各种环境信息。同时将当前访问网页当做一个对象进行操作。  
+
 >	
 	PageContext.APPLICATION_SCOPE//获得application对象
 	PageContext.SESSION_SCOPE//获得session对象
@@ -9715,7 +9732,22 @@ c.隐藏表单域的方式，不推荐使用。
 	PageContext.PAGE_SCOPE //获得page对象
 	
 总之，`PageContext`具有最大的域范围，包含了其他的八个域。  
-
+   
+无论是网页中out对象输出还是JavaSe中的输出。一般都使用了缓冲区的概念。也就是说，输出的时候，不是立刻输出到目的地，而是先输出到缓冲区，再输出到目的地。  
+这里就有几个针对缓冲区的操作。无论是哪里的输出，都有这几个方法对缓冲区进行操作。  
+1. `clear()`：用于清空缓冲区，如果在这个方法之前有输出内容，那么使用`clear()`方法之后，那些内容就被从缓冲区清除，不会显示在目的地了。  
+如：  
+>
+	out.println("hello");
+	out.clear();//这样，页面不会有任何的显示，因为使用了clear将缓冲区中储存的hello清空了，所以不会显示出来。
+	
+2. `clearBuffer()`:作用与`clear()`一样，也是清空缓冲区。但是区别在于，`clear()`方法如果缓冲区是空的，就会报出异常。而`clearBuffer()`不会报出异常。  
+3. 	`flush()`：作用是清空缓冲区，但是会将缓冲区的内容全部显示在目的地。这就是它与前两个方法的不同之处。  
+如：  
+>
+	out.println("hello");
+	out.flush();//这样，页面会显示出hello字符串，因为使用了flush]将缓冲区中储存的hello显示出来。
+	
 ##EL中的运算符
 与`Java`中的运算符没有什么区别。差不多的。
 
@@ -9728,7 +9760,7 @@ c.隐藏表单域的方式，不推荐使用。
 由上可知：`EL`的作用就是从`page、request、session、application`中取出各种储存的数据，而对这些数据的处理、控制就需要使用`JSTL`进行完成。  
 
 `JSTL`:`JavaSever Pages Standard Tag Library`,`JSP`标准标签函数库。  
-其实际上包括：
+`JSTL`其实际上包括：
 核心标签库、I18N格式标签库、SQL标签库、XML标签库、函数标签库。  
 但重点掌握的是*核心标签库*。其他的都几乎不用。  
 `JSTL`与`EL`一样，都是用在`JSP`页面中。  
@@ -9738,7 +9770,78 @@ c.隐藏表单域的方式，不推荐使用。
 实际上，无论是`EL`还是`JSTL`，其实际上都是`JSP`的一种子语言而已，目的是为了满足一定的任务与作用，例如，`EL`的作用就是为了取出、输出变量的值，而`JSTL`是为了提供流程控制语句。其作用也和`Java`中相应部分的作用是一样的。都是`JSP`中的一部分。就好比`JSP`也是一种语言一样。  
 `EL`与`JSTL`的作用就是代替`JSP`中的脚本元素与动作元素。所以，我们应该将`JSP`文件中的所有的脚本元素与动作元素(当然指令元素是不能换的)换成`EL、JSTL`语句才好。`JSP`中的这两种元素都可以使用`EL`与`JSTL`予以代替。  
 
+`tag`标签库使用代码示例：  
+>
+	<html>
+		<%@ taglib uri="http://www.tag.net/mytag" prefix="tag"%>
+			//使用tag标签
+			<tag:fortag start="1" end="5">
+				//执行语句……
+			</tag:fortag>
+	</html>
+
+`JSTL`中核心标签库使用代码示例：  
+>
+	<html>
+		<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+			//使用JSTL核心标签
+			//输出一个值
+			<c:out value="hello" />
+			</c:out>
+>			
+			//将变量mk的值设为hello。
+			<c:set value="hello" var="mk" />
+			</c:set>
+>			
+			//将变量mk移除
+			<c:remove var="mk" />
+			</c:remove>
+>			
+			//在此处显示一个url地址
+			<c:url value="www.sina.com" />
+			</c:url>
+>			
+			//在此处显示一个url地址,当在页面中点击这个链接的时候，会将后面的指定参数发送过去。
+			<c:url value="www.sina.com" />
+				<c:param value="hello" var="mk"/>
+				</c:param>
+			</c:url>	
+>
+			//在此处导入一个外部文件(注：只是导入，而不是使用，就好比java中的import功能一样),并将文件内容放在一个变量中。在本文件中就可以使用这个变量将文件内容输出了。
+			<c:import url="hello.jsp" var="varString"/>
+			</c:import>
+>			
+			//本网页被浏览是，被直接重定向到新网页。当然，这里也可以在其里面使用param标签，重定向时传递参数给新网页
+			<c:redirect url="hello.jsp" />
+			</c:redirect>
+>			
+			//使用forEach循环
+			<c:forEach var="theItem" begin="1" end="10"/>
+				${theItem}
+			</c:forEach>
+	</html>
+
 注意：不要误以为`Session`、`request`、`application`这些里面只能放少量的数据，其可以放任何的数据，而且可以传递。例如，就可以在`request`里面放一个`map`或者`list`，再请求转发出去，在另外一个页面中进行使用。都是可以的。
+
+##总结
+`JSP`中提供了5种构建网页内容所需的元素：  
+脚本元素：有`Java`代码构成的`JSP`程序块。  
+指令元素：用于网页相关信息、属性的访问与设置，包括`page(用于设置JSP的网页特性，此指令一般放在JSP最前面)、include(用于将外部HTML、JSP、文本文件加载到当前的JSP网页，可以放在JSP任何地方)、taglib(用于自定义JSP标签)`这几个指令。  
+注意：使用include指令是，外部文件中如果有中文字符，那么在外部文件中也要使用page指令设置中文字符集。  
+
+动作元素：  
+`EL`元素：用于简化脚本元素的网页编写。  
+`JSTL`元素：为`JSP`定义的专门提供网页制作的标签函数库。包含网页运行的所需功能，例如、循环、流程控制、文字格式化、`XML`文件处理、数据库访问等功能。相当于别人替我们定义好了的宏，我们直接使用就可以了。  
+
+注：在`JSP`中，`form`表单里，如果表单属性的`action`没有设置，那么就会默认将本`JSP`页面作为响应页面。  
+在`JSP`中，可以设置字符集格式的地方有三个。  
+1. 文件头，`page`指令中的`ContentType`。  
+2. `request`接收请求的字符集。`request.setContentType()`;  
+3. `response`返回字符集。`response.setContentType()`;功能与`page`指令中`ContentType`是相同的。  
+
+关于`response`的状态码，如果打开的网页正确无误，就会自动发送一个状态码，值为200。  
+
+response中同样与所有的输出一样，具有缓冲区的概念。例如`flushBuffer()`方法等。就是将缓冲区的内容全部输出。  
 
 #Java Web中的自定义标记
 标记示例：  
@@ -9776,7 +9879,7 @@ c.隐藏表单域的方式，不推荐使用。
 
 注：自定义标记的作用，就相当于一个宏一样，通过一个标记来调用与之对应的两个方法。这样就可以实现模块化编程。将`JSP`中的代码抽取出来，放入在模块(标记处理器中的两个方法)之中。  
 
-所谓的`JSTL`就是`Sun`公司给我们开发供我们使用的标签库。我们不用对里面的标签进行自定义，而是可以直接使用。  
+所谓的`JSTL`就是`Sun`公司给我们开发供我们使用的标签库。我们不用对里面的标签进行自定义，而是可以直接使用。JSTL就相当于别人已经替我们定义好了的宏。  
 `Sun`公司已经将这个标签库(核心标签库)里面的标签所对应的标签处理器都写好了(放在`JSTL`的`jar`包里面)。我们直接使用`JSTL`标签即可。  
 这就是为什么我们要使用`JSTL`时必须要导入`JSTL`的`jar`包，因为这个`jar`包里包含了这个标签库里的标签所对应的`tld`文件，该文件里面的就是`JSTL`标签所对应的标签处理器(里面包含了我们想使用的方法)。
 
@@ -10215,7 +10318,16 @@ Answer:
 第二行是样式表处理指令。使用CSS或者XSL样式表。
  
  
- 
+浏览器的功能是编译`HTML`文件中的内容，如果`HTML`中同时含有客户端执行的描述性语言例如：`JavaScript`，那么浏览器同样会对其进行编译。最后将整份网页的执行结果呈现与浏览器窗口中。  
+实际上，所有的网页都是一份存储在网页服务器中的文件。  
+静态网页：单纯使用HTML语法构成的网页。  
+动态网页，依据执行程序所处的位置分为"客户端处理"、"服务器处理"。  
+客户端处理：在HTML语法中假如JavaScript语法。从而让网页产生一些多媒体效果。就是让JS程序在客户计算机中进行处理。  
+服务器端处理：使用PHP、JSP语言等。当客户发出要求的时候，网页服务器会先将这个网页文件进行运行处理(例如JSP网页会先在Java虚拟机中进行处理)，在将处理后的结果发送给客户端的浏览器。服务器处理的有点就是能与用户进行互动，并且能够访问数据库，将执行结果实时响应给用户。JavaScript、JSP这些都是内嵌与HTML的程序语言。  
+
+JavaScript虽然能够达到与客户进行互动的目的，但是功能上有缺陷，就是无法使用整合服务器上的资源，例如文件操作与数据库访问。  
+使用JS的网页只算单纯的动态网页，在客户端执行动态效果。服务器一旦将网页送出，就再也无法与其沟通，无法达到真正的交互目的。客户无法通过客户端的JS来进行服务器上的操作，所以，发展出服务器端网页语言(PHP，JSP等)以解决相关问题。  
+
  
  
 #Structs1
