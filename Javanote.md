@@ -9959,10 +9959,26 @@ Ajax：Asysnomous+JavaScript++XML
 
 
 ##Ajax工作原理
-在`AJax`技术中，客户端浏览器与服务器之间不是直接发送请求的，而是通过中间的一个控件。  
-`Ajax`代码实际上就是`JS`代码，都是写在`JSP`文件中的`JS`代码。
-我们要使用`Ajax`，步骤如下：  
-1. 需要创建一个`XMLHttpRequest`对象。根据不同的浏览器核心，使用不同的代码创建该对象。如图所示：  
+Ajax：一种不用刷新整个页面便可与服务器通讯的办法。  
+传统的Web系统，客户端向客户端发送一个请求，服务器返回整个页面，如此反复。  
+同步传输与异步传输的不同点：  
+同步传输技术中，在服务器没有处理完客户端请求之前，是不会对客户端作出回应。客户端在此阶段也不能继续发送请求。  
+在异步传输中，即使服务器还没有开始处理客户端请求，只要其**接受到了**客户端请求，那么就会立刻调用回调函数告诉客户端已经接收到请求。然后服务器端再去开始处理客户端请求、响应客户端请求，而在服务器处理客户端请求的时候，客户端可以继续向服务器发送请求。  
+
+在Ajax模型中，数据在客户端与服务器之间独立传输，服务器不再返回一整个页面。  
+不用刷新整个页面既可与服务器进行通信的方法有：  
+1. flash  
+1. java applet  
+2. 框架  
+3. 隐藏的iframe  
+4. xmlHttpRequest对象，也就是Ajax技术。该对象是对JS的扩展，用于网页与服务器之间的通信。是创建Ajax的最佳选择。  
+在`AJax`技术中，客户端浏览器与服务器之间不是直接发送请求的，而是通过中间的一个控件。这个控件也就是Ajax引擎。  
+JS中独立调用Ajax引擎。  
+`Ajax`代码实际上就是`JS`代码，都是写在`JSP`文件中的`JS`代码。Ajax工作原理见图`Ajax工作原理`。  
+Ajax中包含的技术见图`Ajax中包含的技术`。  
+使用Ajax技术时，客户端、Ajax引擎、服务器之间传输数据是使用XML文件进行信息的传递的。  
+当然Ajax技术也存在缺陷，见图`Ajax缺陷`
+1. 我们要使在JS代码中，创建一个`XMLHttpRequest`对象。根据不同的浏览器核心，使用不同的代码创建该对象。在JS代码中创建该对象，然后用户通过按钮之类的调用这些JS代码创建对象，在通过这个对象将信息发送给服务器，发送完成后，就会自动调用回调函数告诉客户端已经发送。如图所示：  
 2. 设置回调函数。什么叫回调函数？当服务器端返回了结果之后，需要告诉客户端返回结果已经到达，这就是回调函数的作用，服务器通知客户端返回结果已经到达。  
 3. 初始化`XMLHttpRequest`组件。设置`url`、请求方式、是否异步这些属性。  
 4. 发送请求。
@@ -9975,7 +9991,7 @@ Ajax：Asysnomous+JavaScript++XML
 >	
 	<script type="text/javascript">
 	    var xmlHttpRequest;
-	    //创建xmlHttpRequest对象的方法
+	    //创建xmlHttpRequest对象
 	    function createXMLHttpRequest()
 	    {
 	    	if(window.ActiveXObject)
@@ -10000,12 +10016,13 @@ Ajax：Asysnomous+JavaScript++XML
 	    {
 	    	//1.创建xmlHttpRequest对象这个对象是客户端与服务器端之间的中介，也是缓冲区域。
 	    	xmlHttpRequest = createXMLHttpRequest();
-	    	//2.设置回调函数，这个函数就是当服务器端作出回应之后，调用的方法，在该方法中取出服务器端返回给xmlHttpRequest的回应，然后将这个回应返回给客户端
+	    	//2.设置回调函数，这个函数就是当服务器端接收到客户端请求之后，调用的方法，在该方法中判断服务器接收客户端请求的状态，然后依据接收信息的状态予以响应。每一次服务器接收客户端信息的状态的改变，都会触发这个回调函数，具体会对哪些状态予以回应则决定于回调函数中的代码。也就是说，客户端每发送一次消息给服务器，就会激发、调用这个回调函数5次，因为服务器从开始接受这个请求到接受请求完成(也就是开始处理请求之前)这段时间内，这个接受信息的状态会发生5次变化(0~4),每次变化都会调用一次这个回调函数。在这个回调函数内部根据这个信息状态进行响应的处理。
 	    	xmlHttpRequest.onreadystatechange = haolejiaowo;
 	    	var url = "${pageContext.request.contextPath}/RandomNumberServlet";
-	    	//3.初始化.此处就是将请求通过这个xmlHttpRequest组件发送至一个Servlet。xmlHttpRequest只是一个中介。客户端请求不是直接发送到服务器端的Servlet中，而是先发送到xmlHttpRequest中的。再由xmlHttpRequest将这个Request发送到服务器端。
-	    	xmlHttpRequest.open("get",url,true);
+	    	//3.初始化，建立与服务器端的连接.此处就是将请求通过这个xmlHttpRequest组件发送至一个Servlet(也就是url所指的服务器中的那个Servlet)进行处理。xmlHttpRequest只是一个中介。客户端请求不是直接发送到服务器端的Servlet中，而是先发送到xmlHttpRequest中的。再由xmlHttpRequest将这个Request发送到服务器端。
+	    	xmlHttpRequest.open("get","./testServlet",true);
 	    	//4.客户端通过这个xmlHttpRequest组件发送请求至服务器端的Servlet。
+	    	//总之，整个方法调用顺序是：客户端发送一个请求给服务器端的xmlHttpRequest对象，在这个请求的传输过程中要调用5次回调函数，然后请求传送完毕之后，xmlHttpReques对象就会将这个请求发送给Servlet进行处理，就是调用该Servlet中的doPost()或者doGet(）方法。
 	    	xmlHttpRequest.send(null);
 	    }
 >	    
@@ -10389,12 +10406,41 @@ Answer:
 `JavaScript`虽然能够达到与客户进行互动的目的，但是功能上有缺陷，就是无法使用整合服务器上的资源，例如文件操作与数据库访问。  
 使用JS的网页只算单纯的动态网页，在客户端执行动态效果。服务器一旦将网页送出，就再也无法与其沟通，无法达到真正的交互目的。客户无法通过客户端的JS来进行服务器上的操作，所以，发展出服务器端网页语言(`PHP`，`JSP`等)以解决相关问题。  
 
+在`JSP`中调用另一个`JSP`或者`Servlet`的时候，比如，在表单的`action`中设置为另一个`Servlet`或者`JSP`的时候，实际上就是重定向。  
+
  
 类中的静态块一般不推荐使用。  
+
+代码`${pageContext.request.contextPath}`的作用是取出部署的应用程序名，这样不管如何部署，所用路径都是正确的。 
 
 #Structs1
 -----
 一般已经很少使用`Structs1`进行新项目了，一般都是老项目才用的。重点是`Structs2`,但二者是完全不同的东西，没有联系。  
 ##自定义内存数据库  
 定义一个内存数据库的作用是，我们在这个内存数据库(实际上就是一个链表)中假如一些数据，以供我们后面写代码作数据库之用，免得每次都的使用数据库，进行数据库的操作，太过于麻烦。自己使用一个链表来代替数据库，方便一些。只是内存数据会在关闭程序之后就消失，回归到原始的样子。  
+
+##基础知识
+框架：就好比写简历时使用的模板。简化应用程序的开发。写简历时使用的模板就是一个框架。使我们不用从头造轮子。框架是个半成品，提供一个公共结构。有一个比较牛的组织开发的，大家都认可他们的框架，都去学习他们的框架。这就是Structs、Spring这些框架的来源。  
+
+Structs1实际上是MVC思想的一种实现。  
+Structs1刚开始出现的时候是最好的MVC框架，现在已经不是最好的。比如Structs2就比它好。我们学习它是因为它出现得最早。  
+MVC思想的实现框架有：Structs1、WebWork(后变为Structs2)、Structs2、Spring MVC、JSF(实际上是一个标准，基于事件驱动，模仿ASP.net)、Tapestry(基于事件驱动)。  
+Structs1使用了jsp、Servlet、xml、java解析ml、反射等技术。  
+
+注意：在请求转发的时候，会自动给你加上项目名称，所以我们不用再加上contextPath。
+总之，在Web项目中，尽量都不加ContextPath，都能自己找到。
+
+#SSH
+Structs1(2)、Spring、Hibernate三者都是轻量级框架  
+Structs1(2)：实现MVC思想。主要做表示层。  
+Spring：实现了AOP，面向方面编程思想。主要做业务层，但其也提供了Spring MVC可以做表示层，还提供了模板做持久化层。  
+hibernate：实现ORM思想。主要做持久化层。  
+三个框架的功能偏重是不同的。  
+
+Java EE框架。实现了传统的Java EE框架(JSF
+、EJB等)的特征,无需专业的Java Web容器，使用简单的Java Web服务器即可。  
+轻量级的Java EE应用框架:以传统的JSP作为表现层技术，以系列开源框架作为MVC层，中间层，持久层解决方案。  
+传统的Web中，需要等到服务器作出回应之后，才能继续进行请求，这就是传统的阻塞式调用。Ajax技术是一种异步处理方法，允许Servlet发动新线程去进行新的活动。这样可以避免等待。  
+Model1模式下，整个Web应用都几乎都是由JSP页面构成，JSP页面接收处理客户端请求，对请求处理后直接作出回应。使用少量的JavaBean来处理数据库连接、数据库访问等操作。模式简单，适用于快速开发小规模应用项目。但是，JSP页面身兼View、Controller两种角色，将控制逻辑与表现逻辑混为一谈，导致代码复用性低，维护难度高。  
+Model2模式是基于MVC架构的设计模式，在Model2中，Servlet作为前端控制器，负责接收客户端发送的请求，在Servlet中只包含控制逻辑与简单的前端处理。然后调用后端的JavaBean完成实际的逻辑处理。最后转发到相应的JSP页面处理显示逻辑。JavaBean作为Model，JSP作为View，Servlet作为Controller。
 
