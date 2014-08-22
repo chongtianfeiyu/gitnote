@@ -96,3 +96,119 @@ DTD元素见图`DTD元素`。
 同样可以在DTD文件中来设置限制XML文件中每一个元素的属性，见图`XML属性`  
 
 对一个XML文件进行约束需要3个文件，DTD文件用于描述XML文件必须满足的条件，check文件用于运行，作用是检查xml文件中的元素是否满足DTD文件中的要求；xml文件就是描述数据。  我们依据DTD文件写完一个xml文件，应该再写一个check文件，当然，这个检验必须是使用IE浏览器才能使用的，因为这个check文件中使用的是IE浏览器中内嵌的一个对象进行XML文件的检验。用于判断、检查xml文件是否有错误。见git/xml目录下3个文件。  
+在DTD文档中，可以定义一个实体，以后可以在XML文档中引用这个实体，实际上就是对一段内容的引用。  
+
+示例如下：  
+>
+	myClass2.xml 
+	<?xml version="1.0" encoding="utf-8" ?>
+	<!DOCTYPE 班级 SYSTEM "myClass.dtd">
+	<班级>
+		<学生  学号="a123" 性别="女" 大哥="a0002">
+			<名字>周星驰 &intro;</名字>
+			<年龄>23</年龄>
+			<介绍>学习刻苦 &intro; &intro;</介绍>
+		</学生>
+		<学生 住址="天津" 性别="男" 学号="a0002" 大哥="a0002 a0003">
+			<名字>林青霞</名字>
+			 <年龄>32</年龄>
+			<介绍>&intro;是一个好学生</介绍>
+		</学生>
+		<学生 住址="大观园"  性别="男" 学号="a0003" 大哥="a0002">
+			<名字>贾宝玉</名字>
+			 <年龄>16</年龄>
+			<介绍>是一个好学生 &intro;</介绍>
+		</学生>
+	</班级>
+>
+	myClass.dtd
+	<!ELEMENT 班级 (学生+)>
+	<!ENTITY % tagname "名字">
+	<!ENTITY % tagname1 "名字gg">
+	<!ENTITY % tagname2 "名字kk">
+	<!ELEMENT 学生 (%tagname;,年龄,介绍)>
+	<!ATTLIST 学生 
+		住址 CDATA #IMPLIED
+		学号 ID	 #REQUIRED
+		大哥 IDREFS #REQUIRED
+		性别 (男|女) #REQUIRED
+		公司 CDATA #FIXED "ibm"
+		>
+	<!ELEMENT %tagname; (#PCDATA)>
+	<!ELEMENT 年龄 (#PCDATA)>
+	<!ELEMENT 介绍 (#PCDATA)>
+	<!ENTITY intro "这是一个好同志呀!">	
+>	
+	check.html
+	<html>
+	<head>
+	<script language="javascript">
+	var xmldom= new ActiveXObject("Microsoft.XMLDOM");
+	xmldom.validateOnParse=true;
+	xmldom.load("myClass2.xml");
+	document.writeln("错误信息是:"+xmldom.parseError.reason);
+	document.writeln("错误行号:"+xmldom.parseError.line);
+	</script>
+	</head>
+	<body>
+	</body>
+	</html>	
+	
+##Java中对XML文件的解析
+XML解析分为：dom解析和sax解析  
+dom：(Document Object Model, 即文档对象模型) 是 W3C 组织推荐的处理 XML 的一种方式。  
+sax： (Simple API for XML) 不是官方标准，但它是 XML 社区事实上的标准，几乎所有的 XML 解析器都支持它。  
+
+###Dom解析：
+XML解析器：Crimson(sun)、Xerces (ibm->apache)、Aelfred2(dom4j)。  
+XML解析API：Jaxp(sun)、dom4j，是进行DOM解析。  
+
+DOM模型(document object model)
+DOM解析器在解析XML文档时，会把文档中的所有元素，按照其出现的层次关系，解析成一个个Node对象(节点)。
+在dom中，节点之间关系如下：
+位于一个节点之上的节点是该节点的父节点(parent)
+一个节点之下的节点是该节点的子节点（children） 
+同一层次，具有相同父节点的节点是兄弟节点（sibling） 
+一个节点的下一个层次的节点集合是节点后代(descendant)
+父、祖父节点及所有位于节点上面的，都是节点的祖先(ancestor) 
+
+在Java中使用Dom4J来对XML文件进行解析。获得根节点之后，就可以继续向下解析。解析方法如下例：  
+>
+	import java.io.File;
+	import java.io.FileNotFoundException;
+	import org.dom4j.Document;
+	import org.dom4j.DocumentException;
+	import org.dom4j.Element;
+	import org.dom4j.io.SAXReader;
+	public class Dom4JTest
+	{
+		public static void main(String[] args) throws DocumentException, FileNotFoundException
+		{
+			SAXReader reader = new SAXReader();
+			File f = new File("D://git//git_note//XML//myClass2.xml");  
+	        Document document = reader.read(f); 
+	        Element e = document.getRootElement();
+	        String str= e.getName();
+	        System.out.println(str);
+		}
+	}
+
+可以使用Dom4J对XML文档中的节点进行修改、删除、增加等操作。  
+
+XPath：路径查询语言，用于在XML文件中查找信息的语言。其通过节点与属性进行查询，简化了XML中查找节点的过程。其语法类似与正则表达式。  
+一个XPath就是一个字符串，就好比，一个正则表达式就是一个字符串，用这个字符串在一个长字符串中查找符合正则表达式的部分。  
+同样，一个XPath也是个字符串，用于在XML中查找符合XPath的节点。所以，XPath有其自己的语法规则，就好比正则表达式有其自己的语法规则一样。  
+要使用JXen.jar包对XPath进行解析使用。
+###Sax解析
+在使用 DOM 解析 XML 文档时，需要读取整个 XML 文档，在内存中构架代表整个 DOM 树的Doucment对象，从而再对XML文档进行操作。此种情况下，如果 XML 文档特别大，就会消耗计算机的大量内存，严重情况下可能还会导致内存溢出。  
+SAX解析允许在读取文档的时候，即对文档进行处理，而不必等到整个文档装载完才会文档进行操作。
+通过继承DefaultHandler ,来开发一个sax解析器。  
+
+Sax解析步骤：  
+1. 使用SAXParserFactory创建SAX解析工厂.  
+2. SAXParserFactory spf = SAXParserFactory.newInstance();  
+3. 通过SAX解析工厂得到解析器对象	  
+4. SAXParser sp = spf.newSAXParser();  
+5. 将解析对象和事件处理器对象关联`sp.parse("src/myClass.xml", new MyHander());`
+
+
