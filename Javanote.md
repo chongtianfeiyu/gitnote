@@ -1514,6 +1514,141 @@ B、在外部类之外使用static内部类的时候。
 #Java中的枚举
 -------
 枚举：用于代表实例数量是固定的**特殊类**。有点像单例类，只不过**有多个实例**。枚举非常重要。  
+##提出问题
+实际中，有些类的值必须尤其范围的。
+比如我们给Person{private String sex;} 这是如果你不控制，sex可以为任意值。但实际上，sex值是有范围的。
+##解决方法
+###传统解决方法1
+>
+	//传统解决方法1
+	class Person{
+		private String name;
+		private String sex;
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getSex() {
+			return sex;
+		}
+		public void setSex(String sex) {
+			//看看sex是不是我需要的,事后诸葛亮.
+			if(!sex.matches("man|woman")){
+				//不对
+				throw new RuntimeException("性别值不对");
+				}
+			this.sex = sex;
+		}
+	}
+
+###传统解决方法2
+>
+	//定义一个Sex类,目标是让使用者，不能让其创建Sex对象
+	final class Sex{
+		public static Sex man=new Sex("男");    //man->"男"
+		public static Sex woman=new Sex("女");  //woman->"女";
+		public static Sex middle=new Sex("ddd");
+		private String val;
+		public String getVal() {
+			return val;
+		}
+		private Sex(String val){
+			this.val=val;
+		}
+	}
+
+###直接使用enum来解决
+>
+	//直接使用enum类型
+	enum Sex1{
+		woman,man;
+	}
+
+##使用示例	
+案例:1
+>
+	//用枚举类型来Grade
+	enum Grade{
+		a("优秀"),b("良好"),c("一般"),d("及格"),e("不及格");//构造函数.
+		private String val;
+		public String getVal() {
+			return val;
+		}
+		private Grade(String val){
+			this.val=val;
+		}
+	}
+
+案例:2, 通过内部类来实现打印对应信息
+>
+	enum Grade2{
+		a{
+			@Override
+			public String getInfo() {
+				// TODO Auto-generated method stub
+				return "优秀";
+			}
+		}
+		,b{
+			@Override
+			public String getInfo() {
+				// TODO Auto-generated method stub
+				return "良好";
+			}
+		}
+		,c{
+			@Override
+			public String getInfo() {
+				// TODO Auto-generated method stub
+				return "一般";
+			}
+		}
+		,d{
+			@Override
+			public String getInfo() {
+				// TODO Auto-generated method stub
+				return "及格";
+			}
+		}
+		,e{
+			@Override
+			public String getInfo() {
+				// TODO Auto-generated method stub
+				return "不及格";
+			}
+		}
+		;
+		//提供一个函数去返回a对应的具体的值.
+		abstract public  String getInfo();
+	}
+
+案例3:把enum如何使用到 switch
+>
+	Grade g=Grade.a;
+		switch(g){
+		case a:
+			System.out.println("aaa");
+			break;
+		case b:
+			System.out.println("bbb");
+			break;
+	}
+	
+枚举的几个常用方法举例:
+>
+	WeekDay wd=WeekDay.Tue;
+	System.out.println(wd.name()+" "+wd.ordinal());
+>			
+	WeekDay wd2=wd.valueOf("Mon");
+	System.out.println(wd2.getLocaleDate());
+>			
+	//遍历枚举值
+	WeekDay wds[]=wd.values();
+	for(WeekDay t: wds){
+			System.out.println(t.getLocaleDate());
+	}
 语法示例如下：
 >
 	[修饰符] enum 枚举名
@@ -2636,7 +2771,10 @@ b. loadFactor：负载因子。
 `HashSet`的底层是依靠`HashMap`实现的，`HashMap`依靠`hash`算法以确定在其底层数组中的位置。  
 `TreeSet`的底层是依靠`TreeMap`实现的，`TreeSet`底层就是一个**红黑树**。
   
-常用的实现了`Map`接口的类有3个：`HashMap`与`TreeMap`、`HashTable`。  
+常用的实现了`Map`接口的类有3个：`HashMap`与`TreeMap`、`HashTable`。 
+使用map.keySet:可以取出Map之中所有的key集合。  
+使用map.entrySet:可以去除Map之中的所有键-值对的集合。  
+
 ### `HashMap`实现类  
 会根据其存、取的元素对象的`key`值的`hashCode()`方法的返回值来确定这个`key`值的存放位置，也随之确定`key-value`对的储存位置。  
 
@@ -8918,7 +9056,23 @@ f. 测试类：
 ###建立一个`Servelet`的操作步骤：
 1. 创建一个类，继承自`HttpServelet`。  
 2. `OverRide`两个方法，`doGet()`与`doPost()`。  
-3. 去`web.XML`配置文件中进行注册配置`servlet`。此步很重要。  
+3. 去`web.
+4. 
+5. 
+6. 
+7. 
+8. 
+9. 
+10. 
+11. 
+12. 
+13. 
+14. 
+15. 
+16. 
+17. 
+18. 
+19. `配置文件中进行注册配置`servlet`。此步很重要。  
 
 创建`Servlet`的示例代码：  
 >
@@ -9987,6 +10141,10 @@ Ajax中包含的技术见图`Ajax中包含的技术`。
 该组件的状态也就是：`XMLHttpRequest.readyState`。有下面几个值：0(未初始化)、1(初始化)、2(发送请求)、3(开始接受结果，也就是开始接受服务器返回结果，返回结果就是一个字符串，就是`HTML`文档)、4(接受结果完毕)。  
 `XMLHttpRequest`状态发生一次改变，就调用一次回调函数。
 
+Ajax技术，实际上就是利用JS可以通过编程DOM修改部分的页面而不用修改全部页面的特性来进行的。重点是在JS中对页面的部分元素进行操作，而不必等待后面的Servlet、JSP这些代码的响应。因为Servlet、JSP响应都需要刷新全局的页面，而且速度慢一些(服务器计算与网络传输的原因)。  
+所以Ajax的技术原理就是：在客户端发送信息之后，在服务器**接收信息的过程中**（从开始接受到接收完毕）就通过JS中的Ajax技术里面的回调函数对页面进行局部的修改，而不必等待服务器的Servlet/JSP返回结果对整个页面进行全局的刷新。这样就提高了交互的速度。当服务器接收完请求之后，就立刻调用JS中的回调函数，与此同时，让相应的Servlet/JSP对请求进行处理。处理结果再通过Ajax技术中的XMLHttpRequest对象发送给客户端，而不是直接从Servlet这些发送给客户端。  
+
+
 `Ajax`使用代码示例：  
 >	
 	<script type="text/javascript">
@@ -10023,6 +10181,7 @@ Ajax中包含的技术见图`Ajax中包含的技术`。
 	    	xmlHttpRequest.open("get","./testServlet",true);
 	    	//4.客户端通过这个xmlHttpRequest组件发送请求至服务器端的Servlet。
 	    	//总之，整个方法调用顺序是：客户端发送一个请求给服务器端的xmlHttpRequest对象，在这个请求的传输过程中要调用5次回调函数，然后请求传送完毕之后，xmlHttpReques对象就会将这个请求发送给Servlet进行处理，就是调用该Servlet中的doPost()或者doGet(）方法。
+	    	//send方法里传送的数据(注意只有对于open里面使用post请求的时候才能通过send方法传送数据，只是还需要在send方法之前加上一句代码。对于get请求是不能通过send方法传送数据的)JS中传递之后，可以在Servlet/JSP中通过Request中的getParameter()方法取出相应的数据。在这里给Servlet/JSP传递数据就类似与表单提交的情况一样。
 	    	xmlHttpRequest.send(null);
 	    }
 >	    
@@ -10332,7 +10491,18 @@ Answer:
 `XML`:扩展性(`Extended`)标识语言，用于标识描述数据信息。其是`SGML`标识语言的简化。  
 再，由于`HTML`语言的语法不够严谨，所以在`HTML`4.0.1版本之后，将其过渡至`XHTML`(扩展性`Extended`）语言,`XHTML`更加严谨、规范。`XHTML`可以理解为是`HTML`向`XML`语言过渡的中间产物。  
 
+需求1  
+两个程序间进行数据通信？例如，qq聊天的时候，我们原来使用字符串的形式进行客户端间的通信，但是字符串形式的表现能力太差，所以，实际上是使用XML文件进行客户端之间的通信。  
+需求2  
+给一台服务器，做一个配置文件，当服务器程序启动时，去读取它应当监听的端口号、还有连接数据库的用户名和密码?  
 其作用就是：方便应用程序获得想要的信息。  
+需求3  
+xml可以充当小型的数据库。  
+xml文件做小型数据库，也是不错的选择，我们程序中可能用到一些经常要人工配置的数据，如果放在数据库中读取不合适(因为你要增加维护数据库工作)，则可以考虑直接用xm来做小型数据库 【比如msn中保存用户聊天记录就是用xml文件的】，而且直接读取文件显然要比读取数据库快。
+
+
+XML语言出现的根本目标在于描述在现实生活中经常出现的有关系的数据。  
+在XML语言中，它允许用户自定义标签。一个标签用于描述一段数据；一个标签可分为开始标签和结束标签，在开始标签和结束标签之间，又可以使用其它标签描述其它数据，以此来实现数据关系的描述。  
 
 `HTML`与`XML`之间的区别在于：  
 1. `HTML`是固定标识，只能写它能识别的标识。`XML`中的标签可以自由定义。  
@@ -10347,6 +10517,8 @@ Answer:
 
 `XML`是被设计用于描述数据的，重点是：什么是数据，如何存放数据。描述相关。  
 `HTML`是被设计用来显示数据的，重点是：显示数据以及如何更好的显示数据。显示相关。  
+实际上XML文档中，元素的属性部分也可以写在元素里面作为元素自己的一个子元素(节点)进行使用的。  
+注意：当一个属性的属性值既有单引号，又有双引号的时候，**“**相当于**&quot;**。'相当于aqos;
 
 `XML`文档同样可以引用`CSS`样式表。  
 `XML`文档还可以引用`XSL`样式表。  
@@ -10425,7 +10597,7 @@ Answer:
 Structs1实际上是MVC思想的一种实现。  
 Structs1刚开始出现的时候是最好的MVC框架，现在已经不是最好的。比如Structs2就比它好。我们学习它是因为它出现得最早。  
 MVC思想的实现框架有：Structs1、WebWork(后变为Structs2)、Structs2、Spring MVC、JSF(实际上是一个标准，基于事件驱动，模仿ASP.net)、Tapestry(基于事件驱动)。  
-Structs1使用了jsp、Servlet、xml、java解析ml、反射等技术。  
+Structs1使用了jsp、Servlet、xml、java解析xml、反射等技术。  
 
 注意：在请求转发的时候，会自动给你加上项目名称，所以我们不用再加上contextPath。
 总之，在Web项目中，尽量都不加ContextPath，都能自己找到。
