@@ -172,6 +172,7 @@ DOM解析器在解析XML文档时，会把文档中的所有元素，按照其�
 一个节点的下一个层次的节点集合是节点后代(descendant)
 父、祖父节点及所有位于节点上面的，都是节点的祖先(ancestor) 
 
+####使用Dom4J来对XML文件进行解析
 在Java中使用Dom4J来对XML文件进行解析。获得根节点之后，就可以继续向下解析。解析方法如下例：  
 >
 	import java.io.File;
@@ -198,17 +199,113 @@ DOM解析器在解析XML文档时，会把文档中的所有元素，按照其�
 XPath：路径查询语言，用于在XML文件中查找信息的语言。其通过节点与属性进行查询，简化了XML中查找节点的过程。其语法类似与正则表达式。  
 一个XPath就是一个字符串，就好比，一个正则表达式就是一个字符串，用这个字符串在一个长字符串中查找符合正则表达式的部分。  
 同样，一个XPath也是个字符串，用于在XML中查找符合XPath的节点。所以，XPath有其自己的语法规则，就好比正则表达式有其自己的语法规则一样。  
-要使用JXen.jar包对XPath进行解析使用。
+要添加JXen.jar包以使用XPath。  
+
+####使用Jaxp进行XML的Dom解析  
+步骤也是先获得Document对象再使用。  
+JAXP 开发包是J2SE的一部分，它由javax.xml、org.w3c.dom 、org.xml.sax 包及其子包组成
+在 javax.xml.parsers 包中，定义了几个工厂类，程序员调用这些工厂类，可以得到对xml文档进行解析的 DOM 或 SAX 的解析器对象。  
+
+使用步骤：  
+1. 调用 DocumentBuilderFactory.newInstance() 方法得到创建 DOM 解析器的工厂。  
+2. 调用工厂对象的 newDocumentBuilder方法得到 DOM 解析器对象。  
+3. 调用 DOM 解析器对象的 parse() 方法解析 XML 文档，得到代表整个文档的 Document 对象，进行可以利用DOM特性对整个XML文档进行操作了。
+
+Jaxp解析XML代码示例：  
+>
+	import java.io.File;
+	import java.io.IOException;
+	import javax.xml.parsers.DocumentBuilder;
+	import javax.xml.parsers.DocumentBuilderFactory;
+	import javax.xml.parsers.ParserConfigurationException;
+	import org.w3c.dom.Document;
+	import org.w3c.dom.Element;
+	import org.xml.sax.SAXException;
+	public class JaxpTest
+	{
+		public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
+		{
+			DocumentBuilderFactory factory =
+					DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			File f = new File("D://git//git_note//XML//myClass2.xml");
+			Document document = builder.parse(f);
+			Element e = document.getDocumentElement();
+	        String str= e.getNodeName();
+	        System.out.println(str);
+		}
+	}
+
+同样可以进行增加、删除等操作。  
+
 ###Sax解析
+Jaxp中也可用于进行sax解析。  
+
 在使用 DOM 解析 XML 文档时，需要读取整个 XML 文档，在内存中构架代表整个 DOM 树的Doucment对象，从而再对XML文档进行操作。此种情况下，如果 XML 文档特别大，就会消耗计算机的大量内存，严重情况下可能还会导致内存溢出。  
 SAX解析允许在读取文档的时候，即对文档进行处理，而不必等到整个文档装载完才会文档进行操作。
 通过继承DefaultHandler ,来开发一个sax解析器。  
 
-Sax解析步骤：  
-1. 使用SAXParserFactory创建SAX解析工厂.  
-2. SAXParserFactory spf = SAXParserFactory.newInstance();  
-3. 通过SAX解析工厂得到解析器对象	  
-4. SAXParser sp = spf.newSAXParser();  
-5. 将解析对象和事件处理器对象关联`sp.parse("src/myClass.xml", new MyHander());`
+sax是一种推式的机制,你创建一个sax 解析器,解析器在发现xml文档中的内容时就告诉你(把事件推给你). 如何处理这些内容，由程序员自己决定。
+在基于sax 的程序中,有五个最常用sax事件处理方法：  
+1. startDocument() ----> 告诉你解析器发现了文档的开始,告诉你解析器开始扫描文档.  
+2. endDocument() ---> 告诉你解析器发现了文档尾  
+3. startElement()------>  告诉你解析器发现了一个起始标签,该事件告诉你元素的名称,该元素所有的属性名和值.  
+4. character() -----> 告诉你解析器发现了一些文本,将得到一个字符数组, 该数组的偏移量和一个长度变量,有这三个变量你可以得到解析器所发现的文本.  
+5. endElement()-----> 告诉你解析器发现了一个结束标签,该事件告诉你元素的名称  
 
+
+Sax解析步骤：  
+1. 使用SAXParserFactory创建SAX解析工厂。`SAXParserFactory spf = SAXParserFactory.newInstance();`  
+2. 通过SAX解析工厂得到解析器对象。`SAXParser sp = spf.newSAXParser();`  
+3. 将解析对象和XML文件、事件处理器对象关联。`sp.parse("src/myClass.xml", new MyHander());`在使用Sax解析xml文件的时候，是采用事件驱动的解析方式，对事件的处理方法都封装在事件处理器中，例如，解析到xml文件的结尾的时候，就会启动该事件处理器对象中封装的endDocument()方法。
+
+Sax解析一般只有读取，没有删除、修改。Sax解析是XML文件解析中最简单的读取方式了。  
+Sax解析代码示例：  
+>
+	import java.io.File;
+	import java.io.IOException;
+	import javax.xml.parsers.ParserConfigurationException;
+	import javax.xml.parsers.SAXParser;
+	import javax.xml.parsers.SAXParserFactory;
+	import org.xml.sax.Attributes;
+	import org.xml.sax.SAXException;
+	import org.xml.sax.helpers.DefaultHandler;
+	class myHandler extends DefaultHandler
+	{
+		@Override
+		public void startDocument() throws SAXException
+		{
+			System.out.println("startDocument");
+			super.startDocument();
+		}
+		@Override
+		public void endDocument() throws SAXException
+		{
+			System.out.println("endDocument");
+			super.endDocument();
+		}
+		@Override
+		public void startElement(String uri, String localName, String qName,
+				Attributes attributes) throws SAXException
+		{
+			System.out.println("startElement");
+			super.startElement(uri, localName, qName, attributes);
+		}
+		@Override
+		public void endElement(String uri, String localName, String qName)
+				throws SAXException
+		{
+			System.out.println("endElement");
+			super.endElement(uri, localName, qName);
+		}
+	}
+	public class SaxTest
+	{
+		public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
+		{
+			SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+			SAXParser saxParser = saxParserFactory.newSAXParser();
+			saxParser.parse(new File("D://git//git_note//XML//myClass2.xml"),new myHandler());
+		}
+	}
 
