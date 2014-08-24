@@ -142,7 +142,7 @@ rpm -ivh .rpm
 
 
 
-
+set CURRENT DIR=%CD% //将路径设置为当前目录
 
 
 

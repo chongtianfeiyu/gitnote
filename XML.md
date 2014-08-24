@@ -196,7 +196,7 @@ DOM解析器在解析XML文档时，会把文档中的所有元素，按照其�
 
 可以使用Dom4J对XML文档中的节点进行修改、删除、增加等操作。  
 
-XPath：路径查询语言，用于在XML文件中查找信息的语言。其通过节点与属性进行查询，简化了XML中查找节点的过程。其语法类似与正则表达式。  
+XPath：路径查询语言，用于在XML文件中查找信息的语言。其通过节点与属性进行查询，简化了XML中查找节点的过程(在没有使用XPath时，查找每一个元素的时候需要一层一层地查找，速度很慢)。其语法类似与正则表达式。  
 一个XPath就是一个字符串，就好比，一个正则表达式就是一个字符串，用这个字符串在一个长字符串中查找符合正则表达式的部分。  
 同样，一个XPath也是个字符串，用于在XML中查找符合XPath的节点。所以，XPath有其自己的语法规则，就好比正则表达式有其自己的语法规则一样。  
 要添加JXen.jar包以使用XPath。  
@@ -309,3 +309,67 @@ Sax解析代码示例：
 		}
 	}
 
+#XML Schema
+XML Schema： 也是一种用于定义和描述 XML 文档结构与内容的模式语言，其出现是为了克服 DTD 的局限性。  
+功能等价与DTD文档。同样，只要求通过Schema文件写出对应的XML文档即可。  
+
+XML Schema VS DTD：  
+XML Schema符合XML语法结构。  
+DOM、SAX等XML API很容易解析出XML Schema文档中的内容。  
+XML Schema对名称空间支持得非常好。  
+XML Schema比XML DTD支持更多的数据类型，并支持用户自定义新的数据类型。  
+XML Schema定义约束的能力非常强大，可以对XML实例文档作出细致的语义限制。  
+XML Schema不能像DTD一样定义实体，比DTD更复杂，但Xml Schema现在已是w3c组织的标准，它正逐步取代DTD。  
+
+
+XML Schema 文件自身就是一个XML文件，但它的扩展名通常为.xsd。
+一个XML Schema文档通常称之为模式文档(约束文档)，遵循这个文档书写的xml文件称之为实例文档。
+和XML文件一样，一个XML Schema文档也必须有一个根结点，但这个根结点的名称为Schema。
+编写了一个XML Schema约束文档后，通常需要把这个文件中声明的元素绑定到一个ＵＲＩ地址上，在XML Schema技术中有一个专业术语来描述这个过程，即把XML Schema文档声明的元素绑定到一个名称空间上，以后XML文件就可以通过这个URI（即名称空间）来告诉解析引擎，xml文档中编写的元素来自哪里，被谁约束。
+
+Schema文档：myclass.xsd  
+>
+	<?xml version="1.0" encoding="UTF-8" ?> 
+	<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+						  targetNamespace="http://www.itcast.cn"
+						  elementFormDefault="qualified">
+		<xs:element name=‘班级' >
+			<xs:complexType>
+				<xs:sequence maxOccurs='unbounded' >
+					<xs:element name=‘学生' >
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name=‘名字' type='xs:string' />
+								<xs:element name=‘年龄' type='xs:integer' />
+								<xs:element name=‘介绍' type='xs:string' />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+	</xs:schema>
+
+其中targetNamespace，表示将这个xsd文件中的所有元素都绑定到targetNamespace指向的命名空间中。类似于包的概念。  
+这里的xs，指向另外一个命名空间，这个命名空间和targetNamespace这个命名空间不同，targetNamespace这个指的是自己定义的元素。而xs指向的命名空间中包含的是element、complexType这些在后面使用的元素。  
+
+
+xml文档：  
+>
+	<?xml version="1.0" encoding="UTF-8"?>
+	<itcast:班级 xmlns:itcast="http://www.itcast.cn"
+					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:schemaLocation=“http://www.itcast.cn myclass.xsd">
+		<itcast:学生>
+			<itcast:名字>周星驰</itcast:名字>
+			<itcast:年龄>29</itcast:年龄>
+			<itcast:介绍>学习很刻苦</itcast:介绍>
+		</itcast:学生>
+	</itcast:班级>
+	
+xsi:schemaLocation：这个表示的是本XML文件引用的Schema约束文档。  
+xmlns:xsi：表示所使用的命名空间，来自W3C的命名空间。  
+xmlns:itcast：表示使用我们自己写的命名空间。  
+
+
+语法部分参看W3C文档即可。
