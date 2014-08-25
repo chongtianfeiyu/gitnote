@@ -146,6 +146,10 @@ JavaBean的自省机制：
 为了简化JavaBean的类对象初始化步骤。可以使用以下代码来初始化JavaBean对象的属性。  
 	<jsp:setProperty property="*" name="p"/>
 
-这样，只要<form>中各个标签提交的参数名称与JavaBean中定义的属性值是完全一一对应的，就可以简便地利用一个setProperty标签及"*"来对JavaBean对象进行全部的初始化。这样就不用使用多个setProperty标签对所有的JavaBean属性进行初始化。更加方便。  
+这样，只要<form>中各个标签提交的参数名称与JavaBean中定义的属性值是完全一一对应的，就可以简便地利用一个setProperty标签及"*"来对JavaBean对象进行全部的初始化。这样就不用使用多个setProperty标签对所有的JavaBean属性进行初始化。更加方便。此处用处就是，可以用Form中提交的request中的数据来初始化JavaBean中的参数。一提交之后即可进行初始化。  
+
+
+以上的对JavaBean的介绍在以前的项目中使用的很多，因为以前的项目都采用这种JSP+JavaBean的模式进行开发，现在很少用这种模式，所以JavaBean也使用的比较少了。现在都是使用第二种模式，也就是MVC的模式。  
+
 
 存储件的范围大小：page<request<session<application
