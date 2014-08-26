@@ -25,7 +25,7 @@ DButil实际上就是对JDBC的封装，封装成各种方法，各个方法各�
 				System.out.println(booktype.getIsDelete());
 				System.out.println(booktype.getParentId());
 			}
-			//部分查询，使用了匿内部类
+			//部分查询，使用了匿内部类。这里实际上就是使用了回调接口的原理，这里的resultsethandlet就是一个接口。
 			List<Integer> str = queryRunner.query(conn, sql1, new ResultSetHandler()
 					{
 						@Override
