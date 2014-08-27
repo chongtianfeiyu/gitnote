@@ -227,7 +227,24 @@ Struts1执行流程：
 1. 在Web.xml中定义请求路径是*.do。  
 2. 定义类XXXAction extends Action，并且重写execute()方法。根据具体的业务处理  
 3. 配置struts-config.xml文件。  
-4. 
+
+
+在Struts中，当其带有表单提交的时候，要使用JavaBean来封装表单提交的数据，这个JavaBean对象要继承自ActionForm类。  
+这里的Struts1执行流程就有一定的变化：  
+1. 服务器启动时，根据Web.xml文件的配置信息进行实例化ActionServlet。  
+2. ActionServlet加载struts-config.xml文件。读取信息放置在内存中。  
+3. 客户端从JSP/servlet文件中发出请求，例如：请求路径是：/loginAction.do（也就是*.do格式，这样才能走ActionServlet）  
+4. ActionServlet对请求路径/loginAction.do进行解析。例如，解析为/loginAction。ActionServlet是Struts框架帮我们写的。  
+5. ActionServlet根据解析后的路径/loginAction，查找其在struts-config.xml文件中所对应的Action类，也就是type属性的值所对应的类。  
+6. ActionServlet会依据struts-config.xml文件中第5步中所查找到的Action类的name属性，找到用于封装JavaBean类对象。并将Form表单中提交的数据封装到JavaBean对象中。  
+7. ActionServlet中会自动创建5中查找到的我们自己写的Action继承类(如，com.trilever.wt.loginAction)的实例对象，并调用这个实例对象的execute()方法，以处理请求。同时会依据struts-config.xml文件中第5步中所查找到的Action类的name属性，找到用于封装JavaBean类对象。将这个类对象作为execute()方法的一个参数传递给它。这样，就在消息的处理方法中获得了Form表单提交的数据。  
+
+以上的带表单的Struts，开发人员的工作：  
+1. 在Web.xml中定义请求路径是*.do。  
+2. 定义类XXXAction extends Action，并且重写execute()方法。在其里面获得JavaBean中所封装的Form表单中提交的数据。根据具体的业务处理  
+3. 配置struts-config.xml文件。  
+
+
 
 
 
