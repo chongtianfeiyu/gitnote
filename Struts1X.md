@@ -573,5 +573,6 @@ ActionForm中的reset()方法的作用就是将ActionForm中的属性值全部�
 
 注意：在request、session等中存放的不仅可以是字符串，还可以是对象，也就是说，可以是request.setAttribute("people","zhangsan"),这里的"zhangsan"是一个字符串。还可以是request.setAttribute("people",zhangsan),这里的zhangsan是一个对象。
 
+当我们发出请求，只希望转发到另外一个JSP页面，而且也要通过ActionServlet中央控制器时，该action不用给其配置ActionForm，该action配置可以写作：<action path="/test" forward="/te.jsp"></action>，这样的请求无需action去处理其数据，而是可以直接通过actionservlet转发给目的页面。  
 
 
