@@ -339,7 +339,215 @@ Struts1执行流程：
 2. 定义类XXXAction extends Action，并且重写execute()方法。在其里面获得JavaBean中所封装的Form表单中提交的数据。根据具体的业务处理  
 3. 配置struts-config.xml文件。  
 
-Struts1工作流程：见图Struts1_working_process
+带表单提交的Struts代码示例：  
+>login.jsp  
+	<%@ page language="java" import="java.util.*" pageEncoding="utf-8" contentType="text/html; charset=utf-8"%>
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+	<html>
+	  <head>
+	    <title>My JSP 'login.jsp' starting page</title>
+	  </head>
+	  <body>
+	  <form action="${pageContext.request.contextPath}/login.do" method="post" name="loginForm">
+	  <table>
+	  		<tr>
+	  			<td>name:</td>
+	  			<td><input type="text" name="username"></td>
+	  		</tr>
+	  		<tr>
+	  			<td>pwd:</td>
+	  			<td><input type="password" name="password"></td>
+	  		</tr>
+	  		<tr>
+	  			<td><input type="submit" name="submit"></td>
+	  		</tr>
+	  	</table>
+	  	</form>
+	  </body>
+	</html>
+>web.xml配置  
+	<?xml version="1.0" encoding="UTF-8"?>
+	<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+	  <display-name>Struts1</display-name>
+	  <!--ActionServlet是struts的中央控制器，所有的请求，只要是*.do的形式，
+	  		都要通过struts的控制器，也就是这个ActionServlet。
+	  		在Struts中只有这一个ActionServlet,它是单示例，多线程运行。
+	  -->
+	  <servlet>
+	  	<servlet-name>ActionServlet</servlet-name>
+	  	<servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+	  	<!--设置ActionServlet启动时加载配置文件 -->
+	  	<init-param>
+	  		<!-- 注意config这个参数名称是固定的 -->
+	  		<param-name>config</param-name>
+	  		<!-- 该struts配置文件名是随意的，但一般都是使用ActionServlet中写的那一个 -->
+	  		<param-value>/WEB-INF/struts-config.xml</param-value>
+	  	</init-param>
+	  	<!-- 设置ActionServlet的启动顺序 -->
+	  	<load-on-startup>0</load-on-startup>
+	  </servlet>
+	  <servlet-mapping>
+	  	<servlet-name>ActionServlet</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	  </servlet-mapping>
+	</web-app>
+>strus-config.xml配置  
+	<?xml version="1.0" encoding="utf-8" ?>
+	<!DOCTYPE struts-config PUBLIC
+	          "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+	          "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+	<struts-config>
+	<form-beans>
+		<!--
+			form-beans是FormBean的集合 
+			Action子对象(也就是用于处理请求的对象)查找想要的JavaBean时，是通过查找这里的Form-Bean找到对应的JavaBean的。
+			form-bean用于配置封装表单数据的JavaBean 
+			type属性表示JavaBean的完整类名
+			name属性表示JavaBean对象的唯一标示，也是Action子对象(也就是用于处理请求的对象)在查找ActionForm子对象(也就是JavaBean对象)时的表示
+		-->
+		<form-bean name="loginForm" type="com.trilever.wt.loginForm"></form-bean>
+	</form-beans>
+		<!-- 
+	 		这里是全局forward标签,对所有的action都有效
+	 	 -->
+	   <global-forwards>
+		 	<forward name="success1" path="/success1.jsp" redirect="false"></forward>
+		   	<forward name="failed1" path="/failed1.jsp"></forward>
+	   </global-forwards>
+	 <action-mappings>   
+	   <!-- 
+	      	 action-mappings是action的集合
+	      	 ActionServlet(也就是中央处理器)在查找用于处理消息的对应Action子对象(也就是用于处理请求的对象)时，是通过查找这里的
+	      	 Action来找到对应的Action子对象的。
+	         path属性:表示action标签的唯一标识，也是ActionServlet(也就是中央处理器)在查找Action子对象(也就是用于处理请求的对象)时的标示
+	         type:表示在ActionServlet中要实例化的action类的路径
+	         name属性：表示用于封装form表单提交数据的JavaBean，也就是ActionForm子对象,该属性的值必须在form-beans这个标签中存在
+	         name属性的作用是将用于处理消息的对应Action子对象(也就是用于处理请求的对象)与用于封装数据的JavaBean联系起来，这样Action子对象就可以
+	                      方便地从JavaBean中直接取数据，
+	         scope属性:指定ActionFormBean的作用域
+	    -->
+	    <!-- action标签供ActionServlet阅读，ActionServlet是中央控制器，其通过阅读解析action标签，将请求路径的来源(path)与将要调用的类(type)相联系起来-->
+	   <action path="/login"  name="loginForm" scope="request"
+	        type="com.trilever.wt.loginAction">
+	   <!-- 
+	   		这里是局部forward标签,只对本action有效	
+	   		本forward标签用于定义本action将要转向的页面路径
+	   		name属性：表示本forward标签唯一的标示，自定义
+	   		path属性：要转向的路径
+	   		redirect属性：设置为true，表示使用重定向，默认是false。设置为true几乎是更好的选择。也就是说默认是请求转发，设置为true就是重定向.
+	   		同时要注意这两个forward标签是针对本action的，是对本action处理的转向
+	    -->    
+	   <forward name="success" path="/success.jsp" redirect="false"></forward>
+	   <forward name="failed" path="/failed.jsp"></forward>     
+	   </action>
+	 </action-mappings>
+	</struts-config>
+>loginForm.java  
+	package com.trilever.wt;
+	import javax.servlet.http.HttpServletRequest;
+	import org.apache.struts.action.ActionErrors;
+	import org.apache.struts.action.ActionForm;
+	import org.apache.struts.action.ActionMapping;
+	//该JavaBean类用于封装表单提交数据。必须继承actionform类。
+	//而且此JavaBean中的属性名必须与JSP中的表单中数据域的name是一样的，
+	//这样才能使用Structs的自动封装机制。
+	public class loginForm extends ActionForm {
+		//<td><input type="text" name="username"></td>
+		private String username;
+		//<td><input type="password" name="password"></td>
+		private String password;
+		public String getUsername() {
+			return username;
+		}
+		public void setUsername(String username) {
+			this.username = username;
+		}
+		public String getPassword() {
+			return password;
+		}
+		public void setPassword(String password) {
+			this.password = password;
+		}
+	}
+>loginAction.java  
+	package com.trilever.wt;
+	import javax.servlet.ServletRequest;
+	import javax.servlet.ServletResponse;
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
+	import org.apache.struts.action.Action;
+	import org.apache.struts.action.ActionForm;
+	import org.apache.struts.action.ActionForward;
+	import org.apache.struts.action.ActionMapping;
+	public class loginAction extends Action{
+		//这个execute()方法中的几个参数的意义，form表示封装表单数据的JavaBean对象，
+		//mapping表示在struts-config.xml文件中封装的当前action的信息,其里面不仅封装了这个action的name、path。
+		//还封装了这个action里面的forward标签，forward标签里面封装的name、path信息。
+		public ActionForward execute(ActionMapping mapping, ActionForm form,
+				HttpServletRequest request, HttpServletResponse response)
+				throws Exception {
+			String userName = ((loginForm)form).getUsername();
+			String passWord = ((loginForm)form).getPassword();
+			System.out.println(((loginForm)form).getUsername());
+			//ActionForward对象实际上就是包装了转发路径。在Struts底层，就是获得了这个路径，然后帮助我们讲路径转发给路径对应的页面。
+			ActionForward res = null;
+			if("123".equals(userName)&&"123".equals(passWord))
+			{
+				//mapping去struts-config.xml文件中查找相应的ActionForward
+				res = mapping.findForward("success1");
+				request.setAttribute("deal", "成功");
+			}
+			else
+			{
+				//自己创建一个ActionForward,其参数就是struts-config.xml文件中相应的forward标签对应的name.
+				res = new ActionForward("failed1");
+				request.setAttribute("deal", "失败");
+			}
+			return  res;
+		}
+	}
+>success.jsp  
+	<%@ page language="java" import="java.util.*" pageEncoding="UTF-8" contentType="text/html; charset=utf-8"%>
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+	<html>
+	  <head>
+	    <title>My JSP 'success.jsp' starting page</title>
+	  </head>
+	  <body>
+	    Success<br>
+	    <h1>
+	    ${deal}
+	    </h1>
+	  </body>
+	</html>
+>failed.jsp  
+	<%@ page language="java" import="java.util.*" pageEncoding="UTF-8" contentType="text/html; charset=utf-8"%>
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+	<html>
+	  <head>
+	    <title>My JSP 'success.jsp' starting page</title>
+	  </head>
+	  <body>
+	    failed<br>
+	    <h1>
+	    ${deal}
+	    </h1>
+	  </body>
+	</html>
+	
+Struts1工作流程：见图Struts1_working_process，注意该图中的MVC模型的分类。  
+Struts中对应的MVC各部分的组件见图Struts_Component。在我们上例中所写的Action的子对象还有Struts给我们写的ActionServlet(完全在幕后工作)都是属于控制层的内容。实际上尽管Structs号称是对MVC模型的具体实现，但是实际上运用的时候，更多地将其体现在表示层。这依据于Struts强大的标签库。  
+实际上，在底层代码中，RequestProcessor是将ActionServlet封装起来的类，其实际上就是处理Servlet请求时遵循的控制逻辑。  
+关于ActionForm(也就是所谓的JavaBean封装数据的对象)。其每一个属性必须对于HTML的Form数据域中的一个提交数据。  
+ActionForm还需符合的一些要求：  
+1. 如果你要去在Actionform被传递到Action子对象的execute()方法前(作为参数的形式)，校验数据的合理性，就必须实现该ActionForm子对象(也就是JavaBean)的validate()方法。  
+2. 如果希望在将表单提交的数据包装成ActionForm之前，对ActionForm中的属性进行初始化，那么就必须重写ActionForm的reset()方法。  
+ActionForm是一个多功能对象，可以扮演字段收集器，数据校验器，类型转换器，以及传输对象。  
+动态ActionForm作用：  
+例如，在一个网站的登陆与注册页面的时候，注册需要4个数据域，而登陆需要两个数据域。如果按照静态ActionForm的写法，那么对于登陆、注册各需要一个ActionForm类(也就是JavaBean)，但是如果使用动态ActionForm，那就只需要一个动态ActionForm即可。并且对于动态ActionForm，无需get、set方法。  
+由于DynActionForm无需get、set方法，所以，其在封装数据是不是采用set方法，而是通过在底层封装成map类型，也就是键值对的形式。在Action中取出其封装的值的时候也不是采用get方法。  
+
+
 
 
 
