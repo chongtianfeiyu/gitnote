@@ -227,8 +227,99 @@ Struts1执行流程：
 1. 在Web.xml中定义请求路径是*.do。  
 2. 定义类XXXAction extends Action，并且重写execute()方法。根据具体的业务处理  
 3. 配置struts-config.xml文件。  
-
-
+基本的Struts框架使用：  
+>index.jsp  
+	<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+	<html>
+	  <head>
+	    <title>My JSP 'index.jsp' starting page</title>
+	  </head>
+	  <body>
+	    <a href="${pageContext.request.contextPath}\empAction.do">连接</a>
+	    <a href="${pageContext.request.contextPath}\CustomerAction.do">连接1</a>
+	  </body>
+	</html>
+>web.xml配置  
+	<?xml version="1.0" encoding="UTF-8"?>
+	<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+	  <display-name>Struts1</display-name>
+	  <!--ActionServlet是struts的中央控制器，所有的请求，只要是*.do的形式，
+	  		都要通过struts的控制器，也就是这个ActionServlet。
+	  		在Struts中只有这一个ActionServlet,它是单示例，多线程运行。
+	  -->
+	  <servlet>
+	  	<servlet-name>ActionServlet</servlet-name>
+	  	<servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+	  	<!--设置ActionServlet启动时加载配置文件 -->
+	  	<init-param>
+	  		<!-- 注意config这个参数名称是固定的 -->
+	  		<param-name>config</param-name>
+	  		<!-- 该struts配置文件名是随意的，但一般都是使用ActionServlet中写的那一个 -->
+	  		<param-value>/WEB-INF/struts-config.xml</param-value>
+	  	</init-param>
+	  	<!-- 设置ActionServlet的启动顺序 -->
+	  	<load-on-startup>0</load-on-startup>
+	  </servlet>
+	  <servlet-mapping>
+	  	<servlet-name>ActionServlet</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	  </servlet-mapping>
+	</web-app>
+>struts-config.xml  
+	<?xml version="1.0" encoding="utf-8" ?>
+	<!DOCTYPE struts-config PUBLIC
+	          "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+	          "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+	<struts-config>
+	 <action-mappings>   
+	   <!-- 
+	      action-mappings是action的集合
+	         path属性:表示action标签的唯一标识
+	         type:表示在ActionServlet中要实例化的action类的路径
+	         name属性：执行要封装页面的ActionForm,该属性的值必须在form-beans这个标签中存在
+	         scope属性:指定ActionFormBean的作用域
+	    -->
+	    <!-- action标签供ActionServlet阅读，ActionServlet是中央控制器，其通过阅读解析action标签，将请求路径的来源(path)与将要调用的类(type)相联系起来-->
+	   <action path="/empAction"  
+	        type="com.trilever.wt.empAction"></action>
+	   <action path="/CustomerAction"  
+	        type="com.trilever.wt.CustomerAction"></action>
+	 </action-mappings>
+	</struts-config>
+>第一个Action子类  
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
+	import org.apache.struts.action.Action;
+	import org.apache.struts.action.ActionForm;
+	import org.apache.struts.action.ActionForward;
+	import org.apache.struts.action.ActionMapping;
+	public class CustomerAction extends Action{
+			@Override
+			public ActionForward execute(ActionMapping mapping, ActionForm form,
+					HttpServletRequest request, HttpServletResponse response)
+					throws Exception {
+				System.out.println("cus exec--------------");
+				return null;
+			}
+	}
+>第二个Action子类  
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
+	import org.apache.struts.action.Action;
+	import org.apache.struts.action.ActionForm;
+	import org.apache.struts.action.ActionForward;
+	import org.apache.struts.action.ActionMapping;
+	//Struts中所有的Action类都要继承自Action
+	public class empAction extends Action{
+		@Override
+		public ActionForward execute(ActionMapping mapping, ActionForm form,
+				HttpServletRequest request, HttpServletResponse response)
+				throws Exception {
+			System.out.println("empaction exec--------------");
+			return null;
+		}
+	}	
+	
 在Struts中，当其带有表单提交的时候，要使用JavaBean来封装表单提交的数据，这个JavaBean对象要继承自ActionForm类。  
 这里的Struts1执行流程就有一定的变化：  
 1. 服务器启动时，根据Web.xml文件的配置信息进行实例化ActionServlet。  
@@ -236,15 +327,19 @@ Struts1执行流程：
 3. 客户端从JSP/servlet文件中发出请求，例如：请求路径是：/loginAction.do（也就是*.do格式，这样才能走ActionServlet）  
 4. ActionServlet对请求路径/loginAction.do进行解析。例如，解析为/loginAction。ActionServlet是Struts框架帮我们写的。  
 5. ActionServlet根据解析后的路径/loginAction，查找其在struts-config.xml文件中所对应的Action类，也就是type属性的值所对应的类。  
-6. ActionServlet会依据struts-config.xml文件中第5步中所查找到的Action类的name属性，找到用于封装JavaBean类对象。并将Form表单中提交的数据封装到JavaBean对象中。  
-7. ActionServlet中会自动创建5中查找到的我们自己写的Action继承类(如，com.trilever.wt.loginAction)的实例对象，并调用这个实例对象的execute()方法，以处理请求。同时会依据struts-config.xml文件中第5步中所查找到的Action类的name属性，找到用于封装JavaBean类对象。将这个类对象作为execute()方法的一个参数传递给它。这样，就在消息的处理方法中获得了Form表单提交的数据。  
+6. ActionServlet会依据struts-config.xml文件中第5步中所查找到的Action类的name属性，找到用于封装JavaBean类对象。并将Form表单中提交的数据填充封装到JavaBean对象中。  
+7. ActionServlet中会自动创建5中查找到的我们自己写的Action继承类(如，com.trilever.wt.loginAction)的实例对象，并调用这个实例对象的execute()方法，以分发、处理Http请求。同时会依据struts-config.xml文件中第5步中所查找到的Action类的name属性，找到用于封装JavaBean类对象。将这个类对象作为execute()方法的一个参数传递给它。这样，就在消息的处理方法中获得了Form表单提交的数据。  
+8. ActionServlet根据execute方法返回的ActionForward对象，查找struts-config.xml文件，然后通过其中的forward标签获得转发或者重定向的目标路径，这就是forward标签的使用。
+
+在配置Action子对象的转发或者重定向目标时，就是配置forward标签，然后通过Action子对象的execute()方法中的参数mapping去查找forward标签中定义的重定向、转发目标。  
+在配置forward标签的时候，可以配置全局forward标签，也可以配置局部forward标签。对于同一个Action而言，局部forward标签由于全局的forward标签。  
 
 以上的带表单的Struts，开发人员的工作：  
 1. 在Web.xml中定义请求路径是*.do。  
 2. 定义类XXXAction extends Action，并且重写execute()方法。在其里面获得JavaBean中所封装的Form表单中提交的数据。根据具体的业务处理  
 3. 配置struts-config.xml文件。  
 
-
+Struts1工作流程：见图Struts1_working_process
 
 
 
