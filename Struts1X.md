@@ -736,12 +736,7 @@ ActionForm是一个多功能对象，可以扮演字段收集器，数据校验�
 	</html>
 	
 
-
-
-
-
-
-Struts中对ActionForm(也就是JavaBean)的处理：  
+Struts中对ActionForm(也就是JavaBean)的处理步骤：  
 也就是在数据封装过程中的实际步骤。  
 1. 检查确认在struts-config.xml文件中的action中已经配置了对ActionForm的配置，也就是说，该action中的name属性值指向一个ActionForm(用于封装数据的JavaBean)。如果action中没有name属性，就不能封装form中的数据。  
 2. 根据第一步中查找到的ActionForm，查询ActionForm类中的属性是否与JSP文件中提交的Form表单的各个数据域的name值相符。  
@@ -783,6 +778,11 @@ c.总之，在JSP中使用form标签的时候，struts-config.xml中必须有act
 	<html:text name="EmpForm" property="username"></html:text>
 表示这个text组件输入的对应是EmpForm这个ActionForm类的username属性值。  
 form标签的focus属性表示这个form中组件的定焦位置。  
+在Struts中怎样设置回显？所谓的回显就是：JSP页面显示的时候，就已经显示了输入组件中的初始值。这就是所谓的回显。回显实现的原理就是在JavaBean中给各个参数赋予初始值。即可自动设置为回显值。  
+HTML标签库使用代码示例：  
+
+
+
 
   
 
