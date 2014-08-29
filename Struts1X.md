@@ -18,6 +18,7 @@ Http协议、servlet、JSP、JSP标签、JavaBean、Model2（JSP+Servlet+JavaBea
 Struts 1.x的简单模拟实现：  
 代码示例：  
 >JSP代码,index.jsp：  
+>
 	<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
 	<html>
 	  <head>
@@ -29,12 +30,14 @@ Struts 1.x的简单模拟实现：
 	  </body>
 	</html>
 >Action接口代码,Action.java：  
+>
 	import javax.servlet.http.HttpServletRequest;
 	import javax.servlet.http.HttpServletResponse;
 	public interface Action {
 		public String execute(HttpServletRequest request,HttpServletResponse response);
 	}
 >Action接口实现类,CustomerAction.java：  
+>
 	import javax.servlet.http.HttpServletRequest;
 	import javax.servlet.http.HttpServletResponse;
 	public class CustomerAction implements Action {
@@ -46,6 +49,7 @@ Struts 1.x的简单模拟实现：
 		}
 	}	
 >Action接口实现类，empAction.java：  
+>
 	import javax.servlet.http.HttpServletRequest;
 	import javax.servlet.http.HttpServletResponse;
 	public class empAction implements Action {
@@ -57,6 +61,7 @@ Struts 1.x的简单模拟实现：
 		}
 	}
 >Servlet类，ActionServlet.java。用于处理JSP中的请求：  
+>
 	import java.io.IOException;
 	import java.io.PrintWriter;
 	import javax.servlet.RequestDispatcher;
@@ -95,6 +100,7 @@ Struts 1.x的简单模拟实现：
 	}
 	另：该servlet的xml文件中的mapping名字是.do,这样可以让JSP中的请求被调用。  
 >success.jsp,用于结果显示:  
+>
 	<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 	<html>
@@ -181,6 +187,7 @@ struts-config文件配置代码：
 5. 创建Action的子类。在请求通过Struts的中央控制器ActionServlet时，ActionServlet会通过解析上面4中配置的struts-config文件，将请求转给响应的处理类，也就是这里我们要创建的Action的子类。注意，这里所有写的用于处理请求的类都必须继承自Action类。  
 代码示例：  
 >empAction类代码：  
+>
 	import javax.servlet.http.HttpServletRequest;
 	import javax.servlet.http.HttpServletResponse;
 	import org.apache.struts.action.Action;
@@ -197,7 +204,8 @@ struts-config文件配置代码：
 			return null;
 		}
 	}
->CustomerAction代码示例：
+>CustomerAction代码示例：  
+>
 	import javax.servlet.http.HttpServletRequest;
 	import javax.servlet.http.HttpServletResponse;
 	import org.apache.struts.action.Action;
@@ -229,6 +237,7 @@ Struts1执行流程：
 3. 配置struts-config.xml文件。  
 基本的Struts框架使用：  
 >index.jsp  
+>
 	<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
 	<html>
 	  <head>
@@ -240,6 +249,7 @@ Struts1执行流程：
 	  </body>
 	</html>
 >web.xml配置  
+>
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
 	  <display-name>Struts1</display-name>
@@ -266,6 +276,7 @@ Struts1执行流程：
 	  </servlet-mapping>
 	</web-app>
 >struts-config.xml  
+>
 	<?xml version="1.0" encoding="utf-8" ?>
 	<!DOCTYPE struts-config PUBLIC
 	          "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
@@ -287,6 +298,7 @@ Struts1执行流程：
 	 </action-mappings>
 	</struts-config>
 >第一个Action子类  
+>
 	import javax.servlet.http.HttpServletRequest;
 	import javax.servlet.http.HttpServletResponse;
 	import org.apache.struts.action.Action;
@@ -303,6 +315,7 @@ Struts1执行流程：
 			}
 	}
 >第二个Action子类  
+>
 	import javax.servlet.http.HttpServletRequest;
 	import javax.servlet.http.HttpServletResponse;
 	import org.apache.struts.action.Action;
@@ -341,6 +354,7 @@ Struts1执行流程：
 
 带表单提交的Struts代码示例：  
 >login.jsp  
+>
 	<%@ page language="java" import="java.util.*" pageEncoding="utf-8" contentType="text/html; charset=utf-8"%>
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 	<html>
@@ -366,6 +380,7 @@ Struts1执行流程：
 	  </body>
 	</html>
 >web.xml配置  
+>
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
 	  <display-name>Struts1</display-name>
@@ -392,6 +407,7 @@ Struts1执行流程：
 	  </servlet-mapping>
 	</web-app>
 >strus-config.xml配置  
+>
 	<?xml version="1.0" encoding="utf-8" ?>
 	<!DOCTYPE struts-config PUBLIC
 	          "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
@@ -449,6 +465,7 @@ Struts1执行流程：
 	 </action-mappings>
 	</struts-config>
 >loginForm.java  
+>
 	package com.trilever.wt;
 	import javax.servlet.http.HttpServletRequest;
 	import org.apache.struts.action.ActionErrors;
@@ -476,6 +493,7 @@ Struts1执行流程：
 		}
 	}
 >loginAction.java  
+>
 	package com.trilever.wt;
 	import javax.servlet.ServletRequest;
 	import javax.servlet.ServletResponse;
@@ -515,6 +533,7 @@ Struts1执行流程：
 		}
 	}
 >success.jsp  
+>
 	<%@ page language="java" import="java.util.*" pageEncoding="UTF-8" contentType="text/html; charset=utf-8"%>
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 	<html>
@@ -529,6 +548,7 @@ Struts1执行流程：
 	  </body>
 	</html>
 >failed.jsp  
+>
 	<%@ page language="java" import="java.util.*" pageEncoding="UTF-8" contentType="text/html; charset=utf-8"%>
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 	<html>
@@ -551,10 +571,171 @@ ActionForm还需符合的一些要求：
 1. 如果你要去在Actionform被传递到Action子对象的execute()方法前(作为参数的形式)，校验数据的合理性，就必须实现该ActionForm子对象(也就是JavaBean)的validate()方法。  
 2. 如果希望在将表单提交的数据包装成ActionForm之前，对ActionForm中的属性进行初始化，那么就必须重写ActionForm的reset()方法。  
 ActionForm是一个多功能对象，可以扮演字段收集器，数据校验器，类型转换器，以及传输对象。  
+
 动态ActionForm作用：  
 例如，在一个网站的登陆与注册页面的时候，注册需要4个数据域，而登陆需要两个数据域。如果按照静态ActionForm的写法，那么对于登陆、注册各需要一个ActionForm类(也就是JavaBean)，但是如果使用动态ActionForm，那就只需要一个动态ActionForm即可。并且对于动态ActionForm，无需get、set方法。  
 由于DynActionForm无需get、set方法，所以，其在封装数据是不是采用set方法，而是通过在底层封装成map类型，也就是键值对的形式。在Action中取出其封装的值的时候也不是采用get方法。  
-示例如下：  
+代码示例如下：  
+>login.jsp  
+>
+	<%@ page language="java" import="java.util.*" pageEncoding="utf-8" contentType="text/html; charset=utf-8"%>
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+	<html>
+	  <head>
+	    <title>My JSP 'login.jsp' starting page</title>
+	  </head>
+	  <body>
+	  <form action="${pageContext.request.contextPath}/login.do" method="post" name="loginForm">
+	  <table>
+	  		<tr>
+	  			<td>name:</td>
+	  			<td><input type="text" name="username"></td>
+	  		</tr>
+	  		<tr>
+	  			<td>pwd:</td>
+	  			<td><input type="password" name="password"></td>
+	  		</tr>
+	  		<tr>
+	  			<td><input type="submit" name="submit"></td>
+	  		</tr>
+	  	</table>
+	  	</form>
+	  </body>
+	</html>
+>Web.xml  
+>
+	<?xml version="1.0" encoding="UTF-8"?>
+	<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+	  <display-name>Struts1</display-name>
+	  <!--ActionServlet是struts的中央控制器，所有的请求，只要是*.do的形式，
+	  		都要通过struts的控制器，也就是这个ActionServlet。
+	  		在Struts中只有这一个ActionServlet,它是单示例，多线程运行。
+	  -->
+	  <servlet>
+	  	<servlet-name>ActionServlet</servlet-name>
+	  	<servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+	  	<!--设置ActionServlet启动时加载配置文件 -->
+	  	<init-param>
+	  		<!-- 注意config这个参数名称是固定的 -->
+	  		<param-name>config</param-name>
+	  		<!-- 该struts配置文件名是随意的，但一般都是使用ActionServlet中写的那一个 -->
+	  		<param-value>/WEB-INF/struts-config.xml</param-value>
+	  	</init-param>
+	  	<!-- 设置ActionServlet的启动顺序 -->
+	  	<load-on-startup>0</load-on-startup>
+	  </servlet>
+	  <servlet-mapping>
+	  	<servlet-name>ActionServlet</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	  </servlet-mapping>
+	</web-app>	
+>Struts-Config.xml  
+>
+	<?xml version="1.0" encoding="utf-8" ?>
+	<!DOCTYPE struts-config PUBLIC
+	          "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+	          "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+	<struts-config>
+	<form-beans>
+		<!-- 配置动态的ActionForm 
+			type属性的值：永远是"org.apache.struts.action.DynaActionForm"
+		-->
+		<form-bean name="loginForm" type="org.apache.struts.action.DynaActionForm">
+			<!-- 配置动态ActionForm中的属性，
+				name值必须与表单中数据域的name一样
+				type值为属性类型
+				initial：属性的初始化值
+			 -->
+			 <form-property name="username" type="java.lang.String" initial="123"></form-property>
+			 <form-property name="password" type="java.lang.String" initial="123"></form-property>
+		</form-bean>
+	</form-beans>
+	 <action-mappings>   
+	   <!-- 
+	      	 action-mappings是action的集合
+	      	 ActionServlet(也就是中央处理器)在查找用于处理消息的对应Action子对象(也就是用于处理请求的对象)时，是通过查找这里的
+	      	 Action来找到对应的Action子对象的。
+	         path属性:表示action标签的唯一标识，也是ActionServlet(也就是中央处理器)在查找Action子对象(也就是用于处理请求的对象)时的标示
+	         type:表示在ActionServlet中要实例化的action类的路径
+	         name属性：表示用于封装form表单提交数据的JavaBean，也就是ActionForm子对象,该属性的值必须在form-beans这个标签中存在
+	         name属性的作用是将用于处理消息的对应Action子对象(也就是用于处理请求的对象)与用于封装数据的JavaBean联系起来，这样Action子对象就可以
+	                      方便地从JavaBean中直接取数据，
+	         scope属性:指定ActionFormBean的作用域
+	    -->
+	    <!-- action标签供ActionServlet阅读，ActionServlet是中央控制器，其通过阅读解析action标签，将请求路径的来源(path)与将要调用的类(type)相联系起来-->
+	   <action path="/login"  name="loginForm"   scope="request"
+	        type="com.trilever.wt.loginAction">
+	   <!-- 
+	   		这里是局部forward标签,只对本action有效	
+	   		本forward标签用于定义本action将要转向的页面路径
+	   		name属性：表示本forward标签唯一的标示，自定义
+	   		path属性：要转向的路径
+	   		redirect属性：设置为true，表示使用重定向，默认是false。设置为true几乎是更好的选择。也就是说默认是请求转发，设置为true就是重定向.
+	   		同时要注意这两个forward标签是针对本action的，是对本action处理的转向
+	    -->    
+	   <forward name="success" path="/success.jsp" redirect="false"></forward>
+	   <forward name="failed" path="/failed.jsp"></forward>     
+	   </action>
+	 </action-mappings>
+	</struts-config>
+>loginAction.java  
+>
+	package com.trilever.wt;
+	import javax.servlet.ServletRequest;
+	import javax.servlet.ServletResponse;
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
+	import org.apache.struts.action.Action;
+	import org.apache.struts.action.ActionForm;
+	import org.apache.struts.action.ActionForward;
+	import org.apache.struts.action.ActionMapping;
+	import org.apache.struts.action.DynaActionForm;
+	public class loginAction extends Action{
+		//这个execute()方法中的几个参数的意义，form表示封装表单数据的JavaBean对象，
+		//mapping表示在struts-config.xml文件中封装的当前action的信息,其里面不仅封装了这个action的name、path。
+		//还封装了这个action里面的forward标签，forward标签里面封装的name、path信息。
+		public ActionForward execute(ActionMapping mapping, ActionForm form,
+				HttpServletRequest request, HttpServletResponse response)
+				throws Exception {
+			System.out.println(form);
+			DynaActionForm dynaActionForm = (DynaActionForm) form;
+			System.out.println((String)dynaActionForm.get("username"));
+			System.out.println((String)dynaActionForm.get("password"));
+			return  null;
+		}
+	}
+>success.jsp  
+>
+	<%@ page language="java" import="java.util.*" pageEncoding="UTF-8" contentType="text/html; charset=utf-8"%>
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+	<html>
+	  <head>
+	    <title>My JSP 'success.jsp' starting page</title>
+	  </head>
+	  <body>
+	    Success<br>
+	    <h1>
+	    ${deal}
+	    </h1>
+	  </body>
+	</html>
+>failed.jsp  
+>
+	<%@ page language="java" import="java.util.*" pageEncoding="UTF-8" contentType="text/html; charset=utf-8"%>
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+	<html>
+	  <head>
+	    <title>My JSP 'success.jsp' starting page</title>
+	  </head>
+	  <body>
+	    failed<br>
+	    <h1>
+	    ${deal}
+	    </h1>
+	  </body>
+	</html>
+	
+
 
 
 
@@ -573,6 +754,19 @@ ActionForm中的reset()方法的作用就是将ActionForm中的属性值全部�
 
 注意：在request、session等中存放的不仅可以是字符串，还可以是对象，也就是说，可以是request.setAttribute("people","zhangsan"),这里的"zhangsan"是一个字符串。还可以是request.setAttribute("people",zhangsan),这里的zhangsan是一个对象。
 
+##DispatchAction
 当我们发出请求，只希望转发到另外一个JSP页面，而且也要通过ActionServlet中央控制器时，该action不用给其配置ActionForm，该action配置可以写作：<action path="/test" forward="/te.jsp"></action>，这样的请求无需action去处理其数据，而是可以直接通过actionservlet转发给目的页面。  
+当我们希望对多个相似的请求(这几个不同的请求指向同一个ActionServlet，但是请求内容还是不同的)在同一个Action中的不同方法进行处理时，就可以使用DispatchAction，对不同但类似的请求进行分发，使用不同的方法进行处理。我们创建一个Action继承自DispatchAction，然后在其里面创建不同的方法，以处理不同的请求内容。因为这个DispatchAction可以依据请求内容进行分发。这个dispatchAction的作用就是，当我们在一个JSP页面中发出CRUB请求的时候，可以将这个几个请求全部都发送给一个DispatchAction的子类。这个子类中有多个方法，每一个方法都对应处理不同的GRUB请求，然后在Struts-config.xml文件中对这个DispatchAction子类进行配置，需要使用parameter参数。  
+实际上的工作原理就是：在DispatchAction中的execute()方法(excute是底层必须执行的方法)里面，根据请求的参数不同，调用我们自己写的不同的处理方法。  也就是说，调用我们自己写的方法的底层还是excute()方法，在execute()方法里面根据GRUB的不同要求调用我们自己写的针对GRUB进行操作的各自的方法。  
+
+
+前面所讲的反射机制的作用，在于，在这里我们可以通过读取web.xml文件及Struts-Config.xml文件中的标签获得属性值，然后通过属性值(都是字符串类型)来调用方法、类。这就是反射机制的使用。不是通过对象进行常规的方法调用。而是通过方法的名字字符串进行调用。  
+
+
+##Struts标签
+前面我们讨论的都是Struts流程的内容。现开始讨论Struts中的标签。  
+
+
+
 
 
