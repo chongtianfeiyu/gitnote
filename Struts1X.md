@@ -762,9 +762,29 @@ ActionForm中的reset()方法的作用就是将ActionForm中的属性值全部�
 
 前面所讲的反射机制的作用，在于，在这里我们可以通过读取web.xml文件及Struts-Config.xml文件中的标签获得属性值，然后通过属性值(都是字符串类型)来调用方法、类。这就是反射机制的使用。不是通过对象进行常规的方法调用。而是通过方法的名字字符串进行调用。  
 
-
+注意：jsp文件中form表单的name属性值对应了后面的actionform子类(JavaBean)的名字，也是config文件中action标签中的name属性值，form表单的action属性值对应了后面的action子类的名字。这actionform子类在config文件的form-bean中配置，action子类在config文件的action中配置。
 ##Struts标签
-前面我们讨论的都是Struts流程的内容。现开始讨论Struts中的标签。  
+前面我们讨论的都是Struts流程的内容。现开始讨论Struts中的标签库。其使用的标签库与JavaWeb中的JSTL标签库的原理是一样的。  
+Struts标签库：  
+1. struts-HTML.tld:html标签库。html标签是主要用来创建html输入表单的标记符。  
+2. struts-bean.tld:bean标签库。bean标签用于访问JavaBean与他们的关联属性，也可以用于定义新的bean。类似与JSTL中的<c:set>这样的标签。  
+3. struts-logic.tld：logic标签库，logic标签用于管理对输出内容的条件判断，从一个集合对象中新欢取出内容等已经应用程序的流程管理。类似于JSTL中的<c:if>这样的标签。  
+4. struts-nested.tld:nested标签库，又称为嵌套标签。使用嵌套属性可以自由访问任意层的bean属性。  
+5. struts-tiles.tls:建立类似与一种模板的标签库。所谓的模板就是：在网站上的页头、页尾不变的部分，就是一种模板。  
+这些在Struts中使用的标签在JSTL中一般都有相应的实现。  
+使用Struts标签库的步骤：  
+1. 引入struts标签库的jar包。struts-taglib-1.3.8.jar包。  
+2. 使用html标签库。  
+在使用form标签的时候的注意事项如下：  
+a. form标签的action属性值必须在struts-config.xml文件中必须有对应的action配置。  
+b. 对于a中在xml文件中配置的action，还必须为其写一个actionForm类(JavaBean)，然后在Struts-config.xml文件中配置form-bean以与a中所配置的action相对应。  
+c.总之，在JSP中使用form标签的时候，struts-config.xml中必须有action与actionform与之相对应进行匹配，如果没有写action或者actionform与之配对，就会报错。即使action与actionform都是空的，也必须在xml文件中配置出来。原因是:即使我们在JSP中没有写action与name属性，在解析该标签的时候，也会给我们加上默认的action与name属性(该name属性值就是对应path属性的action中的attribute值)，然后就要依据action与name属性去xml文件中查找对应的action与form-bean。如果在struts-config中没有配置对应的action与form-bean，就会报错。form标签中的action属性指向xml文件中的action。form标签中没有name属性，所以不能指定这个form指向的JavaBean(ActionForm子类)。  
+在html标签中，输入组件里的name属性，指的就是JavaBean(ActionForm子类)的名字，这也就是为什么html:form标签中没有name属性，因为form标签中name属性指定的javabean由各个输入组件的name属性各自指定而不是有form标签中指定。而property指的是JavaBean中对应的属性名。如：  
+	<html:text name="EmpForm" property="username"></html:text>
+表示这个text组件输入的对应是EmpForm这个ActionForm类的username属性值。  
+form标签的focus属性表示这个form中组件的定焦位置。  
+
+  
 
 
 
