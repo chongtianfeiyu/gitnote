@@ -767,9 +767,9 @@ Struts标签库：
 4. struts-nested.tld:nested标签库，又称为嵌套标签。使用嵌套属性可以自由访问任意层的bean属性。  
 5. struts-tiles.tls:建立类似与一种模板的标签库。所谓的模板就是：在网站上的页头、页尾不变的部分，就是一种模板。  
 这些在Struts中使用的标签在JSTL中一般都有相应的实现。  
-使用Struts标签库的步骤：  
-1. 引入struts标签库的jar包。struts-taglib-1.3.8.jar包。  
-2. 使用html标签库。  
+使用Struts标签库需要引入struts标签库的jar包。struts-taglib-1.3.8.jar包。  
+
+###使用html标签库。  
 在使用form标签的时候的注意事项如下：  
 a. form标签的action属性值必须在struts-config.xml文件中必须有对应的action配置。  
 b. 对于a中在xml文件中配置的action，还必须为其写一个actionForm类(JavaBean)，然后在Struts-config.xml文件中配置form-bean以与a中所配置的action相对应。  
@@ -784,9 +784,9 @@ HTML标签库使用代码示例：
 
 
 
-  
+###Bean标签库
 
 
 
-
-
+注意：在JSP中，什么时候该写"/"什么时候不该写"/",当请求的是servlet(如action等)，就不需要写，如果请求(无论是转发还是其他)的是一个JSP页面之类的，就需要写"/"甚至为了准确还要写成"PageContext.request.ContextPath/wel.jsp"
+这样的形式。
