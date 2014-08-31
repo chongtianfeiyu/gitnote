@@ -189,9 +189,9 @@ JDBC缺点：写SQL语句进行GRUB。但是会有例如字段不匹配、类型
 		//初始化数据源
 		static
 		{
-			//加载src/hibernate.properties文件
+			//加载src/hibernate.properties文件进入内存
 			Configuration conf = new Configuration();
-			//加载和类在一起的映射文件。
+			//加载和类在一起的映射文件进入内存
 			conf.addClass(bookType.class);
 			sf = conf.buildSessionFactory();
 		}
@@ -291,7 +291,10 @@ JDBC缺点：写SQL语句进行GRUB。但是会有例如字段不匹配、类型
 	}
 
 注意：实际上Hibernate的底层就是JDBC技术+反射技术，其是对JDBC技术的封装。  
-
+Hibernate是连接java应用程序和关系型数据库的中间件。  
+对JDBC API封装，负责对象持久化。  
+位于持久化层，封装所有的数据访问细节，使业务逻辑层更关注于业务逻辑。  
+一种ORM映射工具。  
 
 
 
