@@ -245,7 +245,6 @@ JDBC缺点：写SQL语句进行GRUB。但是会有例如字段不匹配、类型
 			q.executeUpdate();
 			tx.commit();
 			s.close();
-			
 		}
 		/**
 		 * 修改
@@ -291,6 +290,7 @@ JDBC缺点：写SQL语句进行GRUB。但是会有例如字段不匹配、类型
 	}
 
 注意：实际上Hibernate的底层就是JDBC技术+反射技术，其是对JDBC技术的封装。  
+#Hibernate
 Hibernate是连接java应用程序和关系型数据库的中间件。  
 对JDBC API封装，负责对象持久化。  
 位于持久化层，封装所有的数据访问细节，使业务逻辑层更关注于业务逻辑。  
@@ -316,12 +316,119 @@ d.一般化关系，类之间的继承关系。
 业务逻辑层中的域模型中的域对象与数据库中的表的对应，见图`ORM2.png`  
 ORM使用方法见图`ORM3.png`  
 
+Hibernate API介绍见图`Hibernate_API.png`、`Hibernate_API1.png`  
+Hibernate是对JDBC的轻量级包装，不是对全部的JDBC的包装。Java即可以使用Hibernate对数据库进行访问，也可以使用JDBC对数据库进行访问。  
+Hibernate的缺点就是，不善于大批量数据处理，因为性能方面有欠缺。有些时候，使用JDBC还有优点。  
+对于一个对象而言，什么叫线程安全，就是同一个时刻，可有多个线程能够访问这个对象。  
+SessionFactory对象时重量级的，需要大量缓存，用于存放定义的sql语句与映射元数据(也就是映射)。由于其已经存放了定义的sql语句，所以当后面session进行CRUB的时候，不用再次生成sql语句，而是可以去SessionFactory的缓存中找到已经生成的sql语句，然后再直接执行即可。这就是SessionFactory的缓存的作用。注意，SessionFactory的缓存既不是一级缓存，也不是二级缓存，其就叫做缓存。  
+Session的缓存才叫一级缓存。用于存放当前工作单元加载的对象。例如，在查找的时候，先去一级缓存里面查找，如果没有，就去DB中继续查找。第一次查询到结果之后，就会放在一级缓存中，下一次查询这个，就直接从一级缓存中取，这就是一级缓存的工作原理。  
+代码示例：  
+>
+	Customer c1 = (Customer)session.load(Customer.class,new Long(1));
+	//c2是在一级缓存里面取出来的。
+	Customer c2 = (Customer)session.load(Customer.class,new Long(1));
+	//c3是在数据库中取出来的。
+	Customer c3 = (Customer)session.load(Customer.class,new Long(3));
+	c1 == c2 ?
+	c1 ！= c3 ?
+	//id标签是用于映射OID的。
+	<id name=“id” type=“long” column=“ID”>
+	      <generator class=“increment” />
+	</id>
 
-Hibernate API介绍见图`Hibernate_API.png`
+持久层中的持久化类：就是我们创建的用于对应数据库中的表的类，例如bookType类。  
+Hibernate持久化数据流见图Hibernate_Data_Flow.png,总之，就是Hibernate部分与客户端都对持久化类进行set与get操作。见图Hibernate_Data_Flow1.png。
+注意，在持久化类中的方法里面，对于使用的客户而言，只能调用public的方法(因为类外只能调用public部分)，对于Hibernate而言，持久化类中的public与private方法都可以被Hibernate所使用。所谓的客户端调用某某方法，指的是创建持久化类对象，然后set、get该对象的属性。  
+
+#Hibernate中XML文件的设置  
+主要是通过设置xml文件中的property字段映射属性完成的。  
+
+a.设置Access属性  
+Hibernate访问持久化类属性的策略  
+1.Access属性的默认值为property ：表明hibernate通过getXXX和setXXX来访问类属性。推荐使用。提高域模型透明性。  
+2.Access属性还可以为field:hibernate通过java反射机制直接访问类属性。对于没有javabean方法的属性可设置该访问策略。  
+根据以上两点，
+1.在使用可以在持久化类中不设置某一个属性，但是有针对这个属性的set与get方法(使用property属性值)。Hibernate同样可以使用这个持久化类，因为Hibernate可以通过set、get方法访问属性而与这个属性是否存在无关。也就是说，只要在xml文件中映射了，无论持久化类中有没有该属性，都能在hql语句中访问到它(使用set、get方法)  
+代码示例如下：  
+>
+	class Customer{
+	     …..
+	     private String firstname ;
+	     private String lastname ;
+	     public String getName(){
+	           return firstname + “ ” + lastname ;
+	     }
+	     public void setName(String name){
+	            StringTokenizer t = new StringTokenizer(name);
+	            firstname = t.nextToken();
+	            lastname = t.nextToken();
+	     }
+	} 
+	在持久化类的方法中加入程序逻辑在customer.hbm.xml文件中无需映射firstname和lastname属性，而是映射name属性。
+	<property name =“name” column=“NAME” />  
+	尽管类中并没有name属性，由于hibernate不是直接访问Name属性，而是调用get、set方法，因此建立了Firstname、Lastname和表之间的联系。
+
+2.如果是使用filed属性，那么可以没有set、get方法而是只有这个属性，Hibernate也可以使用这个持久化类。  
+xml文件中property的Access属性设置：  
+>
+	<property name column type 
+	access:设定访问级别,默认值是property(方法级访问)|field:字段级访问(不是通过set、get方法进行访问，而是直接通过反射技术访问该属性)
+	formula:sql表达式
+	insert:true|false
+	update:true|false>
+>
+	<property name="name" access="field" />
+b.设置formula属性
+利用<property>元素的formula属性，用来设置一个sql表达式，hibernate将根据它来计算出派生属性的值。  
+>
+	<property name=“totalprice” formula=“(select sum(o.PRICE) from ORDERS o where o.CUSTOMER_ID=ID)” />
+
+c.设置insert属性
+<property> insert属性，若为false，在insert语句中不包含该字段，该字段永远不能被插入。默认值true。  
+
+##设置类的包名  
+如果在一个映射文件中包含多个类，并且这些类位于同一个包中，可以设置<hibernate-mapping>元素的package属性，避免为每个类提供完整的类名。  
+代码示例：  
+>可以这样写
+	<hibernate-mapping package=“mypack”>
+	    <class name=“customer” table=“cu..” >
+	          ……
+	     </class>
+	    <class name=“Order” table=“orders” >
+	          ……
+	     </class>
+	</hibernate-mapping>
+>以前是这样写
+	<hibernate-mapping>
+	    <class name=“mypack.customer” table=“cu..” >
+	          ……
+	     </class>
+	    <class name=“mypack.Order” table=“orders” >
+	          ……
+	     </class>
+	</hibernate-mapping>
+
+##映射对象标识符  
+Java按地址区分同一个类的不同对象.  
+关系数据库用主键区分同一条记录.  
+Hibernate使用OID来建立内存中的对象和数据库中记录的对应关系。对象的OID和数据库的表的主键对应。为保证OID的唯一性，应该让Hibernate来为OID付值。  
+Hibernate中用对象表示符(OID)来区分对象，OID是关系数据库中的主键在java对象模型中的等价物。在运行时，hibernate根据OID来维持java对象和数据库记录的对应关系。
+
+##关系数据库主键必备条件  
+1. 不允许null  
+2. 唯一，不重复  
+3. 值永远不会改变  
+自然主键：把具有业务含义的字段作为主键叫做自然主键。需要手动录入的。也就是说不能够自动生成。如果是那种可以自动生成的主键值，就叫代理主键。   
 
 
-
-
+##Hibernate内置标示符的设置  
+>
+	<id name=“id” type=“long” column=“ID”>
+	      <generator class=“increment”/>
+	</id>
+	Increment:适用于代理主键。由hibernate自动以递增的方式生成表识符，每次增量为1.
+	
+	
 注意：怎样有效读取一个随意大小的文件(例如，一个图片就是一个二进制文本)？  
 代码示例：  
 >
@@ -330,3 +437,6 @@ Hibernate API介绍见图`Hibernate_API.png`
 	fis.read(bis);
 	fis.close();
 
+#映射一对多的关联关系
+在实际项目中，会有很多张表，表之间也会有关系。所以，我们为每一个表创建的持久化类之间也是有关系的。类之间的关系主要有四种：继承、包含等。  
+在数据库中，采用外键，将某一个表中的某一个字段设为外键，表示对应这个表的持久化类是"多"，外键目的所在的那个表所对应的持久化类是"一"。
