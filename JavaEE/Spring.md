@@ -2,6 +2,8 @@ Hibernate中封装数据访问的细节，体现了OOP的思想，被称为ORM�
 Struts是封装了JSP，JavaBean这些东西，学习Struts是为了将JSP、JavaBean这些都忘掉。Struts是表现层框架。  
 Spring是业务层框架。管理Bean的。Spring的核心组件是容器。  
 
+Spring是一个开源的控制反转(Inversion of Control ,IoC)和面向切面(AOP)的容器框架.它的主要目得是简化企业开发.  
+所谓控制反转就是应用本身不负责依赖对象的创建及维护，依赖对象的创建及维护是由外部容器负责的。这样控制权就由应用转移到了外部容器，控制权的转移就是所谓反转。  
 #使用Spring框架步骤
 1. 添加类库  
 --spring的核心类库 在spring文档的dist下
@@ -135,3 +137,26 @@ applicationContext.xml文件。
 	</beans>
 
 #IOC思想
+inverse of control  
+DI：dependency injection：依赖注入。实际上就是IOC的另一个名字，就是将一个类对象注入成另一个类的属性。  
+如上例所示，我们创建了两个JavaBean对象，而且两个JavaBean对象之间具有依赖关系。如果是一般的方式中，我们必须先new出两个JavaBean对象，然后使用set方法来装配两个对象之间的依赖关系。这就是正常的获得建对象的顺序。  
+但是在Spring框架里面，我们使用了容器来创建对象，也就是使用了所谓的反转控制思想，就是IOC思想，就是获得对象的方式被反转了。Spring框架中是先创建各种对象，然后将这些对象组装起来。  
+使用容器创建对象的原理：  
+当我们创建容器ApplicationContext的对象的时候，就会根据加载的xml文件创建里面所描述的所有类对象，也就是JavaBean对象，同时，容器还帮助我们对这些JavaBean对象之间的关系进行装配。所以，我们自己不用去一个个地new出对象，再装配对象之间的关系。当我们需要使用某一个对象的时候，使用getBean()方法就可以取出放在容器中的JavaBean对象。然后就可以直接使用该JavaBean对象了。  
+#BeanFactory
+另外，BeanFactory也可以叫做容器，因为ApplicationContext接口就是BeanFactory接口的子接口。他们都可以叫做容器。  
+ApplicationContext的功能更加丰富。  
+创建BeanFactory对象的时候，就是创建一个容器。但BeanFactory只是将xml文件读取进来，此时并没有创建xml里面定义的对象，只是一个空容器而已。只有当要获得对象的时候(使用getBean方法)才会创建对象(优先实例化单例的Bean对象)，这样是为了节省资源。这就是BeanFactory的特点。  
+ApplicationContext是更加高级的容器，功能强大，其不用等到要使用JavaBean对象的时候才创建JavaBean对象，而是在加载xml文件创建ApplcationContext对象的时候，就创建所有的单例的JavaBean对象，放入到容器中。实际中，只有在很少的时候，才会使用BeanFactory，例如在移动设备上，为了节省资源。  
+
+#配置单例的JavaBean
+当我需要某一个JavaBean采用单例模式，就需要在xml文件中进行相应的配置。添加scope属性即可。  
+>
+	<bean id="greetingService" class="com.trilever.wt.GreetingServie" scope="singleton">
+	<property name="greetWord">
+	<value>
+		hello world
+	</value>
+	</property>
+	</bean>
+	
