@@ -1,0 +1,1 @@
+在Action里面的ActionContext，其实质就相当于与JavaBean对象，其里面存储的值就相当于Action类里面的属性。

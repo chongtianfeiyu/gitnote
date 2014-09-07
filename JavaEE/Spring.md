@@ -160,3 +160,5 @@ ApplicationContext是更加高级的容器，功能强大，其不用等到要�
 	</property>
 	</bean>
 	
+#Spring工作原理及步骤
+见图Spring_Process.png。
