@@ -46,7 +46,7 @@
 将一个*日期字符串格式化成一个日期对象*。
 >
 	String dat = "2014/5/25 13.34/12";//时间字符串
-	SimpleDateFormat sdf1 = new SimpleDateFormat("y/M%d H.m/s");//创建对象
+	SimpleDateFormat sdf1 = new SimpleDateFormat("y/M/d H.m/s");//创建对象
 	Date da = sdf1.parse(dat);//将时间字符串转换成时间对象
 >		
 	System.out.println(da);//输出时间对象。

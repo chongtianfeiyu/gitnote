@@ -1,10 +1,19 @@
+#基础知识
+---
 Hibernate中封装数据访问的细节，体现了OOP的思想，被称为ORM。学习Hibernate是为了把JDBC忘掉。Hibernate是持久层框架。  
 Struts是封装了JSP，JavaBean这些东西，学习Struts是为了将JSP、JavaBean这些都忘掉。Struts是表现层框架。  
 Spring是业务层框架。管理Bean的。Spring的核心组件是容器。  
 
 Spring是一个开源的控制反转(Inversion of Control ,IoC)和面向切面(AOP)的容器框架.它的主要目得是简化企业开发.  
-所谓控制反转就是应用本身不负责依赖对象的创建及维护，依赖对象的创建及维护是由外部容器负责的。这样控制权就由应用转移到了外部容器，控制权的转移就是所谓反转。  
+依赖注入：在运行期，由外部容器动态地将依赖对象注入到组件中  
+控制反转：应用本身不负责依赖对象的创建及维护，依赖对象的创建及维护是由外部窗口负责得。这样控制权就由应用转移到了外部容器，控制权的转移就是所谓的反转。  
+依赖注入机制减轻了组件之间的依赖关系，同时也大大提高了组件的可移植性，这意味着，组件得到重用
+的机会将会更多。  
+#学习路径
+---
+控制反转/依赖注入->面向切片编程->与其他主流框架(Struts2,Hibernate)的整合、管理
 #使用Spring框架步骤
+---
 1. 添加类库  
 --spring的核心类库 在spring文档的dist下
 dist\spring.jar
@@ -135,7 +144,40 @@ applicationContext.xml文件。
 	</property>
 	</bean>
 	</beans>
+#创建bean的方法
+##通过使用类直接生成
+##bean静态工厂
+>工厂类  
+>
+	package com.trilever.wt;
+	public class animalImpFactory {
+		public static Animal AnimalRetu()
+		{
+			return new Animal();
+		}
+	}
+>bean配置
+>
+	<bean id="Animal" class="com.trilever.wt.animalImpFactory" factory-method="AnimalRetu"></bean>	
+##bean实例工厂
+>工厂类  
+>
+	package com.trilever.wt;
+	public class animalImpFactory {
+		public Animal AnimalRetu()
+		{
+			return new Animal();
+		}
+	}
+>bean配置
+>
+	<bean id="animalFactory" class="com.trilever.wt.animalImpFactory"></bean>
+	<bean id="Animal" factory-bean="animalFactory" factory-method="AnimalRetu"></bean>
 
+#bean的作用域
+singleton:返回bean 的同一个实例，也是默认的作用域（无状态bean 使用此作用域）  
+prototype:每次请求都会创建一个实例（有状态bean 使用此作用域）  
+request、session、global session 这三个作用域主要用在web 应用中  
 #IOC思想
 inverse of control  
 DI：dependency injection：依赖注入。实际上就是IOC的另一个名字，就是将一个类对象注入成另一个类的属性。  
