@@ -67,7 +67,7 @@ JavaBean中一般使用最多的就是结果简单属性。如下例：
 	
 #在JSP中使用JavaBean
 JSP自身没有实现HTML代码与Java代码的完全分离，网页设计人员和Java编程人员需要操作同一个JSP文件，不易维护和管理。  
-把JSP页面中的业务逻辑代码封装到一个JavaBean中，JSP页面再调用JavaBean，则可提供一种分离显示内容和业务逻辑的简单方式，并且有利于软件的组件化、模块化。  
+把JSP页面中的业务逻辑代码封装到一个JavaBean中，JSP页面再调用JavaBean，则可提供一种分离显示内容和业务逻辑的简单方式，并且有利于软件的组件化、模块化。这就是第一种模型开发Web应用的原理。JSP只负责动态生成网页，只管显示数据，生成网页所需的数据来自于JavaBean，JavaBean负责业务逻辑。  
 JSP规范专门定义了三个JSP标签：<jsp:useBean>、<jsp:setProperty>和<jsp:getPropperty>，它们分别用于创建和查找JavaBean的实例对象、设置JavaBean对象的属性、读取JavaBean对象的属性。  
 对于JSP页面来说，只要一个类具有一个公共的、无参数的构造方法，就可以把这个类当作JavaBean来使用，如果类中有不接受任何参数的getter方法或只接受一个参数的setter方法，就可以把前缀“get”或“set”后面的部分当着一个属性名来引用。  
 JSP页面可以像调用一个普通Java类的方式去调用JavaBean，即先使用Java代码创建JavaBean的实例对象，然后直接调用JavaBean对象的getter方法和setter方法。  
