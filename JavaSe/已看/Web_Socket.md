@@ -142,7 +142,7 @@ URL类使用示例：
 			URLConnection uc = u.openConnection();
 			//transform the URLConnection to HttpURLConnection,HttpURLConnection is the subClass of URLConnection.
 			HttpURLConnection huc = (HttpURLConnection)uc;
-			
+>			
 			huc.connect();
 			InputStream is = uc.getInputStream();
 			BufferedReader br = new BufferedRe ader(new InputStreamReader(is));
@@ -161,7 +161,7 @@ URL类使用示例：
 网站破解步骤：  
 1. 建立`HttpURLConnection`连接。
 2. 修改设置登陆页面的`Request`特性，使用`setRequestProperty()`方法设置我们自己的的请求特性(`RequestProperty`)，假装后面的请求来自正规浏览器。  
-3. 设置输入、输出都为`true`。
+3. 设置输入、输出都为`true`。  
 4. 从字典文件中读取字符串。  
 5. 将字符串发送到远程服务器中的登陆页面。  
 6. 接收远程服务器返回的数据，查找返回数据中是否有“登陆成功”这样的字样，如果有，那么就是正确的密码。  
@@ -233,9 +233,8 @@ URL类使用示例：
 	}
 
 `TCP`通信
-
 `TCP`协议：如果两台计算机需要连接，那么`TCP`协议就会让他们之间建立一个连接：用于发送与接收数据的虚拟链路。见`TCP`协议图。  
-实际上这条链路两端连接的东西叫：`socket`，**相当于一个插座**。客户端程序和主机端程序都是建立在`socket`之上的。在客户端，通过`TCP`协议将程序发出的信息包转换、排列、发送出去(通过`socket`)；在主机端，在`socket`收到了数据之后，也通过`TCP`协议将`socket`收到的数据转换恢复过来。也叫套接字。实际上就是**插座**的意思。   
+这条链路两端连接的东西叫：`socket`，**相当于一个插座**。客户端程序和主机端程序都是建立在`socket`之上的。在客户端，通过`TCP`协议将程序发出的信息包转换、排列、发送出去(通过`socket`)；在主机端，在`socket`收到了数据之后，也通过`TCP`协议将`socket`收到的数据转换恢复过来。也叫套接字。实际上就是**插座**的意思。   
 `TCP`协议负责收集这些信息包，并将它们按适当的次序排好、通过下面的`socket`发送。在接收端的`socket`收到数据之后再通过`TCP`协议将其正确还原。  
 `TCP`协议保证了数据包在传送过程中准确无误。其使用重发机制：也就是收信者接收到消息之后，需要发送确认信息。否则发送者会重复发送刚才发送的信息。通过这种机制，`TCP`协议为应用程序提供了可靠的通信连接。使其能够适应网络环境的各种变化。保证通信的可靠。
  
@@ -316,13 +315,13 @@ b. 通过`I/O`流(使用`PrintStream`)向服务器段发送数据，也可以通
 	}
 
 
-注：使用ipconfig可以查询本机IP地址，在子网中，查询的就是本机IP。如果是在公网中，那么就有自己独立的IP地址，而不是与人共用的IP地址。
-在ip138上查询的是公网IP，也就是分配给学校的IP地址，公网IP地址整个学校也只有那么几个。公网IP和本机的子网掩码一起进行计算得到的就是处于子网中的本机IP地址，这个本机IP地址就是通过ipconfig命令查询而来的IP地址。
+注：使用ipconfig可以查询本机IP地址，在子网中，查询的就是本机IP。如果是在公网中，那么就有自己独立的IP地址，而不是与人共用的IP地址。  
+在ip138上查询的是公网IP，也就是分配给学校的IP地址，公网IP地址整个学校也只有那么几个。公网IP和本机的子网掩码一起进行计算得到的就是处于子网中的本机IP地址，这个本机IP地址就是通过ipconfig命令查询而来的IP地址。  
 
 关于输入输出：  
 输出时最好都转化成PrintStream进行输出(将OutputStream转化为PrintStream)，因为更方便。  
 输入时最好都转化为BufferedReader进行输入(将InputStream转化为BufferedReader)，因为这样最方便。  
-以上两条就是输入、输出（无论是网络还是磁盘）的最好的方法。
+以上两条就是输入、输出（无论是网络还是磁盘）的最好的方法。  
 
 
 `UDP`协议通信  

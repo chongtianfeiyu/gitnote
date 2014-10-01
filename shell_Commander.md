@@ -139,9 +139,6 @@ rpm -ivh .rpm
 .tar文件。这中文件不是安装文件，需要进行编译才能安装。
 先解压，看INSTALL或者README文件，然后依据提示进行安装。
 
-
-
-
 set CURRENT DIR=%CD% //将路径设置为当前目录
 
 
