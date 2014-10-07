@@ -1,7 +1,6 @@
-
-#数据库中的数据库相关
+#数据库相关
 -----
-## 基础知识 ##
+## 基础知识 
 `C/S`：所有的`app`与应用程序都是`C/S`架构  
 `B/S`：我们登陆的所有网站都是`B/S`架构  
 
@@ -17,7 +16,7 @@
 `DBMS`：`DataBase Management System`：数据管理系统。用于管理数据库。  
 `DBA`：`DataBase Administrators`：数据库管理员。软件公司没有数据库管理员，只有使用软件的企业里采用数据库管理员。工作是数据控制、管理、备份等。
 
-## 数据库软件中的数据库 ##
+## 数据库软件中的数据库 
 ###系统数据库
 在数据库软件安装完成之后，就会有几个**系统数据库**。  
 **系统数据库**的作用就是：管理我们自己创建的用户数据库。当我们在数据库中储存自己的数据，我们自己创建的这些数据库(**用户数据库**)需要被**系统数据库**管理与控制。系统数据库不能删除不能修改。  
@@ -27,8 +26,8 @@
 还有系统数据库：msdb与tempdb数据库。
 
 ###用户数据库  
-当我们做一个项目的时候，会针对这个项目做一个数据库，为这个项目提供数据的存储、操作等。这个就是**用户数据库**。 
- 
+当我们做一个项目的时候，会针对这个项目做一个数据库，为这个项目提供数据的存储、操作等。这个就是**用户数据库**。  
+
 一个用户数据库中有两种文件：数据文件与日志文件  
 1. 数据文件：  
  a. 主数据文件(.mdf):有且仅有一个。主数据文件中存放了次数据文件和日志文件这些东西的信息。  
@@ -51,7 +50,7 @@ b. 语句创建，创建数据库、表的时候，一定要使用`master`数据
 注意：在`SQL`语言中，往往不能以语句位置来确定语句的执行顺序。只能以`begin……end`来代替其他语言中的`{}`来确定语句的执行顺序。  
 示例如下：
 >
-	if exists(select * from database student)--exit方法的返回值是true或者false，它的参数是一条select语句，如果语句执行结果有记录就是true，如果select语句执行结果为空就为false。
+	if exists(select * from database student)--exists方法的返回值是true或者false，它的参数是一条select语句，如果语句执行结果有记录就是true，如果select语句执行结果为空就为false。  
 	  print("yes)--在这里，如果是true的话，两个语句都可以执行，但是如果是false，第一个语句不执行，第二个语句不是和第一个语句一起被控制的，它还是会执行。
 	  drop database student--因为，在这里，if这个判断只能控制print这个句子，而不能控制drop这个句子，无论如何，drop这个句子都会执行。
 	else
@@ -76,10 +75,10 @@ b. 语句创建，创建数据库、表的时候，一定要使用`master`数据
 ------
 更精确来讲，数据库中的数据是存储在`表`里面。  
 在一张表中，如果我们需要什么信息，就在这个表里面增加一列(也就是增加一个新字段)。
-
+实际上，一张表表示了一个类。  
 ##字段约束  
 对于某些字段，对这个字段的值是有限定的，如果我们输入了错误(无效)的字段值，则称为：此表失去了完整性。
-
+  
 那么怎样保证字段的值有效？  
 `Answer`：对字段施行*完整性约束*。  
 约束有以下几种：  
@@ -96,6 +95,7 @@ b. 语句创建，创建数据库、表的时候，一定要使用`master`数据
 `Answer`：就是对数据库表中的**字段的值进行的限制**。约束的作用就是：保证我们在输入字段的值的时候不会输入错误的值。自动检查我们输入的值是否符合要求。
 
 
+#数据库操作
 ##建表
 >
 	--创建表
@@ -127,6 +127,9 @@ b. 语句创建，创建数据库、表的时候，一定要使用`master`数据
 	alter table score  --添加外键约束的时候要使用外键表
 	-- add constraint   约束名       约束类型    外键表字段    REFERENCES    主键表  主键表字段
 	   add constraint   FK_stuId    Foreign key(stuId)      REFERENCES    student(stuId) --为外键表的stuId这个字段添加外键约束
+	  ALTER TABLE score
+			 ADD CONSTRAINT FK_id        
+   			 FOREIGN KEY(id) REFERENCES student(id)
 
 
 
@@ -155,7 +158,7 @@ T-SQL的组成：
 2. DML(数据操作语言)：用于增、删、改、查的数据库中的数据。如，select(查)、insert(增)、update(改)、delete(删)。  
 3. DCL(数据控制语言):用于控制存取许可、存取权限等，如，grant、revoke等。  
 
-注：SQL总不等于的写法：“<>”。
+注：SQL中不等于的写法：“<>”。
 ###数据插入
 >
 	insert    into     表名       (列名)                                        values(要插入的值);        --字符串需要加''。插入数据最重要的是匹配。
@@ -173,9 +176,11 @@ T-SQL的组成：
 	   select 		 * 			     from student 		where  stu_Age>33;--精确查询，大于33岁的条目
 	   select 	  stu_Id,stu_Name 	 from student 		where  address like '北京%';--使用like进行模糊查询，使用了通配符 
 	   select        *               from country       where Code like "A%";--查找带有A的字符串
+	   select * from student limit 1,3;--1开始，共3个
 	   select top 10 percent * from student;--查询前10%
 	   select * from student order by stu_Age;--查询结果按学生年龄升序排列，默认升序，desc是降序。
-查找所用通配符：
+	   select * from student order by id desc;
+查找所用通配符：  
 "_"：一个字符  
 "%"：任意长度的字符串  
 "[]"：括号内指定范围内的一个字符  
@@ -188,13 +193,14 @@ T-SQL的组成：
 >	
 	--统计
 	select avg(stu_Age) as avga, sum(stu_Age) as suma, max(stu_Age) as maxa, min(stu_Age) as mina,count(stu_Age) as counta from student;
-	--group by分组
-	--having：对已用聚合函数进行分组的结果进行删选(与group by合用)。where：对表中的原始数据进行删选。
+	--group by分组,用于进行分组统计。所谓的group by就是按照后面给的关键词进行分组，各个不同的关键词各自一组。用于按照各个关键词进行统计。
+	--having：对已用聚合函数进行分组统计的结果进行删选(与group by合用)。where：对表中的原始数据进行删选。二者是不同的。
 	select group_Id,avg(stu_Age) from student group by group_Id having avg(stu_Age)>=30;
+	--以上查询结果就是，group_Id相同的所有行数据综合成一行数据，就是求group_Id相同的学生求其平均年龄。
 	
 ####联接查询
 当我们需要在不同的表中查询一个主体的数据，显示在同一张表中，那么就需要使用联接查询。  
-a. 内联接：显示外键表所有数据，并显示主键表与之对应的数据。
+a. 内联接：显示外键表所有数据，并显示主键表与之对应的数据。实际上就是连接创建一个新表，结合了主键表与外键表的内容。单纯的就是将两个表粘在一起。合表的条目数与条目最少的那个表是一样的。
 >
 	select t.teachId,t.teaName,s.stu_Name from teacher as t inner join student as s on(t.teachId=s.teachId);
 
