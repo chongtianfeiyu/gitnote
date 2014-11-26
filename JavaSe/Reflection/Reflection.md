@@ -134,3 +134,69 @@ PrivateObject.class.getDeclaredMethod(“privateString”)方法会返回一个�
 例如：在重写一个方法的时候，在方法上面加上`@Override`，在编译阶段就保证编译成功。这就是注解(`Anotation`)的作用，这是和注释不一样的。  
 `Anotation`是一个接口，`Override`之类的都是它的实现类。
 获取注解对象只有一种方法：反射。
+
+
+
+#反射与数组
+1. 使用反射技术创建数组  
+    int[] intArray = (int[]) Array.newInstance(int.class, 3);
+这个例子创建一个int类型的数组。Array.newInstance()方法的第一个参数表示了我们要创建一个什么类型的数组。第二个参数表示了这个数组的空间是多大。  
+
+----------
+
+2. 使用反射技术访问数组内的内容
+具体可以使用Array.get(…)和Array.set(…)方法来访问数组内的内容。下面是一个例子：
+>
+    int[] intArray = (int[]) Array.newInstance(int.class, 3);
+    Array.set(intArray, 0, 123);
+    Array.set(intArray, 1, 456);
+    Array.set(intArray, 2, 789);
+    System.out.println("intArray[0] = " + Array.get(intArray, 0));
+    System.out.println("intArray[1] = " + Array.get(intArray, 1));
+    System.out.println("intArray[2] = " + Array.get(intArray, 2));
+  
+
+----------
+3. 获取数组对象的class属性
+如果不通过反射的话你可以这样来获取数组的Class对象：
+
+    Class stringArrayClass = String[].class;
+如果使用Class.forName()方法来获取数组的Class对象则不是那么简单。比如你可以像这样来获得一个原生数据类型（primitive）int数组的Class对象：  
+
+    Class intArray = Class.forName("[I");
+在JVM中字母I代表int类型，左边的‘[’代表我想要的是一个int类型的数组，这个规则同样适用于其他的原生数据类型。  
+对于普通对象类型的数组有一点细微的不同：
+
+    Class stringArrayClass = Class.forName("[Ljava.lang.String;");
+注意‘[L’的右边是类名，类名的右边是一个‘;’符号。这个的含义是一个指定类型的数组。  
+
+4. 获取普通原生数据类型的class属性
+需要注意的是，你不能通过Class.forName()方法获取一个原生数据类型的Class对象。下面这两个例子都会报ClassNotFoundException：  
+
+    Class intClass1 = Class.forName("I");
+    Class intClass2 = Class.forName("int");
+通常会用下面这个方法来获取普通对象以及原生对象的Class对象：  
+    public Class getClass(String className){
+      if("int" .equals(className)) return int.class;
+      if("long".equals(className)) return long.class;
+      ...
+      return Class.forName(className);
+    }
+一旦你获取了类型的Class对象，你就有办法轻松的获取到它的数组的Class对象，你可以通过指定的类型创建一个空的数组，然后通过这个空的数组来获取数组的Class对象。这样做有点讨巧，不过很有效。如下例：  
+
+    Class theClass = getClass(theClassName);
+    Class stringArrayClass = Array.newInstance(theClass, 0).getClass();
+这是一个特别的方式来获取指定类型的指定数组的Class对象。无需使用类名或其他方式来获取这个Class对象。
+为了确保Class对象是不是代表一个数组，你可以使用Class.isArray()方法来进行校验：
+    Class stringArrayClass = Array.newInstance(String.class, 0).getClass();
+    System.out.println("is array: " + stringArrayClass.isArray());
+
+5. 获取数组的成员的class属性
+一旦你获取了一个数组的class属性，你就可以通过class.getComponentType()方法获取这个数组的成员类型。  
+成员类型就是数组存储的数据类型。例如，数组int[]的成员类型就是一个Class对象int.class。String[]的成员类型就是java.lang.String类的Class对象。  
+下面是一个访问数组成员的class属性的例子：  
+
+    String[] strings = new String[3];
+    Class stringArrayClass = strings.getClass();
+    Class stringArrayComponentType = stringArrayClass.getComponentType();
+    System.out.println(stringArrayComponentType);
